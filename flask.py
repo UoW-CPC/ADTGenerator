@@ -4,7 +4,7 @@ from flask_restful import Resource, Api
 import json, validators, urllib.request, os.path, excel2json
 
 app = Flask(__name__)
-@app.route('/mdt', methods = ["GET", "POST"])
+@app.route('/api/v1/mdt/compile', methods = ["GET", "POST"])
 
 def mdt():
     file_path = 'microservice.xlsx'
@@ -33,7 +33,7 @@ def mdt():
     else:
         return jsonify({"message":"File not found: Please use a valid file"})
 
-@app.route('/algodt', methods = ["GET", "POST"])
+@app.route('/api/v1/algodt/compile', methods = ["GET", "POST"])
 
 def algodt():
     file_path = 'algorithm.xlsx'
@@ -62,7 +62,7 @@ def algodt():
     else:
         return jsonify({"message":"File not found: Please use a valid file"})
 
-@app.route('/idt', methods = ["GET", "POST"])
+@app.route('/api/v1/idt/compile', methods = ["GET", "POST"])
 
 def idt():
     file_path = 'infrastructure.xlsx'
