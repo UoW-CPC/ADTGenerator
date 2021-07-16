@@ -1,7 +1,6 @@
 from flask import Flask, jsonify
 from flask_restful import Resource, Api
-import xlrd
-import csv, yaml, json, os.path
+import csv, yaml, json, os.path, xlrd
 import pandas as pd
 
 def csv_from_excel_mdt():
