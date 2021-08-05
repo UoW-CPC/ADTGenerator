@@ -1,87 +1,63 @@
 from flask import Flask, jsonify
-from flask_restful import Resource, Api
-import csv, yaml, json, os.path, xlrd
-import pandas as pd
+import yaml, logging, logging.config
+from logging.handlers import RotatingFileHandler
+from logging.config import dictConfig
 
-def csv_from_excel_mdt():
-    wb = xlrd.open_workbook('Microservice.xlsx')
-    sh = wb.sheet_by_name('Microservice')
-    your_csv_file = open('microservice.csv', 'w')
-    wr = csv.writer(your_csv_file, quoting=csv.QUOTE_ALL)
-
-    for rownum in range(sh.nrows):
-        wr.writerow(sh.row_values(rownum))
-    your_csv_file.close()
-csv_from_excel_mdt()
-
-def csv_from_excel_algodt():
-    wb = xlrd.open_workbook('algorithm.xlsx')
-    sh = wb.sheet_by_name('Algorithm')
-    your_csv_file = open('algorithm.csv', 'w')
-    wr = csv.writer(your_csv_file, quoting=csv.QUOTE_ALL)
-
-    for rownum in range(sh.nrows):
-        wr.writerow(sh.row_values(rownum))
-    your_csv_file.close()
-csv_from_excel_algodt()
-
-def csv_from_excel_idt():
-    wb = xlrd.open_workbook('infrastructure.xlsx')
-    sh = wb.sheet_by_name('Infrastructure')
-    your_csv_file = open('infrastructure.csv', 'w')
-    wr = csv.writer(your_csv_file, quoting=csv.QUOTE_ALL)
-
-    for rownum in range(sh.nrows):
-        wr.writerow(sh.row_values(rownum))
-    your_csv_file.close()
-csv_from_excel_idt()
-
+# This is a dictionary to store configurartions that could be revised based on the application requirements
+DEFAULT_LOGGING = {
+    'version': 1,
+    'formatters': {'default': {
+        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    }},
+    'handlers': {'wsgi': {
+        'class': 'logging.StreamHandler',
+        'stream': 'ext://flask.logging.wsgi_errors_stream',
+        'formatter': 'default'
+    }},
+    'root': {
+        'level': 'INFO',
+        'handlers': ['wsgi']
+    }
+}
 
 app = Flask(__name__)
 @app.route('/mdt', methods = ["GET", "POST"])
 
-def mdt():
-    file_path ='microservice.csv'
-    if os.path.exists(file_path):
-        df = pd.read_csv(file_path, encoding='iso-8859-1')
-        text = yaml.dump(
-        df.reset_index().to_dict(orient='records'),
-        sort_keys=False, width=72, indent=4,
-        default_flow_style=None, allow_unicode=True)
-        return text
- 
-    else:
-        return jsonify({"message":"File not found: Please use a valid file"})
+def compile_mdt():
+    app.logger.warning('A warning occurred')
+    app.logger.error('An error occurred')
+    app.logger.info('Info')
+    return "mdt"
 
 @app.route('/algodt', methods = ["GET", "POST"])
 
-def algodt():
-    file_path = 'algorithm.csv'
-    if os.path.exists(file_path):
-        df = pd.read_csv(file_path, encoding='iso-8859-1')
-        text = yaml.dump(
-        df.reset_index().to_dict(orient='records'),
-        sort_keys=False, width=72, indent=4,
-        default_flow_style=None)
-        return text
- 
-    else:
-        return jsonify({"message":"File not found: Please use a valid file"})
+def compile_algodt():
+    app.logger.warning('A warning occurred')
+    app.logger.error('An error occurred')
+    app.logger.info('Info')
+    return "algodt"
 
 @app.route('/idt', methods = ["GET", "POST"])
 
-def idt():
-    file_path = 'infrastructure.csv'
-    if os.path.exists(file_path):
-        df = pd.read_csv(file_path, encoding='iso-8859-1')
-        text = yaml.dump(
-        df.reset_index().to_dict(orient='records'),
-        sort_keys=False, width=72, indent=4,
-        default_flow_style=None)
-        return text
- 
-    else:
-        return jsonify({"message":"File not found: Please use a valid file"})
+def compile_idt():
+    app.logger.warning('A warning occurred')
+    app.logger.error('An error occurred')
+    app.logger.info('Info')
+    return "idt"
+
 
 if __name__ == '__main__':
+    logging.config.dictConfig(DEFAULT_LOGGING)
+    logFormatStr = '[%(asctime)s] p%(process)s {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s'
+    logging.basicConfig(format = logFormatStr, filename = "global.log", level=logging.DEBUG)
+    formatter = logging.Formatter(logFormatStr,'%m-%d %H:%M:%S')
+    fileHandler = logging.FileHandler("summary.log")
+    fileHandler.setLevel(logging.DEBUG)
+    fileHandler.setFormatter(formatter)
+    streamHandler = logging.StreamHandler()
+    streamHandler.setLevel(logging.DEBUG)
+    streamHandler.setFormatter(formatter)
+    app.logger.addHandler(fileHandler)
+    app.logger.addHandler(streamHandler)
+    app.logger.info("Logging is set up.")
     app.run(debug=True)
