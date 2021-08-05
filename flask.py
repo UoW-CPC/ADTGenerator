@@ -26,7 +26,8 @@ def compile_mdt():
     app.logger.warning('A warning occurred')
     app.logger.error('An error occurred')
     app.logger.info('Info')
-    return "This is mdt"
+    mdt_test = "This is idt"
+    return mdt_test
 
 @app.route('/algodt', methods = ["GET", "POST"])
 
@@ -34,7 +35,8 @@ def compile_algodt():
     app.logger.warning('A warning occurred')
     app.logger.error('An error occurred')
     app.logger.info('Info')
-    return "This is algodt"
+    algodt_test = "This is algodt"
+    return algodt_test
 
 @app.route('/idt', methods = ["GET", "POST"])
 
@@ -42,7 +44,8 @@ def compile_idt():
     app.logger.warning('A warning occurred')
     app.logger.error('An error occurred')
     app.logger.info('Info')
-    return "This is idt"
+    idt_test = "This is idt"
+    return idt_test 
 
 
 if __name__ == '__main__':
