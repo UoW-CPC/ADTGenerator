@@ -1,6 +1,5 @@
 from flask import Flask, jsonify
 import yaml, logging, logging.config
-from logging.handlers import RotatingFileHandler
 from logging.config import dictConfig
 
 # This is a dictionary to store configurartions that could be revised based on the application requirements
