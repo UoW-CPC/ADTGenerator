@@ -71,8 +71,9 @@ def compile_idt():
     mdt_test = "This is mdt"
     retrun mdt_test   
 
-def compose_dt(mdt_test, algodt_test, idt_test):
-    
+    # composing code comes here once the results are gotten from compile libraries and functions
+# def compose_dt(mdt_test, algodt_test, idt_test):
+#  ....  getting libraries and put the results in CSAR
 
 
 if __name__ == '__main__':
