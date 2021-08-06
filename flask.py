@@ -51,7 +51,7 @@ def compile_idt():
 if __name__ == '__main__':
     logging.config.dictConfig(DEFAULT_LOGGING)
     logFormatStr = '[%(asctime)s] p%(process)s {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s'
-    logging.basicConfig(format = logFormatStr, filename = "global.log", level=logging.DEBUG)
+    logging.basicConfig(format = logFormatStr, filename = "full.log", level=logging.DEBUG)
     formatter = logging.Formatter(logFormatStr,'%m-%d %H:%M:%S')
     fileHandler = logging.FileHandler("summary.log")
     fileHandler.setLevel(logging.DEBUG)
