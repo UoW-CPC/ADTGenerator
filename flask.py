@@ -24,7 +24,7 @@ app = Flask(__name__)
 
 def compile_mdt():
     app.logger.warning('A warning occurred')
-    app.logger.error('An error occurred')
+    app.logger.error('An error occurred during the validation')
     app.logger.info('The metadata has been received successfully!')
     mdt_test = "This is idt"
     return mdt_test
@@ -33,7 +33,7 @@ def compile_mdt():
 
 def compile_algodt():
     app.logger.warning('A warning occurred')
-    app.logger.error('An error occurred')
+    app.logger.error('An error occurred during the validation')
     app.logger.info('The metadata has been received successfully!')
     algodt_test = "This is idt"
     return algodt_test
@@ -42,7 +42,7 @@ def compile_algodt():
 
 def compile_idt():
     app.logger.warning('A warning occurred')
-    app.logger.error('An error occurred')
+    app.logger.error('An error occurred during the validation')
     app.logger.info('The metadata has been received successfully!')
     idt_test = "This is idt"
     return idt_test
