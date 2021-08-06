@@ -25,7 +25,7 @@ app = Flask(__name__)
 def compile_mdt():
     app.logger.warning('A warning occurred')
     app.logger.error('An error occurred')
-    app.logger.info('Info')
+    app.logger.info('The metadata has been received successfully!')
     mdt_test = "This is idt"
     return mdt_test
 
@@ -34,8 +34,8 @@ def compile_mdt():
 def compile_algodt():
     app.logger.warning('A warning occurred')
     app.logger.error('An error occurred')
-    app.logger.info('Info')
-    algodt_test = "This is algodt"
+    app.logger.info('The metadata has been received successfully!')
+    algodt_test = "This is idt"
     return algodt_test
 
 @app.route('/idt', methods = ["GET", "POST"])
@@ -43,15 +43,18 @@ def compile_algodt():
 def compile_idt():
     app.logger.warning('A warning occurred')
     app.logger.error('An error occurred')
-    app.logger.info('Info')
+    app.logger.info('The metadata has been received successfully!')
     idt_test = "This is idt"
-    return idt_test 
+    return idt_test
+
+def compose_dt(mdt_test, algodt_test, idt_test):
+    
 
 
 if __name__ == '__main__':
     logging.config.dictConfig(DEFAULT_LOGGING)
     logFormatStr = '[%(asctime)s] p%(process)s {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s'
-    logging.basicConfig(format = logFormatStr, filename = "full.log", level=logging.DEBUG)
+    logging.basicConfig(format = logFormatStr, filename = "global.log", level=logging.DEBUG)
     formatter = logging.Formatter(logFormatStr,'%m-%d %H:%M:%S')
     fileHandler = logging.FileHandler("summary.log")
     fileHandler.setLevel(logging.DEBUG)
