@@ -23,29 +23,53 @@ app = Flask(__name__)
 @app.route('/mdt', methods = ["GET", "POST"])
 
 def compile_mdt():
-    app.logger.warning('A warning occurred')
-    app.logger.error('An error occurred during the validation')
-    app.logger.info('The metadata has been received successfully!')
-    mdt_test = "This is idt"
-    return mdt_test
+    json_content = request.json
+    try:
+       result = json.load(json_content)
+       logger.debug("Valid json!")
+          
+    except ValidationError as err:
+    logger.error("No valid json is found!")
+    # invoking library here ... #
+    # .........
+    # Then invoking the libarary
+    app.logger.info('The library has been invoked!')
+    mdt_test = "This is mdt"
+    retrun mdt_test   
 
 @app.route('/algodt', methods = ["GET", "POST"])
 
 def compile_algodt():
-    app.logger.warning('A warning occurred')
-    app.logger.error('An error occurred during the validation')
-    app.logger.info('The metadata has been received successfully!')
-    algodt_test = "This is idt"
-    return algodt_test
+    json_content = request.json
+    try:
+       result = json.load(json_content)
+       logger.debug("Valid json!")
+          
+    except ValidationError as err:
+    logger.error("No valid json is found!")
+    # invoking library here ... #
+    # .........
+    # Then invoking the libarary
+    app.logger.info('The library has been invoked!')
+    mdt_test = "This is mdt"
+    retrun mdt_test   
 
 @app.route('/idt', methods = ["GET", "POST"])
 
 def compile_idt():
-    app.logger.warning('A warning occurred')
-    app.logger.error('An error occurred during the validation')
-    app.logger.info('The metadata has been received successfully!')
-    idt_test = "This is idt"
-    return idt_test
+    json_content = request.json
+    try:
+       result = json.load(json_content)
+       logger.debug("Valid json!")
+          
+    except ValidationError as err:
+    logger.error("No valid json is found!")
+    # invoking library here ... #
+    # .........
+    # Then invoking the libarary
+    app.logger.info('The library has been invoked!')
+    mdt_test = "This is mdt"
+    retrun mdt_test   
 
 def compose_dt(mdt_test, algodt_test, idt_test):
     
