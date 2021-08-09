@@ -29,7 +29,7 @@ def compile_mdt():
        logger.debug("Valid json!")
           
     except ValidationError as err:
-    logger.error("No valid json is found!")
+      logger.error("No valid json is found!")
     # invoking library here ... #
     # .........
     # Then invoking the libarary
@@ -46,7 +46,7 @@ def compile_algodt():
        logger.debug("Valid json!")
           
     except ValidationError as err:
-    logger.error("No valid json is found!")
+       logger.error("No valid json is found!")
     # invoking library here ... #
     # .........
     # Then invoking the libarary
@@ -63,7 +63,7 @@ def compile_idt():
        logger.debug("Valid json!")
           
     except ValidationError as err:
-    logger.error("No valid json is found!")
+      logger.error("No valid json is found!")
     # invoking library here ... #
     # .........
     # Then invoking the libarary
