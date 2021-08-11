@@ -12,17 +12,6 @@ try:
 except Exception as e:
     app.logger.error('Failed to load config file: '+ str(e))
 
-logging.basicConfig(filename='record.log', level=logging.DEBUG, 
-    format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
-fileHandler = logging.FileHandler("summary.log")
-fileHandler.setLevel(logging.DEBUG)
-streamHandler = logging.StreamHandler()
-streamHandler.setLevel(logging.DEBUG)
-app.logger.addHandler(fileHandler)
-app.logger.addHandler(streamHandler)
-app.logger.info("Logging is set up.")
-
-
 logging_configuration = app.config.get('LOGGING')
 if logging_configuration:
     logging.config.dictConfig(logging_configuration)
@@ -85,6 +74,18 @@ def compile_idt():
 
 
 if __name__ == '__main__':
+    logFormatStr = '[%(asctime)s] p%(process)s {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s'
+    logging.basicConfig(format = logFormatStr, filename = "record.log", level=logging.DEBUG)
+    formatter = logging.Formatter(logFormatStr,'%m-%d %H:%M:%S')
+    fileHandler = logging.FileHandler("summary.log")
+    fileHandler.setLevel(logging.DEBUG)
+    fileHandler.setFormatter(formatter)
+    streamHandler = logging.StreamHandler()
+    streamHandler.setLevel(logging.DEBUG)
+    streamHandler.setFormatter(formatter)
+    app.logger.addHandler(fileHandler)
+    app.logger.addHandler(streamHandler)
+    app.logger.info("Logging is set up.")
     app.run(host='localhost', debug=True)
 
 
