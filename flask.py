@@ -8,9 +8,12 @@ try:
     with open('config_test.yaml','r') as stream:
         config = yaml.safe_load(stream)
         app.config.from_object(config)
+        logging.config.dictConfig(config)
         app.logger.info('Reading the Config File')
 except Exception as e:
     app.logger.error('Failed to load config file: '+ str(e))
+
+#logging.config.dictConfig(config)
 
 @app.route('/mdt', methods = ["GET", "POST"])
 
@@ -33,12 +36,13 @@ def compile_mdt():
 @app.route('/algodt', methods = ["GET", "POST"])
 
 def compile_algodt():
-    json_content = request.json
-    try:
-        result = json.load(json_content)
-        logger.debug("Valid json!")
-    except ValidationError as err:
-        logger.debug("No valid json is found!")
+    with open('sample.json') as j:
+        try:
+            result = json.load(j)
+            app.logger.debug("Valid json!")
+            
+        except ValidationError as err:
+            app.logger.error("No valid json is found!")
     # invoking library here ... #
     # .........
     # Then invoking the libarary
@@ -49,12 +53,13 @@ def compile_algodt():
 @app.route('/idt', methods = ["GET", "POST"])
 
 def compile_idt():
-    json_content = request.json
-    try:
-        result = json.load(json_content)
-        logger.debug("Valid json!")
-    except ValidationError as err:
-        logger.debug("No valid json is found!")
+    with open('sample.json') as j:
+        try:
+            result = json.load(j)
+            app.logger.debug("Valid json!")
+            
+        except ValidationError as err:
+            app.logger.error("No valid json is found!")
     # invoking library here ... #
     # .........
     # Then invoking the libarary
