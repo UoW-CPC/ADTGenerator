@@ -31,7 +31,7 @@ def compile_mdt():
     # .........
     # Then invoking the libarary
     app.logger.info('The library has been invoked!')
-    return 'This is MDT! {}'.format(app.config.get('LOGGING'))   
+    return 'This is MDT! {}'.format(app.config.get('logging'))   
 
 @app.route('/algodt', methods = ["GET", "POST"])
 
@@ -47,7 +47,7 @@ def compile_algodt():
     # .........
     # Then invoking the libarary
     app.logger.info('The library has been invoked!')
-    return 'This is ADT! {}'.format(app.config.get('LOGGING'))  
+    return 'This is ADT! {}'.format(app.config.get('logging'))  
 
 @app.route('/idt', methods = ["GET", "POST"])
 
@@ -63,7 +63,7 @@ def compile_idt():
     # .........
     # Then invoking the libarary
     app.logger.info('The library has been invoked!')
-    return 'This is IDT! {}'.format(app.config.get('LOGGING'))  
+    return 'This is IDT! {}'.format(app.config.get('logging'))  
 
 # composing code comes here once the results are gotten from compile libraries and functions
 # def compose_dt(mdt_test, algodt_test, idt_test):
