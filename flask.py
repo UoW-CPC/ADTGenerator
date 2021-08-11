@@ -12,7 +12,7 @@ try:
 except Exception as e:
     app.logger.error('Failed to load config file: '+ str(e))
 
-logging_configuration = app.config.get('LOGGING')
+logging_configuration = app.config.get('logging')
 if logging_configuration:
     logging.config.dictConfig(logging_configuration)
 
