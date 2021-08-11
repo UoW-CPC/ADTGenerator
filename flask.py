@@ -44,7 +44,7 @@ def compile_algodt():
     # Then invoking the libarary
     app.logger.info('The library has been invoked!')
     mdt_test = "This is mdt"
-    retrun mdt_test  
+    return mdt_test  
 
 @app.route('/idt', methods = ["GET", "POST"])
 
@@ -60,7 +60,7 @@ def compile_idt():
     # Then invoking the libarary
     app.logger.info('The library has been invoked!')
     mdt_test = "This is mdt"
-    retrun mdt_test  
+    return mdt_test  
 
 # composing code comes here once the results are gotten from compile libraries and functions
 # def compose_dt(mdt_test, algodt_test, idt_test):
