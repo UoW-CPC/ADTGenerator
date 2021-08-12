@@ -4,6 +4,8 @@ from logging.config import dictConfig
 
 app = Flask(__name__)
 
+
+# Reading the config file and initializing the config dictionary
 try: 
     with open('config_test.yaml', 'r') as f:
         config = yaml.safe_load(f)
