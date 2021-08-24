@@ -8,7 +8,7 @@
 * [Building the API](#build-api)
 
 
-## Geenral info and structure
+## General info and structure
 
 
 
