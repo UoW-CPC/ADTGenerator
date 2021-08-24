@@ -3,9 +3,10 @@
 
 ## Table of Contents
 
-* [General Info and structure]
-* [Building the API]
-* [Running the API]
+* [General Info and structure](#general-information)
+* [Running the API](#running-api)
+* [Building the API](#build-api)
+
 
 ## Geenral info and structure
 
