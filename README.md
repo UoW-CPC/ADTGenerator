@@ -1,5 +1,5 @@
 # REST-API-ADT-GENRATOR
-> This application is a FLASK-based REST API, is a part of ADT geenrator for the DigitiBrain project. 
+> This application is a FLASK-based REST API, as a part of ADT geenrator for the DigitiBrain project. 
 
 ## Table of Contents
 
