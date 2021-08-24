@@ -14,7 +14,8 @@
 
 ## Using the API
 - In order to run the API, it is required to run the following command:
-'python flask.py'
+`python flask.py`
+
 
 
 
