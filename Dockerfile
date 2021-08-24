@@ -1,4 +1,4 @@
-ARG APP_IMAGE=python:::3.9.5-alpine
+ARG APP_IMAGE=python:3.9.5-alpine
 
 FROM $APP_IMAGE AS base
 
