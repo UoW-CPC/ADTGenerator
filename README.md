@@ -13,8 +13,8 @@
 - All the operations in the API are logged and stored in a configuration dictionary.   
 
 ## Using the API
-- In order to run the API, it is required to run the following command:
-`python flask.py`
+- In order to run the API, it is required to execute the `python flask.py`
+
 
 
 
