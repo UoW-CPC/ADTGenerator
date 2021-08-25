@@ -14,7 +14,7 @@
 
 ## Using the API
 - In order to run the API, it is required to execute the `python flask.py`
-- Once the application starts to run, based on what has been set up in the designated routes in the API, it is required to execute a correct route in the web browser to access libraries and their contents. In the `flask.py` the routes are `/mdt`, `/adt`, and `/algodt`. Therefore, you may be able to access those route by typing `http://127.0.0.1/algodt`, `http://127.0.0.1/idt`, `http://127.0.0.1/mdt` in the web browser. By executing each of these URLs, the API will start to log the events for each function and library using any pre-defined configuration.       
+- Once the application starts to run, based on what has been set up in the designated routes in the API, it is required to execute a correct route in the web browser to access libraries and their contents. In the `flask.py` the routes are `/mdt`, `/adt`, and `/algodt`. Therefore, you may be able to access those route by typing `http://127.0.0.1:5001/algodt`, `http://127.0.0.1:5001/idt`, `http://127.0.0.1:5001/mdt` in the web browser. By executing each of these URLs, the API will start to log the events for each function and library using any pre-defined configuration.       
 
 ## Building the API
 - It is a best practice to dockerise the API and run it accordingly. To do this, first it is required to build the application using the following command:
@@ -25,5 +25,5 @@
                                        
                         sudo docker run --name flask-docker-demo-app -p 5001:5001 flask-docker-demo-app
 
-
+- After running the containerised API, you may use the mentioned URLs to interact with the REST API. 
 
