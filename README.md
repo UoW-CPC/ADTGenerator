@@ -23,7 +23,7 @@
 
 - Once the image was build, the next step is running the API by executing the following command:
                                        
-                        sudo docker run --name flask-docker-demo-app -p 5001:5001 flask-docker-demo-app
+                        sudo docker run --name adt-generator-app -p 5001:5001 adt-generator-app
 
 - After running the containerised API, you may use the mentioned URLs to interact with the REST API. 
 
