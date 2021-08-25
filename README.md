@@ -19,7 +19,7 @@
 ## Building the API
 - It is a best practice to dockerise the API and run it accordingly. To do this, first it is required to build the application using the following command:
 
-                                         `sudo docker build --tag adt-generator-app .`
+                                         ```sudo docker build --tag adt-generator-app .```
 
 - Once the image was build, the next step is running the API by executing the following command:
                                        
