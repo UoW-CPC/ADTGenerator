@@ -14,9 +14,12 @@ try:
 except Exception as e:
     app.logger.error('Failed to load config file: '+ str(e))
 
-logging_configuration = app.config.get('logging')
-if logging_configuration:
-    logging.config.dictConfig(logging_configuration)
+try:
+    logging_configuration = app.config.get('logging')
+    if logging_configuration:
+        logging.config.dictConfig(logging_configuration)
+except Exception as e:
+    app.logger.error('Failed to initialize config dictionary: ' + str(e))
 
 @app.route('/mdt', methods = ["GET", "POST"])
 
