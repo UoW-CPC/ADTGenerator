@@ -1,5 +1,5 @@
 from flask import Flask
-import yaml, logging, logging.config, json, os
+import yaml, logging, logging.config, json
 from logging.config import dictConfig
 
 app = Flask(__name__)
