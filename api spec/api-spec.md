@@ -83,7 +83,7 @@ The REST API for the ADT generator benefits the logging functionality for all op
 | ------------- | ------------- | 
 | logger.debug | used to find the reason in case the program is not working as expected or an exception has occurred |
 | logger.info | used to log the information in case that the program is working as expected |
-| logger.erro | used to log the information in case that the program is not working as expected. |
+| logger.error | used to log the information in case that the program is not working as expected. |
 
                                                    Table 4 - Logging levels in API
 
