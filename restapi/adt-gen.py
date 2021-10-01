@@ -1,37 +1,22 @@
 from flask import Flask
-import yaml, logging, logging.config, json
+import yaml, logging, logging.config, json, os
 from logging.config import dictConfig
+from app_config import LOG_FORMAT, CONF
 
 app = Flask(__name__)
 
-
-# Reading the config file and initializing the config dictionary
-try: 
-    with open('config_test.yaml', 'r') as f:
-        config = yaml.safe_load(f)
-        app.config.from_object(config)
-        app.logger.info('Loading is successful')
-except Exception as e:
-    app.logger.error('Failed to load config file: '+ str(e))
-
 try:
-    logging_configuration = app.config.get('logging')
+    logging_configuration = app.config.update(CONF)
     if logging_configuration:
         logging.config.dictConfig(logging_configuration)
 except Exception as e:
-    app.logger.error('Failed to initialize config dictionary: ' + str(e))
+    app.logger.error('Failed to update config dictionary: ' + str(e))
 
 @app.route('/mdt', methods = ["GET", "POST"])
 
 def compile_mdt():
   
-    with open('sample.json') as j:
-        try:
-            result = json.load(j)
-            app.logger.debug("Valid json!")
-            
-        except ValidationError as err:
-            app.logger.error("No valid json is found!")
+
     # invoking library here ...
     # .........
     # Then invoking the libarary
@@ -41,13 +26,7 @@ def compile_mdt():
 @app.route('/algodt', methods = ["GET", "POST"])
 
 def compile_algodt():
-    with open('sample.json') as j:
-        try:
-            result = json.load(j)
-            app.logger.debug("Valid json!")
-            
-        except ValidationError as err:
-            app.logger.error("No valid json is found!")
+
     # invoking library here ... #
     # .........
     # Then invoking the libarary
@@ -57,13 +36,7 @@ def compile_algodt():
 @app.route('/idt', methods = ["GET", "POST"])
 
 def compile_idt():
-    with open('sample.json') as j:
-        try:
-            result = json.load(j)
-            app.logger.debug("Valid json!")
-            
-        except ValidationError as err:
-            app.logger.error("No valid json is found!")
+
     # invoking library here ... #
     # .........
     # Then invoking the libarary
@@ -76,9 +49,8 @@ def compile_idt():
 
 
 if __name__ == '__main__':
-    logFormatStr = '[%(asctime)s] p%(process)s {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s'
-    logging.basicConfig(format = logFormatStr, filename = "record.log", level=logging.DEBUG)
-    formatter = logging.Formatter(logFormatStr,'%m-%d %H:%M:%S')
+    logging.basicConfig(format = LOG_FORMAT, filename = "record.log", level=logging.DEBUG)
+    formatter = logging.Formatter(LOG_FORMAT,'%m-%d %H:%M:%S')
     fileHandler = logging.FileHandler("summary.log")
     fileHandler.setLevel(logging.DEBUG)
     fileHandler.setFormatter(formatter)
@@ -89,3 +61,5 @@ if __name__ == '__main__':
     app.logger.addHandler(streamHandler)
     app.logger.info("Logging is set up.")
     app.run(debug=True, port=5001)
+
+
