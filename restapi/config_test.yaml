@@ -4,7 +4,6 @@ environment: development
 debug: True
 testing: True
 secret_key: None
-env: None
 token: None
 runtime_config:
   python_version: 3
