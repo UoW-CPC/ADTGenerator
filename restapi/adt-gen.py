@@ -1,11 +1,11 @@
 from flask import Flask, jsonify, request
 import yaml, logging, logging.config, json
 from logging.config import dictConfig
-#from flask_oicd import OpenIDConnect
+#from flask_oidc import OpenIDConnect
 from app_config import LOG_FORMAT, CONF
 
 app = Flask(__name__)
-#oicd = OpenIDConnect(app)
+#oidc = OpenIDConnect(app)
 try:
     logging_configuration = app.config.update(CONF)
     if logging_configuration:
@@ -15,7 +15,7 @@ except Exception as e:
 
 
 @app.route('/v1/adtg/compile/mdt', methods = ["GET", "POST"])
-#@oicd.accept_token(require_token=True)
+#@oidc.accept_token(require_token=True)
 def compile_mdt():
     # Token verification
     # ...
