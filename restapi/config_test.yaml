@@ -1,8 +1,19 @@
+runtime: python
+api_version: 1
+environment: development
+debug: True
+testing: True
+secret_key: None
+env: None
+token: None
+runtime_config:
+  python_version: 3
+
 logging:
     version: 1
     formatters:
       default:
-        format: '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
+        format: '%(asctime)s %(levelname)s: %(filename)s %(funcName)s:%(lineno)d : %(message)s'
     handlers:
       wsgi:
         class: logging.StreamHandler
@@ -12,3 +23,4 @@ logging:
       level: INFO
       handlers:
         - wsgi
+
