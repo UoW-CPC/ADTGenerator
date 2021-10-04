@@ -1,10 +1,11 @@
-from flask import Flask
-import yaml, logging, logging.config, json, os
+from flask import Flask, jsonify, request
+import yaml, logging, logging.config, json
 from logging.config import dictConfig
+#from flask_oicd import OpenIDConnect
 from app_config import LOG_FORMAT, CONF
 
 app = Flask(__name__)
-
+#oicd = OpenIDConnect(app)
 try:
     logging_configuration = app.config.update(CONF)
     if logging_configuration:
@@ -12,36 +13,39 @@ try:
 except Exception as e:
     app.logger.error('Failed to update config dictionary: ' + str(e))
 
-@app.route('/mdt', methods = ["GET", "POST"])
 
+@app.route('/v1/adtg/compile/mdt', methods = ["GET", "POST"])
+#@oicd.accept_token(require_token=True)
 def compile_mdt():
-  
-
+    # Token verification
+    # ...
     # invoking library here ...
     # .........
     # Then invoking the libarary
     app.logger.info('The library has been invoked!')
-    return 'This is MDT! {}'.format(app.config.get('logging'))   
+    return jsonify({'success':'This is MDT'}), 200   
 
-@app.route('/algodt', methods = ["GET", "POST"])
-
+@app.route('/v1/adtg/compile/algodt', methods = ["GET", "POST"])
+#@oidc.accept_token(require_token=True)
 def compile_algodt():
-
+    # Token verification
+    # ...
     # invoking library here ... #
     # .........
     # Then invoking the libarary
     app.logger.info('The library has been invoked!')
-    return 'This is ADT! {}'.format(app.config.get('logging'))  
+    return jsonify({'success':'This is ALGODT'}), 200   
 
-@app.route('/idt', methods = ["GET", "POST"])
-
+@app.route('/v1/adtg/compile/idt', methods = ["GET", "POST"])
+#@oidc.accept_token(require_token=True)
 def compile_idt():
-
+    # Token versification
+    # ...
     # invoking library here ... #
     # .........
     # Then invoking the libarary
     app.logger.info('The library has been invoked!')
-    return 'This is IDT! {}'.format(app.config.get('logging'))  
+    return jsonify({'success':'This is IDT'}), 200  
 
 # composing code comes here once the results are gotten from compile libraries and functions
 # def compose_dt(mdt_test, algodt_test, idt_test):
@@ -49,6 +53,7 @@ def compile_idt():
 
 
 if __name__ == '__main__':
+    #logFormatStr = '[%(asctime)s] p%(process)s {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s'
     logging.basicConfig(format = LOG_FORMAT, filename = "record.log", level=logging.DEBUG)
     formatter = logging.Formatter(LOG_FORMAT,'%m-%d %H:%M:%S')
     fileHandler = logging.FileHandler("summary.log")
