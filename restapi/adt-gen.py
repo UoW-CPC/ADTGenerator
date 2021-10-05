@@ -11,17 +11,17 @@ try:
     app.config.from_object(__name__)
     logging_configuration = app.config.update(CONF)
     if logging_configuration:
-        logging.config.dictConfig(logging_configuration)
+        dictConfig(logging_configuration)
 except Exception as e:
     app.logger.error('Failed to update config dictionary: ' + str(e))
 
 
 @app.route('/v1/adtg/compile/mdt', methods = ["GET", "POST"])
 #@oidc.accept_token(require_token=True)
-def compile_mdt(id):
-    parser = reqparse.Requestparser()
-    parser.add_argument('id', type=str, required=True)
-    id = args['id']
+def compile_mdt():
+    # parser = reqparse.Requestparser()
+    # parser.add_argument('id', type=str, required=True)
+    # id = args['id']
     # Token verification
     # ...
     # invoking library here ...
@@ -32,9 +32,9 @@ def compile_mdt(id):
 @app.route('/v1/adtg/compile/algodt', methods = ["GET", "POST"])
 #@oidc.accept_token(require_token=True)
 def compile_algodt(id):
-    parser = reqparse.Requestparser()
-    parser.add_argument('id', type=str, required=True)
-    id = args['id']
+    # parser = reqparse.Requestparser()
+    # parser.add_argument('id', type=str, required=True)
+    # id = args['id']
     # Token verification
     # ...
     # invoking library here ... #
@@ -45,9 +45,9 @@ def compile_algodt(id):
 @app.route('/v1/adtg/compile/idt', methods = ["GET", "POST"])
 #@oidc.accept_token(require_token=True)
 def compile_idt(id):
-    parser = reqparse.Requestparser()
-    parser.add_argument('id', type=str, required=True)
-    id = args['id']
+    # parser = reqparse.Requestparser()
+    # parser.add_argument('id', type=str, required=True)
+    # id = args['id']
     # Token versification
     # ...
     # invoking library here ... #
