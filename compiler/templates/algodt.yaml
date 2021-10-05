@@ -1,0 +1,25 @@
+description:
+  id: "{{ description["id"] }}"
+  name: "{{ description["name"] }}"
+  description: "{{ description["description"] }}"
+  classificationSchema: "{{ description["classificationSchema"] }}"
+  type:
+  {%- for type in description["type"] %}
+  - "{{ type }}"
+  {%- endfor %}
+  author: "{{ description["author"] }}"
+  date: {{ description["date"] }}
+  version: "{{ description["version"] }}"
+algorithm:
+  listOfMicroservices:
+  {%- for microservice in algorithm["listOfMicroservices"] %}
+  - {{ microservice }}
+  {%- endfor %}
+  abstractHostDefinition:
+  {%- for hosts in algorithm["abstractHostDefinition"] %}
+  {%- for host in hosts %}
+  {%- for value in hosts.values() %}
+  - {{ host }}: {{ value }}
+  {%- endfor %}
+  {%- endfor %}
+  {%- endfor %}

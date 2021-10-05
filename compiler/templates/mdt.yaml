@@ -1,0 +1,95 @@
+description:
+  id: "{{ description["id"] }}"
+  name: "{{ description["name"] }}"
+  author: "{{ description["author"] }}"
+  date: {{ description["date"] }}
+  version: "{{ description["version"] }}"
+  description: "{{ description["description"] }}"
+  classificationSchema: "{{ description["classificationSchema"] }}"
+  type:
+  {%- for type in description["type"] %}
+  - "{{ type }}"
+  {%- endfor %}
+  {%- if description["software"] != NULL %}
+  software:
+  {%- endif %}
+  {%- for software in description["software"] %}
+  - "{{ software }}"
+  {%- endfor %}
+  {%- if description["softwareVersion"] != NULL %}
+  softwareVersion:
+  {%- endif %}
+  {%- for softwareVersion in description["softwareVersion"] %}
+  - "{{ softwareVersion }}"
+  {%- endfor %}
+service:
+  containerFormat: "{{ service["containerFormat"] }}"
+  image: "{{ service["image"] }}"
+  deploymentFormat: "{{ service["deploymentFormat"] }}"
+  deploymentData: "{{ service["deploymentData"] }}"
+  {%- if service["dependencyRequirements"]  != NULL %}
+  dependencyRequirements: "{{ service["dependencyRequirements"] }}"
+  {%- endif %}
+  {%- if service["storageRequirements"]  != NULL %}
+  storageRequirements: "{{ service["storageRequirements"] }}"
+  {%- endif %}
+  {%- if service[ "limitations" ]  != NULL %}
+  limitations: "{{ service["limitations"] }}"
+  {%- endif %}
+{%- if containerConfiguration != NULL %}
+containerConfiguration:
+{%- endif %}
+  {%- for key,value in containerConfiguration.items() %}
+  {{ key}}: '{{ value }}'
+  {%- endfor %}
+{%- if containerConfiguration != NULL %}
+hardwareRequirements:
+{%- endif %}
+  {%- for key,value in hardwareRequirements.items() %}
+  {{ key}}: {{ value }}
+  {%- endfor %}
+OSRequirements:
+  {%- for key,value in OSRequirements.items() %}
+  {{ key }}: "{{ value }}"
+  {%- endfor %}
+inputData:
+  inputData:
+  {%- for key,value in inputData["inputData"].items() %}
+  - {{ key }}: "{{ value }}"
+  {%- endfor %}
+  dataObjects:
+  {%- for key,values in inputData[ "dataObjects" ].items() %}
+    {{ key }}:
+  {%- for value in values %}
+    - "{{ value }}"
+  {%- endfor %}
+  {%- endfor %}
+outputData:
+  outputData:
+  {%- for key,value in outputData["outputData"].items() %}
+  - {{ key }}: "{{ value }}"
+  {%- endfor %}
+  dataObjects:
+  {%- for key,values in inputData[ "dataObjects" ].items() %}
+    {{ key }}:
+  {%- for value in values %}
+    - "{{ value }}"
+  {%- endfor %}
+  {%- endfor %}
+{%- if containerConfiguration != NULL %}
+model:
+{%- endif -%}
+{% for key,values in model.items() %}
+  {{ key }}:
+{%- for value in values %}
+  - "{{ value }}"
+{%- endfor %}
+{%- endfor %}
+{%- for key in k8s2adt1(1).items() %}
+{%- set key, value = key %}
+  - {{key}}: {{value}}
+{%- endfor %}
+{%- for key in k8s2adt2(3).items() %}
+{%- set key, value = key %}
+  - {{key}}: {{value}}
+{%- endfor %}
