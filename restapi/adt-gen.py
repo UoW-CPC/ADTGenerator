@@ -3,7 +3,7 @@ import yaml, logging, logging.config, json, argparse
 from logging.config import dictConfig
 from flask_restful import reqparse
 #from flask_oidc import OpenIDConnect
-from app_config import CONF
+from app_config import LOG_FORMAT, CONF
 
 app = Flask(__name__)
 #oidc = OpenIDConnect(app)
@@ -15,14 +15,19 @@ try:
 except Exception as e:
     app.logger.error('Failed to update config dictionary: ' + str(e))
 
-log = logging.getLogger('adtg_compiler')
-log.info("This is ADT generator compiler Configuration")
+app_log = logging.getLogger('adtg_api')
+app_log.info("ADT generator API Configuration")
 
-parser = argparse.ArgumentParser(description='processing arguments.')
-parser.add_argument('--config', dest = 'config_variable', default = './config_test.yaml' ,
-                    help='Setting arguments')
-args = parser.parse_args()
-print('--args--', args.config)
+compile_log = logging.getLogger('adtg_compiler')
+compile_log.info("ADT generator compiler Configuration")
+
+
+
+# parser = argparse.ArgumentParser(description='processing arguments.')
+# parser.add_argument('--config', dest = 'config_variable', default = './config_test.yaml' ,
+#                     help='Setting arguments')
+# args = parser.parse_args()
+# print('--args--', args.config)
 
 @app.route('/v1/adtg/compile/mdt', methods = ["GET", "POST"])
 #@oidc.accept_token(require_token=True)
