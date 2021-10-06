@@ -32,7 +32,6 @@ except Exception as e:
 log.info('ADT generator started.')
 
 
-
 @app.route('/v1/adtg/compile/mdt', methods = ["GET", "POST"])
 #@oidc.accept_token(require_token=True)
 def compile_mdt():
@@ -41,7 +40,7 @@ def compile_mdt():
     input_data = request.stream.read()
     if not input_data:
         raise RequestException(400, 'Empty POST data')
-    log.debug('Input data:' + input_data)
+    log.debug('Received data: {0}'.format(input_data))
     #print(json.dumps(parsed, indent=4, sort_keys=True))
     # Token verification
     # ...
