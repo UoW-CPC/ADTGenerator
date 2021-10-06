@@ -7,6 +7,8 @@ from app_config import LOG_FORMAT, CONF
 
 app = Flask(__name__)
 #oidc = OpenIDConnect(app)
+
+#configurations
 try:
     app.config.from_object(__name__)
     logging_configuration = app.config.update(CONF)
@@ -21,13 +23,12 @@ app_log.info("ADT generator API Configuration")
 compile_log = logging.getLogger('adtg_compiler')
 compile_log.info("ADT generator compiler Configuration")
 
-
-
-# parser = argparse.ArgumentParser(description='processing arguments.')
-# parser.add_argument('--config', dest = 'config_variable', default = './config_test.yaml' ,
-#                     help='Setting arguments')
-# args = parser.parse_args()
-# print('--args--', args.config)
+# parsing arguments
+parser = argparse.ArgumentParser(description='processing arguments.')
+parser.add_argument('--config', dest = 'config_variable', default = './config_test.yaml' ,
+                     help='Setting arguments')
+args = parser.parse_args()
+print('--args--', args.config)
 
 @app.route('/v1/adtg/compile/mdt', methods = ["GET", "POST"])
 #@oidc.accept_token(require_token=True)
