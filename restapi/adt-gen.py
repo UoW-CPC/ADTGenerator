@@ -6,9 +6,6 @@ from flask_restful import reqparse
 from app_config import LOG_FORMAT, CONF
 
 app = Flask(__name__)
-
-log = logging.getLogger('adtg_compiler')
-log.info("This is ADT generator compiler Configuration")
 #oidc = OpenIDConnect(app)
 try:
     app.config.from_object(__name__)
@@ -18,9 +15,14 @@ try:
 except Exception as e:
     app.logger.error('Failed to update config dictionary: ' + str(e))
 
+log = logging.getLogger('adtg_compiler')
+log.info("This is ADT generator compiler Configuration")
+
 parser = argparse.ArgumentParser(description='processing arguments.')
-parser.add_argument('--aaa', dest = 'config_variable', default = './config_test.yaml' ,
+parser.add_argument('--config', dest = 'config_variable', default = './config_test.yaml' ,
                     help='Setting arguments')
+args = parser.parse_args()
+print('--args--', args.config)
 
 @app.route('/v1/adtg/compile/mdt', methods = ["GET", "POST"])
 #@oidc.accept_token(require_token=True)
