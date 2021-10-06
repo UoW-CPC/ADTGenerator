@@ -3,7 +3,7 @@ import yaml, logging, logging.config, json, argparse
 from logging.config import dictConfig
 from flask_restful import reqparse
 #from flask_oidc import OpenIDConnect
-from app_config import LOG_FORMAT, CONF
+from app_config import CONF
 
 app = Flask(__name__)
 #oidc = OpenIDConnect(app)
