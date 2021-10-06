@@ -1,78 +1,77 @@
 from flask import Flask, jsonify, request
-import yaml, logging, logging.config, json, argparse
-from logging.config import dictConfig
-from flask_restful import reqparse
+import yaml, logging,logging.config, json, argparse
 #from flask_oidc import OpenIDConnect
-from app_config import LOG_FORMAT, CONF
-
+global CONFIG
+log = None
 app = Flask(__name__)
 #oidc = OpenIDConnect(app)
-# try:
-#     app.config.from_object(__name__)
-#     logging_configuration = app.config.update(CONF)
-#     if logging_configuration:
-#         dictConfig(logging_configuration)
-# except Exception as e:
-#     app.logger.error('Failed to update config dictionary: ' + str(e))
-
-app_log = logging.getLogger('adtg_api')
-app_log.info("ADT generator API Configuration")
-
-compile_log = logging.getLogger('adtg_compiler')
-compile_log.info("ADT generator compiler Configuration")
 
 # argument parsing
 
-parser = argparse.ArgumentParser(description='processing arguments.')
-parser.add_argument('--port', type = int, default = '5001',
-                     help='The services use this port')
+parser = argparse.ArgumentParser(description='DigitBrain ADT Generator: This service is used for compiling DigitBrain assets towards MiCADO ADT')
+parser.add_argument('--port', dest = 'port_number', type = int, default = '5001',
+                     help='Specifies the port number where the service should listen')
 
-parser.add_argument('--config', dest = 'config_path', default = './config_test.yaml' ,
-                     help='Setting arguments')
+parser.add_argument('--config', dest = 'config_path', default = 'config_test.yaml' ,
+                     help='Specifies the path to the configuration file')
 args = parser.parse_args()
 
 try:
     with open(args.config_path,'r') as conf_var:
-      CONF.config(yaml.safe_load(conf_var))
+      CONFIG = yaml.safe_load(conf_var)
 except Exception as e:
-     print('ERROR: Cannot read configuration file')
+     print('Cannot read configuration file:', args.config_path)
+     print(e)
 
 try:
-    logging.config.dictConfig(CONF['logging'])
+    logging.config.dictConfig(CONFIG['logging'])
     log = logging.getLogger('adtg_compiler')
 except Exception as e:
      log.info('Unable to initialize the dictionary')
+
+log.info('ADT generator started.')
 
 
 
 @app.route('/v1/adtg/compile/mdt', methods = ["GET", "POST"])
 #@oidc.accept_token(require_token=True)
 def compile_mdt():
+    global log
+    log.debug('Compile MDT started')
+    input_data = request.stream.read()
+    if not input_data:
+        raise RequestException(400, 'Empty POST data')
+    log.debug('Input data:' + input_data)
+    #print(json.dumps(parsed, indent=4, sort_keys=True))
     # Token verification
     # ...
     # invoking library here ...
     # .........
-    app.logger.info('The library has been invoked!')
+    log.debug('Compile MDT finished')
     return jsonify({'success':'This is MDT'}), 200   
     #return 'This is MDT! {}'.format(app.config.get('logging'))  
 @app.route('/v1/adtg/compile/algodt', methods = ["GET", "POST"])
 #@oidc.accept_token(require_token=True)
 def compile_algodt():
+    global log
+    log.debug('Compile ALGODT started')
     # Token verification
     # ...
     # invoking library here ... #
     # .........
-    app.logger.info('The library has been invoked!')
+    log.debug('Compile ALGODT finished')
     return jsonify({'success':'This is ALGODT'}), 200   
 
 @app.route('/v1/adtg/compile/idt', methods = ["GET", "POST"])
 #@oidc.accept_token(require_token=True)
 def compile_idt():
+    global log
+    log.debug('Compile IDT started')
     # Token versification
     # ...
     # invoking library here ... #
     # .........
-    app.logger.info('The library has been invoked!')
+    log.debug('Compile IDT finished')
     return jsonify({'success':'This is IDT'}), 200  
 
 # composing code comes here once the results are gotten from compile libraries and functions
@@ -80,7 +79,7 @@ def compile_idt():
 #  ....  getting libraries and put the results in CSAR
 
 if __name__ == '__main__':
-    logging.config.dictConfig(CONF['logging'])
-    app.run(debug=True, port=5001)
+    logging.config.dictConfig(CONFIG['logging'])
+    app.run(debug=True, port=args.port_number)
 
 
