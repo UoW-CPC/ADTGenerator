@@ -3,19 +3,11 @@ import yaml, logging, logging.config, json, argparse
 from logging.config import dictConfig
 from flask_restful import reqparse
 #from flask_oidc import OpenIDConnect
-from app_config import LOG_FORMAT, CONF
+from app_config import CONF
 
 app = Flask(__name__)
 #oidc = OpenIDConnect(app)
 
-#configurations
-try:
-    app.config.from_object(__name__)
-    logging_configuration = app.config.update(CONF)
-    if logging_configuration:
-        dictConfig(logging_configuration)
-except Exception as e:
-    app.logger.error('Failed to update config dictionary: ' + str(e))
 
 app_log = logging.getLogger('adtg_api')
 app_log.info("ADT generator API Configuration")
@@ -23,12 +15,29 @@ app_log.info("ADT generator API Configuration")
 compile_log = logging.getLogger('adtg_compiler')
 compile_log.info("ADT generator compiler Configuration")
 
-# parsing arguments
+# argument parsing
+
 parser = argparse.ArgumentParser(description='processing arguments.')
-parser.add_argument('--config', dest = 'config_variable', default = './config_test.yaml' ,
+parser.add_argument('--port', type = int, default = '5001',
+                     help='The services use this port')
+
+parser.add_argument('--config', dest = 'config_path', default = './config_test.yaml' ,
                      help='Setting arguments')
 args = parser.parse_args()
-print('--args--', args.config)
+
+try:
+    with open(args.config_path,'r') as conf_var:
+      CONF.config(yaml.safe_load(conf_var))
+except Exception as e:
+     print('ERROR: Cannot read configuration file')
+
+try:
+    logging.config.dictConfig(CONF['logging'])
+    log = logging.getLogger('adtg_compiler')
+except Exception as e:
+     print('ERROR: Cannot read configuration file', log)
+
+
 
 @app.route('/v1/adtg/compile/mdt', methods = ["GET", "POST"])
 #@oidc.accept_token(require_token=True)
@@ -37,7 +46,6 @@ def compile_mdt():
     # ...
     # invoking library here ...
     # .........
-    print('This is adt')
     app.logger.info('The library has been invoked!')
     return jsonify({'success':'This is MDT'}), 200   
     #return 'This is MDT! {}'.format(app.config.get('logging'))  
