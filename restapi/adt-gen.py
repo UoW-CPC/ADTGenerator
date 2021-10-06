@@ -37,7 +37,7 @@ def compile_mdt():
     #return 'This is MDT! {}'.format(app.config.get('logging'))  
 @app.route('/v1/adtg/compile/algodt', methods = ["GET", "POST"])
 #@oidc.accept_token(require_token=True)
-def compile_algodt(id):
+def compile_algodt():
     # Token verification
     # ...
     # invoking library here ... #
@@ -47,7 +47,7 @@ def compile_algodt(id):
 
 @app.route('/v1/adtg/compile/idt', methods = ["GET", "POST"])
 #@oidc.accept_token(require_token=True)
-def compile_idt(id):
+def compile_idt():
     # Token versification
     # ...
     # invoking library here ... #
