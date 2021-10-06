@@ -3,11 +3,17 @@ import yaml, logging, logging.config, json, argparse
 from logging.config import dictConfig
 from flask_restful import reqparse
 #from flask_oidc import OpenIDConnect
-from app_config import CONF
+from app_config import LOG_FORMAT, CONF
 
 app = Flask(__name__)
 #oidc = OpenIDConnect(app)
-
+# try:
+#     app.config.from_object(__name__)
+#     logging_configuration = app.config.update(CONF)
+#     if logging_configuration:
+#         dictConfig(logging_configuration)
+# except Exception as e:
+#     app.logger.error('Failed to update config dictionary: ' + str(e))
 
 app_log = logging.getLogger('adtg_api')
 app_log.info("ADT generator API Configuration")
@@ -35,7 +41,7 @@ try:
     logging.config.dictConfig(CONF['logging'])
     log = logging.getLogger('adtg_compiler')
 except Exception as e:
-     print('ERROR: Cannot read configuration file', log)
+     log.info('Unable to initialize the dictionary')
 
 
 
