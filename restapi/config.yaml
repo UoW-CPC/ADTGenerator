@@ -33,9 +33,13 @@ logging:
             level: DEBUG
             filename: record.log
     loggers:
-        services:
+        port_service:
+            propagate: false
             port: "5001"
+            handlers: [console, file]
+        host_service:
             host: "localhost"
+            handlers: [console, file]
         adtg_api:
             propagate: false
             handlers: [console, file]
