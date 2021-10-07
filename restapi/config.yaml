@@ -1,0 +1,44 @@
+api_version: 1
+runtime: python
+environment: development
+debug: True
+testing: True
+secret_key: None
+token: None
+algodt_id: "algorithm_10824912410291"
+mdt_id: "microservice_12312124"
+idt_id: None
+runtime_config:
+  python_version: 3
+
+logging:
+    version: 1
+    root:
+        level: DEBUG
+        handlers: [console, file]
+    formatters:
+        simpleFormatter:
+            #format: "%(module)s %(asctime)s %(levelname)s %(message)s"
+            format: "%(asctime)s %(levelname)s %(message)s"
+    handlers:
+        console:
+            class: logging.StreamHandler
+            formatter: simpleFormatter
+            level: DEBUG
+            stream: ext://sys.stdout
+        file:
+            class : logging.FileHandler
+            formatter: simpleFormatter
+            mode: w
+            level: DEBUG
+            filename: record.log
+    loggers:
+        services:
+            port: "5001"
+            host: "localhost"
+        adtg_api:
+            propagate: false
+            handlers: [console, file]
+        adtg_compiler:
+            propagate: false
+            handlers: [console, file]
