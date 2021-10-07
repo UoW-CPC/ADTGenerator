@@ -10,10 +10,15 @@ app = Flask(__name__)
 
 parser = argparse.ArgumentParser(description='DigitBrain ADT Generator: This service is used for compiling DigitBrain assets towards MiCADO ADT')
 parser.add_argument('--port', dest = 'port_number', type = int, default = '5001',
-                     help='Specifies the port number where the service should listen')
+                    help='Specifies the port number where the service should listen')
 
-parser.add_argument('--config', dest = 'config_path', default = 'config_test.yaml' ,
-                     help='Specifies the path to the configuration file')
+parser.add_argument('--config', dest = 'config_path', default = './config_test.yaml' ,
+                    help='Specifies the path to the configuration file')
+
+parser.add_argument('--host', dest='host_address', type = str, default = '127.0.0.1', 
+                    help = 'Specifies the host to connect service to')
+
+
 args = parser.parse_args()
 
 try:
@@ -54,6 +59,10 @@ def compile_mdt():
 def compile_algodt():
     global log
     log.debug('Compile ALGODT started')
+    input_data = request.stream.read()
+    if not input_data:
+        raise RequestException(400, 'Empty POST data')
+    log.debug('Received data: {0}'.format(input_data))
     # Token verification
     # ...
     # invoking library here ... #
@@ -66,6 +75,10 @@ def compile_algodt():
 def compile_idt():
     global log
     log.debug('Compile IDT started')
+    input_data = request.stream.read()
+    if not input_data:
+        raise RequestException(400, 'Empty POST data')
+    log.debug('Received data: {0}'.format(input_data))
     # Token versification
     # ...
     # invoking library here ... #
@@ -80,5 +93,4 @@ def compile_idt():
 if __name__ == '__main__':
     logging.config.dictConfig(CONFIG['logging'])
     app.run(debug=True, port=args.port_number)
-
 
