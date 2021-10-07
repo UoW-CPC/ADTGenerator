@@ -1,15 +1,18 @@
-api_version: 1
-runtime: python
-environment: development
-debug: True
-testing: True
-secret_key: None
-token: None
-algodt_id: "algorithm_10824912410291"
-mdt_id: "microservice_12312124"
-idt_id: None
-runtime_config:
-  python_version: 3
+service:
+    host: "127.0.0.1"
+    port: 4000
+    rest_root_path: "/v1/adtg"
+    flask_debug_mode: false
+    
+    enable_oidc: false
+    secrets_json_path: "./secret.json"
+    check_user_token: false
+    apply_user_token: false
+    
+compiler:
+    idt_jinja_tmpl: "path"
+    mdt_jinja_tmpl: "path"
+    algodt_jinja_tmpl: "path"
 
 logging:
     version: 1
@@ -33,13 +36,6 @@ logging:
             level: DEBUG
             filename: record.log
     loggers:
-        port_service:
-            propagate: false
-            port: "5001"
-            handlers: [console, file]
-        host_service:
-            host: "localhost"
-            handlers: [console, file]
         adtg_api:
             propagate: false
             handlers: [console, file]
