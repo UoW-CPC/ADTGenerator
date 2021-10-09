@@ -24,10 +24,10 @@ debugger = None # project wide debugger - Disabled by default
 # Debugger object locals
 _initialized = False # PRIVATE - Flag to check if debugger is initialized
 _level = None # PRIVATE - Debugging level [high or low] - None by default
-global _stack_counter # PRIVATE - Counts the depth of embedded function calls for each stack
-global _program_counter # PRIVATE - Counts program flow (adding one for each new stack)
 
 # Debugger logging globals
+global _stack_counter # PRIVATE - Counts the depth of embedded function calls for each stack
+global _program_counter # PRIVATE - Counts program flow (adding one for each new stack)
 global caller # list with the sequence of packages where function calls where initiated
 global caller_line # list with the sequence of lines where function calls was initiated
 global callee_locals # Variables in the local namespace of a function

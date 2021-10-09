@@ -9,13 +9,13 @@ import inspect
 
 #init jinja
 from jinja2 import Environment, FileSystemLoader
-templates_path = None
-templates_packages = None
+_templates_path = None
+_templates_packages = None
 
 #init compiler (set jinja globals and logging level)
 def init(templates_path, templates_packages):
-    globals()['templates_path'] = templates_path
-    globals()['templates_packages'] = templates_packages
+    globals()['_templates_path'] = templates_path
+    globals()['_templates_packages'] = templates_packages
     logger.info('Compiler has been initiated')
 
 
@@ -24,9 +24,9 @@ def init(templates_path, templates_packages):
 def compile(type, metadata):
     # logger_util.caller = inspect.stack()[2][1]
     # logger_util.caller_line = inspect.stack()[2][2]
-    env = Environment(loader=FileSystemLoader(templates_path))
+    env = Environment(loader=FileSystemLoader(_templates_path))
     dt = env.get_template(type)
-    for package in templates_packages:
+    for package in _templates_packages:
         exec(package[1])
         for function in package[2]:
             function_call = f'{package[0]}.{function}'
