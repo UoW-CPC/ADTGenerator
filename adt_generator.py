@@ -44,12 +44,6 @@ def test():
     testttttt
     :return:
     '''
-    # try except to gather caller/callee for the debugger [required]
-    # try:
-    #     debugger.caller.append(inspect.stack()[2][1])
-    #     debugger.caller_line.append(inspect.stack()[2][2])
-    # except:
-    #      pass
     # call functions from a test package
     from tests.test_adt_generator import add, subadd
     logger.info('Call package functions from a test function')

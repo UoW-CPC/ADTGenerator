@@ -68,8 +68,6 @@ def init(path = sys.path[0],folder = 'debug',level = None):
             debugger.addHandler(file_handler)
             _level = level
             _initialized = True
-            # globals()['_stack_counter'] = 0
-            # globals()['_program_counter'] = 0
             globals()['caller'] = []
             globals()['caller_line'] = []
             globals()['callee_locals'] = []
@@ -81,6 +79,7 @@ def init(path = sys.path[0],folder = 'debug',level = None):
             exit(0, 'Unacceptable debugging level. Choose "high" or "low".')
     else:
         logger.warning(f'Debugger can be initiated only once.')
+
 #from functools import wraps
 # Debugger decorator used for debugging
 def debug_func():
@@ -104,14 +103,10 @@ def debug_func():
                     _program_counter += 1
                     debugger.info(f'Stack {globals()["_program_counter"]} begins\n')
             import inspect
-            import os
-            print(os.path.abspath(inspect.getfile(func)))
-            print(func.__code__.co_firstlineno)
             ret = func(*args, **kwargs)
             #print(ret)
             if _initialized == True:
                 _stack_counter -= 1
-                #globals()['_stack_counter'] -= 1
                 message = f'{func.__module__}.{func.__name__} (level:{_stack_counter})\n caller: [{inspect.stack()[1][1]}] line: [{inspect.stack()[1][2]}]\n callee: [{inspect.getfile(func)}] func: [{func.__name__}] line: [{func.__code__.co_firstlineno}]\n'
                 if _level == "high":
                     debugger.info(message)
@@ -123,8 +118,6 @@ def debug_func():
                     callee_l = json.dumps(callee_locals[-1],sort_keys = True, indent = 4, default=str)
                     callee_g = json.dumps(callee_globals[-1],sort_keys = True, indent = 4, default=str)
                     debugger.info(f'{message}\nARGs:\n[{args, kwargs}]\n\nReturn:\n[{ret}]\n\nLocals:\n{callee_l}\n\nGlobals:\n{callee_g}\n')
-                # caller.pop()
-                # caller_line.pop()
                 callee_locals.pop()
                 callee_globals.pop()
                 if _stack_counter == 0:
