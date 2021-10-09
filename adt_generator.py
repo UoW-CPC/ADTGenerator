@@ -51,9 +51,9 @@ def test():
     logger.info('Call package functions from a test function')
     logger.info(globals())
     logger.info(locals())
-    # add(1,1)
-    # subadd(1,1)
-    # add(1, 1)
+    add(1,1)
+    subadd(1,1)
+    add(1, 1)
     # try except to gather locals/globals for the debugger [required]
     try:
         debugger.callee_locals.append(locals())
@@ -68,5 +68,5 @@ if __name__ == "__main__":
     test()
     from tests.test_adt_generator import add, subsubadd
     logger.info('Call package functions from main')
-    #add(1, 1)
-    #subsubadd(1, 1)
+    add(1, 1)
+    subsubadd(1, 1)

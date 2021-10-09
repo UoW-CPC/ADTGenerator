@@ -19,11 +19,11 @@
 import sys
 
 # Debugger global object
-global debugger # project wide debugger - Disabled by default
+debugger = None # project wide debugger - Disabled by default
 
 # Debugger object locals
-global _initialized # PRIVATE - Flag to check if debugger is initialized
-global _level # PRIVATE - Debugging level [high or low] - None by default
+_initialized = False # PRIVATE - Flag to check if debugger is initialized
+_level = None # PRIVATE - Debugging level [high or low] - None by default
 global _stack_counter # PRIVATE - Counts the depth of embedded function calls for each stack
 global _program_counter # PRIVATE - Counts program flow (adding one for each new stack)
 
@@ -34,7 +34,7 @@ global callee_locals # Variables in the local namespace of a function
 global callee_globals # Variables in the global namespace of a function
 
 # Function to initiate the debugger
-def init(path = sys.path[0],folder = 'debugger',level = None):
+def init(path = sys.path[0],folder = 'debug',level = None):
     '''
 
     :param path:
@@ -42,8 +42,11 @@ def init(path = sys.path[0],folder = 'debugger',level = None):
     :param level:
     :return:
     '''
+    global debugger
     from utils.logger import logger
-    if '_initialized' not in globals():
+    global _initialized
+    global _level
+    if _initialized == False:
         if level == 'high' or level == 'low' or level == 'full':
             # Create debugger file path
             import os
@@ -63,10 +66,8 @@ def init(path = sys.path[0],folder = 'debugger',level = None):
             format = "%(asctime)s - %(name)s - [%(levelname)s] - %(message)s"
             file_handler.setFormatter(logging.Formatter(format))
             debugger.addHandler(file_handler)
-            #publish the debugger
-            globals()['debugger'] = debugger
-            globals()['_level'] = level
-            globals()['_initialized'] = True
+            _level = level
+            _initialized = True
             globals()['_stack_counter'] = 0
             globals()['_program_counter'] = 0
             globals()['caller'] = []
@@ -93,12 +94,11 @@ def debug(name, path, line):
 
     def wrap_func(func):
         def wrapped_func(*args, **kwargs):
-            if '_initialized' in globals():
-                if _initialized == True:
-                    globals()['_stack_counter'] += 1
-                    if globals()['_stack_counter'] == 1:
-                        globals()['_program_counter'] += 1
-                        debugger.info(f'Stack {globals()["_program_counter"]} begins\n')
+            if _initialized == True:
+                globals()['_stack_counter'] += 1
+                if globals()['_stack_counter'] == 1:
+                    globals()['_program_counter'] += 1
+                    debugger.info(f'Stack {globals()["_program_counter"]} begins\n')
             import inspect
             from  utils.logger import logger
             logger.info(inspect.stack()[1])
@@ -117,26 +117,25 @@ def debug(name, path, line):
             print(locals())
             ret = func(*args, **kwargs)
             #print(ret)
-            if '_initialized' in globals():
-                if _initialized == True:
-                    globals()['_stack_counter'] -= 1
-                    message = f'{name}.{func.__name__} (level:{globals()["_stack_counter"]})\n caller: [{caller[-1]}] line: [{caller_line[-1]}]\n callee: [{path}] func: [{func.__name__}] line: [{line}]\n'
-                    if _level == "high":
-                        debugger.info(message)
-                    elif _level == "low":
-                        debugger.info(f'{message}\nARGs:\n[{args, kwargs}]\n\nReturn:\n[{ret}]\n')
-                    elif _level == "full":
-                        import json
-                        print(type(callee_locals[-1]))
-                        callee_l = json.dumps(callee_locals[-1],sort_keys = True, indent = 4, default=str)
-                        callee_g = json.dumps(callee_globals[-1],sort_keys = True, indent = 4, default=str)
-                        debugger.info(f'{message}\nARGs:\n[{args, kwargs}]\n\nReturn:\n[{ret}]\n\nLocals:\n{callee_l}\n\nGlobals:\n{callee_g}\n')
-                    caller.pop()
-                    caller_line.pop()
-                    callee_locals.pop()
-                    callee_globals.pop()
-                    if len(caller) == 0:
-                        debugger.info(f'Stack {globals()["_program_counter"]} completed\n======================================================================')
+            if _initialized == True:
+                globals()['_stack_counter'] -= 1
+                message = f'{name}.{func.__name__} (level:{globals()["_stack_counter"]})\n caller: [{caller[-1]}] line: [{caller_line[-1]}]\n callee: [{path}] func: [{func.__name__}] line: [{line}]\n'
+                if _level == "high":
+                    debugger.info(message)
+                elif _level == "low":
+                    debugger.info(f'{message}\nARGs:\n[{args, kwargs}]\n\nReturn:\n[{ret}]\n')
+                elif _level == "full":
+                    import json
+                    print(type(callee_locals[-1]))
+                    callee_l = json.dumps(callee_locals[-1],sort_keys = True, indent = 4, default=str)
+                    callee_g = json.dumps(callee_globals[-1],sort_keys = True, indent = 4, default=str)
+                    debugger.info(f'{message}\nARGs:\n[{args, kwargs}]\n\nReturn:\n[{ret}]\n\nLocals:\n{callee_l}\n\nGlobals:\n{callee_g}\n')
+                caller.pop()
+                caller_line.pop()
+                callee_locals.pop()
+                callee_globals.pop()
+                if len(caller) == 0:
+                    debugger.info(f'Stack {globals()["_program_counter"]} completed\n======================================================================')
             return ret
         return wrapped_func
     return wrap_func
