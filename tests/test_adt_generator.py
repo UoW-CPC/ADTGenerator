@@ -1,15 +1,15 @@
 from utils.logger import logger
 from utils import debugger
-import inspect
 
-@debugger.debug(__name__, __file__, inspect.currentframe().f_lineno)
+
+@debugger.debug
 def add(a, b):
     logger.info('add')
-    try:
-        debugger.caller.append(inspect.stack()[2][1])
-        debugger.caller_line.append(inspect.stack()[2][2])
-    except:
-        pass
+    # try:
+    #     debugger.caller.append(inspect.stack()[2][1])
+    #     debugger.caller_line.append(inspect.stack()[2][2])
+    # except:
+    #     pass
     subadd(a,b)
     # try except to gather locals/globals for the debugger [required]
     try:
@@ -19,14 +19,14 @@ def add(a, b):
         pass
     return a+b
 
-@debugger.debug(__name__, __file__, inspect.currentframe().f_lineno)
+@debugger.debug
 def subadd(a,b):
-    logger.info('subadd')
-    try:
-        debugger.caller.append(inspect.stack()[2][1])
-        debugger.caller_line.append(inspect.stack()[2][2])
-    except:
-        pass
+    # logger.info('subadd')
+    # try:
+    #     debugger.caller.append(inspect.stack()[2][1])
+    #     debugger.caller_line.append(inspect.stack()[2][2])
+    # except:
+    #     pass
     subsubadd(a,b)
     # try except to gather locals/globals for the debugger [required]
     try:
@@ -36,14 +36,14 @@ def subadd(a,b):
         pass
     return a+b+1
 
-@debugger.debug(__name__, __file__, inspect.currentframe().f_lineno)
+@debugger.debug
 def subsubadd(a,b):
-    logger.info('subsubadd')
-    try:
-        debugger.caller.append(inspect.stack()[2][1])
-        debugger.caller_line.append(inspect.stack()[2][2])
-    except:
-        pass
+    # logger.info('subsubadd')
+    # try:
+    #     debugger.caller.append(inspect.stack()[2][1])
+    #     debugger.caller_line.append(inspect.stack()[2][2])
+    # except:
+    #     pass
     # try except to gather locals/globals for the debugger [required]
     try:
         debugger.callee_locals.append(locals())

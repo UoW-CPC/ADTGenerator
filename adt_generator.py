@@ -38,17 +38,23 @@ from utils import debugger
 import inspect
 
 # sample function to present debugger usage
-@debugger.debug(__name__, __file__, inspect.currentframe().f_lineno)
+@debugger.debug
 def test():
+    '''
+    testttttt
+    :return:
+    '''
     # try except to gather caller/callee for the debugger [required]
-    try:
-        debugger.caller.append(inspect.stack()[2][1])
-        debugger.caller_line.append(inspect.stack()[2][2])
-    except:
-         pass
+    # try:
+    #     debugger.caller.append(inspect.stack()[2][1])
+    #     debugger.caller_line.append(inspect.stack()[2][2])
+    # except:
+    #      pass
     # call functions from a test package
     from tests.test_adt_generator import add, subadd
     logger.info('Call package functions from a test function')
+    ttt = 1
+    ttt = 2
     logger.info(globals())
     logger.info(locals())
     add(1,1)
@@ -66,7 +72,7 @@ if __name__ == "__main__":
     logger.info('Main has been started')
     #Testing debugger and logger
     test()
-    from tests.test_adt_generator import add, subsubadd
+    from tests.test_adt_generator import add,subsubadd
     logger.info('Call package functions from main')
     add(1, 1)
     subsubadd(1, 1)

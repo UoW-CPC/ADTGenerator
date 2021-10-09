@@ -26,8 +26,8 @@ _initialized = False # PRIVATE - Flag to check if debugger is initialized
 _level = None # PRIVATE - Debugging level [high or low] - None by default
 
 # Debugger logging globals
-global _stack_counter # PRIVATE - Counts the depth of embedded function calls for each stack
-global _program_counter # PRIVATE - Counts program flow (adding one for each new stack)
+_stack_counter = 0 # PRIVATE - Counts the depth of embedded function calls for each stack
+_program_counter = 0# PRIVATE - Counts program flow (adding one for each new stack)
 global caller # list with the sequence of packages where function calls where initiated
 global caller_line # list with the sequence of lines where function calls was initiated
 global callee_locals # Variables in the local namespace of a function
@@ -68,8 +68,8 @@ def init(path = sys.path[0],folder = 'debug',level = None):
             debugger.addHandler(file_handler)
             _level = level
             _initialized = True
-            globals()['_stack_counter'] = 0
-            globals()['_program_counter'] = 0
+            # globals()['_stack_counter'] = 0
+            # globals()['_program_counter'] = 0
             globals()['caller'] = []
             globals()['caller_line'] = []
             globals()['callee_locals'] = []
@@ -81,9 +81,9 @@ def init(path = sys.path[0],folder = 'debug',level = None):
             exit(0, 'Unacceptable debugging level. Choose "high" or "low".')
     else:
         logger.warning(f'Debugger can be initiated only once.')
-
+#from functools import wraps
 # Debugger decorator used for debugging
-def debug(name, path, line):
+def debug_func():
     '''
 
     :param name:
@@ -92,34 +92,27 @@ def debug(name, path, line):
     :return:
     '''
 
+
     def wrap_func(func):
+        #@wraps(func)
         def wrapped_func(*args, **kwargs):
             if _initialized == True:
-                globals()['_stack_counter'] += 1
-                if globals()['_stack_counter'] == 1:
-                    globals()['_program_counter'] += 1
+                global _stack_counter
+                global _program_counter
+                _stack_counter += 1
+                if _stack_counter == 1:
+                    _program_counter += 1
                     debugger.info(f'Stack {globals()["_program_counter"]} begins\n')
             import inspect
-            from  utils.logger import logger
-            logger.info(inspect.stack()[1])
-            logger.info('t')
-            logger.info(inspect.stack()[1][0])
-            logger.info('t')
-            logger.info(inspect.stack()[1][1])
-            logger.info('t')
-            logger.info(inspect.stack()[1][2])
-            logger.info('t')
-            logger.info(inspect.stack()[1][3])
-            logger.info('t')
-            logger.info(inspect.stack()[1][4])
-            #print(globals())
-            print(globals())
-            print(locals())
+            import os
+            print(os.path.abspath(inspect.getfile(func)))
+            print(func.__code__.co_firstlineno)
             ret = func(*args, **kwargs)
             #print(ret)
             if _initialized == True:
-                globals()['_stack_counter'] -= 1
-                message = f'{name}.{func.__name__} (level:{globals()["_stack_counter"]})\n caller: [{caller[-1]}] line: [{caller_line[-1]}]\n callee: [{path}] func: [{func.__name__}] line: [{line}]\n'
+                _stack_counter -= 1
+                #globals()['_stack_counter'] -= 1
+                message = f'{func.__module__}.{func.__name__} (level:{_stack_counter})\n caller: [{inspect.stack()[1][1]}] line: [{inspect.stack()[1][2]}]\n callee: [{inspect.getfile(func)}] func: [{func.__name__}] line: [{func.__code__.co_firstlineno}]\n'
                 if _level == "high":
                     debugger.info(message)
                 elif _level == "low":
@@ -130,12 +123,14 @@ def debug(name, path, line):
                     callee_l = json.dumps(callee_locals[-1],sort_keys = True, indent = 4, default=str)
                     callee_g = json.dumps(callee_globals[-1],sort_keys = True, indent = 4, default=str)
                     debugger.info(f'{message}\nARGs:\n[{args, kwargs}]\n\nReturn:\n[{ret}]\n\nLocals:\n{callee_l}\n\nGlobals:\n{callee_g}\n')
-                caller.pop()
-                caller_line.pop()
+                # caller.pop()
+                # caller_line.pop()
                 callee_locals.pop()
                 callee_globals.pop()
-                if len(caller) == 0:
-                    debugger.info(f'Stack {globals()["_program_counter"]} completed\n======================================================================')
+                if _stack_counter == 0:
+                    debugger.info(f'Stack {_program_counter} completed\n======================================================================')
             return ret
         return wrapped_func
     return wrap_func
+
+debug = debug_func()
