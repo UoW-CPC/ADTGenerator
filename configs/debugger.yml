@@ -1,0 +1,7 @@
+debugger:
+  # Set path to debugger logs
+  path: '/Users/dimitriskagialis/Gen/d/'
+  # Set debugger logs folder
+  folder: 'mydebugger'
+  #set debugging level [allowed values 'low','high','full']
+  level: 'high'

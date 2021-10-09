@@ -1,0 +1,19 @@
+compiler:
+  # Set path to templates
+  #path: '/path'
+  # Set templates folder
+  #folder: 'tamplates'
+  # List of packages to use inn Jinja2
+  import_packages:
+      # Package name
+      test_compiler_passing_funcs_A:
+        # Import statement
+        import_statement: 'from tests import test_compiler_passing_funcs_A'
+        # Functions to import
+        functions:
+          - func1
+          - func2
+#      test_compiler_passing_funcs_B:
+#        import_statement: 'from tests import test_compiler_passing_funcs_B'
+#        functions:
+#          - func3

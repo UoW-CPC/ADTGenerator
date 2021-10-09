@@ -1,0 +1,11 @@
+logger:
+  # Set path to logs
+  path: '/Users/dimitriskagialis/Gen/l/'
+  # Set logs folder
+  folder: 'mylogs'
+  # Set logging level [allowed values 'info' or 'warning']
+  level: 'info'
+  # Set logging handler [allowed values 'file' or 'screen']
+  handler: 'file'
+
+  #find standard config for the logger
