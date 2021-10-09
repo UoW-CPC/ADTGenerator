@@ -24,12 +24,10 @@ debugger = None # project wide debugger - Disabled by default
 # Debugger object locals
 _initialized = False # PRIVATE - Flag to check if debugger is initialized
 _level = None # PRIVATE - Debugging level [high or low] - None by default
+_stack_counter = 0 # PRIVATE - Counts the depth of embedded function calls for each stack
+_program_counter = 0 # PRIVATE - Counts program flow (adding one for each new stack)
 
 # Debugger logging globals
-_stack_counter = 0 # PRIVATE - Counts the depth of embedded function calls for each stack
-_program_counter = 0# PRIVATE - Counts program flow (adding one for each new stack)
-global caller # list with the sequence of packages where function calls where initiated
-global caller_line # list with the sequence of lines where function calls was initiated
 global callee_locals # Variables in the local namespace of a function
 global callee_globals # Variables in the global namespace of a function
 
@@ -68,8 +66,6 @@ def init(path = sys.path[0],folder = 'debug',level = None):
             debugger.addHandler(file_handler)
             _level = level
             _initialized = True
-            globals()['caller'] = []
-            globals()['caller_line'] = []
             globals()['callee_locals'] = []
             globals()['callee_globals'] = []
             logger.info(f'Debugger has been initiated. [level:{level}]')
@@ -83,15 +79,6 @@ def init(path = sys.path[0],folder = 'debug',level = None):
 #from functools import wraps
 # Debugger decorator used for debugging
 def debug_func():
-    '''
-
-    :param name:
-    :param path:
-    :param line:
-    :return:
-    '''
-
-
     def wrap_func(func):
         #@wraps(func)
         def wrapped_func(*args, **kwargs):
