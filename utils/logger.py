@@ -21,10 +21,9 @@
 import sys
 
 # Logger global object
-#global logger # project wide logger - always enabled
 logger = None # project wide logger - always enabled
+
 # Logger object locals
-#global _initialized # PRIVATE - Flag to check if logger is initialized
 _initialized = False # PRIVATE - Flag to check if logger is initialized
 
 # Function to initiate the logger
@@ -40,8 +39,6 @@ def init(path = sys.path[0],folder = 'logs',level = 'info',handler = 'file'):
     global logger
     global _initialized
     if _initialized == False:
-    #if globals()['_initialized'] == False:
-    #if '_initialized' not in globals():
         if level == 'info' or level == 'warning':
             if handler == 'file' or handler == 'screen':
                 # Create logger file path
@@ -69,17 +66,12 @@ def init(path = sys.path[0],folder = 'logs',level = 'info',handler = 'file'):
                     stream_handler.setLevel(logging.INFO)
                     stream_handler.setFormatter(logging.Formatter(format))
                     logger.addHandler(stream_handler)
-                # Publish the logger
-                #globals()['logger'] = logger
                 _initialized = True
-                #globals()['_initialized'] = True
-                #globals()['logger'].info(f'Logger has been initiated. [level:{level}, handler:{handler}]')
                 logger.info(f'Logger has been initiated. [level:{level}, handler:{handler}]')
             else:
                 exit(0, 'Unacceptable logging handle. Choose "file" or "screen".')
         else:
             exit(0, 'Unacceptable logging level. Choose "info" or "warning".')
     else:
-        #globals()['logger'].warning('Logger can be initiated only once.')
         logger.warning('Logger can be initiated only once.')
 
