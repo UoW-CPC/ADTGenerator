@@ -1,45 +1,60 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Created By  : Dimitris Kagialis
 # Created Date: 05/10/2021
 # version ='1.0'
 # ---------------------------------------------------------------------------
-""" Logger tool which offers two levels of information:
-    Info level: logs the caller and the callee functions
-                path: project-root-folder/logs/high_level.log
-    Warning level:  logs the caller and the callee functions, plus the passing and returning arguments.
-                path: project-root-folder/logs/low_level.log
-    File
-    Screen
+""" Logger module
+    Configuration parameters:
+        path: path to logs folder [Default value project root path]
+        folder: logs folder name [Default value 'logs']
+        level: logging level - allowed values 'info', 'warning' [default value 'info']
+        handler: logging handler - allowed values 'file', 'screen' [default value 'file'] - 'screen' saves also to file.
+    Methods:
+        init(path, folder, level, handler)
     Usage:
-    it can be initiated when calling the RestAPI or ...
+        To initialize the logger:
+            from utils import logger
+            logger.init(path, folder, level, handler)
+        To use the logger:
+            from utils.logger import logger
+            logger.info('msg')
+            logger.warning('msg')
     Implementation:
-    Decorator
+        Use of the built-in logging package.
+        Logger can be initialized only once.
  """
+
 # Packages wide imports
 import sys
 
 # Logger global object
-logger = None # project wide logger - always enabled
+logger = None  # Project wide logger - enabled when calling the init
 
 # Logger object locals
-_initialized = False # PRIVATE - Flag to check if logger is initialized
+_initialized = False  # PRIVATE - Flag to check if logger is initialized
+
 
 # Function to initiate the logger
-def init(path = sys.path[0],folder = 'logs',level = 'info',handler = 'file'):
+def init(path=sys.path[0], folder='logs', level='info', handler='file'):
     '''
-
-    :param path:
-    :param folder:
-    :param level:
-    :param handler:
-    :return:
+    Logger init function:
+    Creates a logger based on the below parameters and stores it to a package global logger variable.
+    :param path: path to logs folder [Default value project root path]
+    :param folder: logs folder name [Default value 'logs']
+    :param level: allowed values 'info', 'warning' [default value 'info']
+    :param handler: logging handler - allowed values 'file', 'screen' [default value 'file'] - 'screen' saves also to file.
+    :return: None
     '''
+    # Use package global variables
     global logger
     global _initialized
-    if _initialized == False:
+    # Create the logger if not initialized
+    if not _initialized:
+        # Evaluate input logging level
         if level == 'info' or level == 'warning':
+            # Evaluate input logging handler
             if handler == 'file' or handler == 'screen':
                 # Create logger file path
                 import os
@@ -74,4 +89,3 @@ def init(path = sys.path[0],folder = 'logs',level = 'info',handler = 'file'):
             exit(0, 'Unacceptable logging level. Choose "info" or "warning".')
     else:
         logger.warning('Logger can be initiated only once.')
-
