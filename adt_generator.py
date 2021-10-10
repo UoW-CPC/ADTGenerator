@@ -32,7 +32,7 @@ from compiler import compiler
 from tests import test_compiler_dicts
 metadata = test_compiler_dicts.mdt
 test_run = compiler.compile("MDT.yaml",metadata)
-print(test_run)
+#print(test_run)
 # Import debugger required packages to be able to use the debugger decorator on functions - step 4
 from utils import debugger
 import inspect
@@ -54,12 +54,6 @@ def test():
     add(1,1)
     subadd(1,1)
     add(1, 1)
-    # try except to gather locals/globals for the debugger [required]
-    try:
-        debugger.callee_locals.append(locals())
-        debugger.callee_globals.append(globals())
-    except:
-        pass
 
 if __name__ == "__main__":
     # Main starts - step 4

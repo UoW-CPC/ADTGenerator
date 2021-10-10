@@ -6,13 +6,16 @@
 # version ='1.0'
 # ---------------------------------------------------------------------------
 """ Logger module
+    Implementation:
+        Use of the built-in logging package.
+        Logger can be initialized only once.
     Configuration parameters:
         path: path to logs folder [Default value project root path]
         folder: logs folder name [Default value 'logs']
         level: logging level - allowed values 'info', 'warning' [default value 'info']
         handler: logging handler - allowed values 'file', 'screen' [default value 'file'] - 'screen' saves also to file.
-    Methods:
-        init(path, folder, level, handler)
+    Functions:
+        init(path, folder, level, handler) - initialize the logger
     Usage:
         To initialize the logger:
             from utils import logger
@@ -21,9 +24,6 @@
             from utils.logger import logger
             logger.info('msg')
             logger.warning('msg')
-    Implementation:
-        Use of the built-in logging package.
-        Logger can be initialized only once.
  """
 
 # Packages wide imports
@@ -43,11 +43,11 @@ def init(path=sys.path[0], folder='logs', level='info', handler='file'):
     Creates a logger based on the below parameters and stores it to a package global logger variable.
     :param path: path to logs folder [Default value project root path]
     :param folder: logs folder name [Default value 'logs']
-    :param level: allowed values 'info', 'warning' [default value 'info']
+    :param level: accepted values 'info', 'warning' [default value 'info']
     :param handler: logging handler - allowed values 'file', 'screen' [default value 'file'] - 'screen' saves also to file.
     :return: None
     '''
-    # Use package global variables
+    # Use of package global variables
     global logger
     global _initialized
     # Create the logger if not initialized
