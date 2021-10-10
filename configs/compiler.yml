@@ -4,7 +4,7 @@ compiler:
   # Set templates folder
   #folder: 'tamplates'
   # List of packages to use inn Jinja2
-  import_packages:
+  import_modules:
       # Package name
       test_compiler_passing_funcs_A:
         # Import statement

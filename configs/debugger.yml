@@ -5,3 +5,5 @@ debugger:
   folder: 'mydebugger'
   #set debugging level [allowed values 'low','high','full']
   level: 'full'
+  packages:
+

@@ -124,15 +124,15 @@ def init_compiler(config):
     if folder == None:
         path = 'compiler/templates'
     try:
-        import_packages = config['compiler']['import_packages']
+        import_modules = config['compiler']['import_modules']
     except:
-        import_packages = None
-    packages = []
-    for package in import_packages:
-        packages.append([package,import_packages[package]['import_statement'],import_packages[package]['functions']])
+        import_modules = None
+    modules = []
+    for module in import_modules:
+        modules.append([module,import_modules[module]['import_statement'],import_modules[module]['functions']])
     abs_path = path + '/' + folder
     from compiler import compiler
-    compiler.init(abs_path,packages)
+    compiler.init(abs_path,modules)
 
 def init_restapi(config):
     pass
