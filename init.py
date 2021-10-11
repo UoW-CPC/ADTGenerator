@@ -5,17 +5,14 @@
 # Created Date: 05/10/2021
 # version ='1.0'
 # ---------------------------------------------------------------------------
-""" Logger tool which offers two levels of information:
-    Info level: logs the caller and the callee functions
-                path: project-root-folder/logs/high_level.log
-    Warning level:  logs the caller and the callee functions, plus the passing and returning arguments.
-                path: project-root-folder/logs/low_level.log
-    File
-    Screen
-    Usage:
-    it can be initiated when calling the RestAPI or ...
-    Implementation:
-    Decorator
+""" Init module
+    Loads ADT generator configs from paths and initiate its components.
+    Functions:
+    init: initialize ADT generator components based on the loaded configs
+    init_logger: initialized the logger
+    init_debugger: initialized the debugger
+    init_compiler: initialized the compiler
+    init_restapi: initialized the restapi
  """
 # Packages wide imports
 import sys
@@ -23,9 +20,9 @@ import sys
 # Function to initiate the ADT-generator
 def init(path):
     '''
-
-    :param path:
-    :return:
+    Load config YAML files from path and initiate components based on the loaded config
+    :param path: path to config files
+    :return: None
     '''
     from utils import configs
     _configs =configs.load(path)
@@ -37,10 +34,11 @@ def init(path):
 # Function to initiate the logger
 def init_logger(config):
     '''
-
-    :param config:
-    :return:
+    Initiate the logger based on the provided config
+    :param config: dictionary with logger configs
+    :return: None
     '''
+    # Try to get configs from the dictionary, except use defaults
     try:
         path = config['logger']['path']
     except:
@@ -61,17 +59,20 @@ def init_logger(config):
         handler = config['logger']['handler']
     except:
         handler = 'file'
+    # Import logger and initiate
     from utils import logger
     logger.init(path, folder, level, handler)
+    # test that logger can be initialized only once
     logger.init()
 
 # Function to initiate the debugger
 def init_debugger(config):
     '''
-
-    :param config:
-    :return:
+    Initiate the debugger based on the provided config
+    :param config: dictionary with debugger configs
+    :return: None
     '''
+    # Try to get configs from the dictionary, except use defaults
     try:
         path = config['debugger']['path']
     except:
@@ -93,19 +94,22 @@ def init_debugger(config):
         debug_scope = configs.get_scope(config['debugger']['packages'])
     except:
         debug_scope = dict
+    # Import logger and initiate
     from utils import debugger
     debugger.init(path, folder, level, debug_scope)
+    # test that logger can be initialized only once
     debugger.init()
     debugger.init(sys.path[0], folder)
 
 
-
+# Function to initiate the compiler
 def init_compiler(config):
     '''
-
-    :param config:
-    :return:
+    Initiate the compiler based on the provided config
+    :param config: dictionary with compiler configs
+    :return: None
     '''
+    # Try to get configs from the dictionary, except use defaults
     try:
         path = config['compiler']['path']
     except:
@@ -123,9 +127,11 @@ def init_compiler(config):
     except:
         import_modules = None
     modules = []
+    # Import modules to the compiler
     for module in import_modules:
         modules.append([module,import_modules[module]['import_statement'],import_modules[module]['functions']])
     abs_path = path + '/' + folder
+    # Import compiler and initiate
     from compiler import compiler
     compiler.init(abs_path,modules)
 
