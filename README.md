@@ -13,8 +13,17 @@
 - All the operations in the API are logged and stored in a configuration dictionary. The logging levels of the API are categorized in `ERROR`, `INFO`, and `DEBUG`.  
 
 ## Using the API
-- In order to run the API, it is required to execute the `python adt-gen.py`
-- Once the application starts to run, based on what has been set up in the designated routes in the API, it is required to execute a correct route in the web browser to access libraries and their contents. In the `flask.py` the routes are `/mdt`, `/adt`, and `/algodt`. Therefore, you may be able to access those route by typing `http://127.0.0.1:5001/algodt`, `http://127.0.0.1:5001/idt`, `http://127.0.0.1:5001/mdt` in the web browser. By executing each of these URLs, the API will start to log the events for each function and library using any pre-defined configuration.       
+- It is noted that the API is configurable so that it is executable using default or customizable configuration. The execution of the API is possible through calling the API in the server side and sending post requests throug the client side. Accotdingly, in the server side, execute the following command. The configuration could be set to any configuration such as port, config, path, etc. 
+
+#### Example
+`python3 flaskapp.py --config config.yaml --port 1234`
+
+
+Then in the client side, it is necessary to send a post request. In the following example we use a JSON file to post it through a CURL command. 
+
+#### Example
+`url -X POST -H "Content-Type: application/json" -d @mdt.json http://<LOCAL_HOST>:5001/v1/adtg/compile/mdt`
+    
 
 ## Building the API
 - It is a best practice to dockerise the API and run it accordingly. To do this, first of all it is required to build the application using the following command:
