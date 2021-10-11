@@ -32,11 +32,11 @@ from compiler import compiler
 from tests import test_compiler_dicts
 metadata = test_compiler_dicts.mdt
 test_run = compiler.compile("MDT.yaml",metadata)
-print(test_run)
+#print(test_run)
 # Import debugger required packages to be able to use the debugger decorator on functions - step 4
 from utils import debugger
 import inspect
-
+print(__package__)
 # sample function to present debugger usage
 @debugger.debug
 def test():
@@ -44,9 +44,9 @@ def test():
     testttttt
     :return:
     '''
-    # call functions from a test package
+    # call functions from a get_scope package
     from tests.test_adt_generator import add, subadd
-    logger.info('Call package functions from a test function')
+    logger.info('Call package functions from a get_scope function')
     ttt = 1
     ttt = 2
     logger.info(globals())

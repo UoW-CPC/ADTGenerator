@@ -3,7 +3,14 @@ debugger:
   path: '/Users/dimitriskagialis/Gen/d/'
   # Set debugger logs folder
   folder: 'mydebugger'
-  #set debugging level [allowed values 'low','high','full']
-  level: 'full'
+  # Set debugging level [allowed values 'low','high','full']
+  level: 'high'
+  # Set debugging scope - can be packages, modules, functions [if not defined debugger will debug the whole project]
   packages:
+    __main__:
+    tests:
+      test_adt_generator:
+#       #- subadd
+        - subsubadd
+
 

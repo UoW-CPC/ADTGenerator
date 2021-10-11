@@ -27,24 +27,12 @@ def init(path):
     :param path:
     :return:
     '''
-    import os
-    configs_path = path + '/configs'
-    if not os.path.exists(configs_path):
-        os.makedirs(configs_path)
-    import glob
-    from ruamel.yaml import YAML
-    configs = dict()
-    for file in glob.glob(f'{configs_path}/*.yml'):
-        with open(file, "r") as config:
-            yaml = YAML()
-            yaml.preserve_quotes = True
-            yaml.width = 800
-            config_yaml = yaml.load(config)
-            configs[os.path.basename(file)] = config_yaml
-    init_logger(configs.get('logger.yml'))
-    init_debugger(configs.get('debugger.yml'))
-    init_compiler(configs.get('compiler.yml'))
-    init_restapi(configs.get('restAPI.yml'))
+    from utils import configs
+    _configs =configs.load(path)
+    init_logger(_configs.get('logger.yml'))
+    init_debugger(_configs.get('debugger.yml'))
+    init_compiler(_configs.get('compiler.yml'))
+    init_restapi(_configs.get('restAPI.yml'))
 
 # Function to initiate the logger
 def init_logger(config):
@@ -100,10 +88,17 @@ def init_debugger(config):
         level = config['debugger']['level']
     except:
         level = None
+    from utils import configs
+    try:
+        debug_scope = configs.get_scope(config['debugger']['packages'])
+    except:
+        debug_scope = dict
     from utils import debugger
-    debugger.init(path, folder, level)
+    debugger.init(path, folder, level, debug_scope)
     debugger.init()
     debugger.init(sys.path[0], folder)
+
+
 
 def init_compiler(config):
     '''

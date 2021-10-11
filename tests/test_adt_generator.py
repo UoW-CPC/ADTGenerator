@@ -17,3 +17,5 @@ def subadd(a,b):
 def subsubadd(a,b):
     logger.info('subsubadd')
     return a+b+2
+
+print(__package__)
