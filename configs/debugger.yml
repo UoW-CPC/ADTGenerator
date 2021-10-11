@@ -7,10 +7,10 @@ debugger:
   level: 'high'
   # Set debugging scope - can be packages, modules, functions [if not defined debugger will debug the whole project]
   packages:
-    __main__:
     tests:
       test_adt_generator:
 #       #- subadd
         - subsubadd
+    __main__:
 
 
