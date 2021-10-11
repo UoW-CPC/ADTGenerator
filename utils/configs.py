@@ -2,39 +2,28 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------
 # Created By  : Dimitris Kagialis
-# Created Date: 05/10/2021
+# Created Date: 11/10/2021
 # version ='1.0'
 # ---------------------------------------------------------------------------
 """ Configs module
-    Supportive function to load ADT-generator components' configuration from YAML files.
+    Supportive functions to load ADT-generator components' configuration from YAML files
+    and get configs trees from nested YAML elements.
     Implementation:
         Use of ruamel.yaml package to load configs.
-        Debugger can be initialized only once.
-        Use of a decorator to wrap callee function and collect required information.
-    Configuration parameters:
-        path: path to debugging logs folder [Default value - project root path]
-        folder: debugging logs folder name [Default value 'debug']
-        level: debugging level - allowed values 'None', 'high', 'low', 'full' [default value 'None']
-        - None, the debugger is disabled.
-        - high, collects the caller module, function and line, and the callee module, function and line.
-        - low, collects high + input arguments and return.
-        - full, collects low + callee function globals.
-        debug_scope: dictionary with packages, modules, functions to include in the debugging phase [default value -  empty dict, debugging enabled for the whole project]
+        Use of recursion to parse a tree of YAML elements and create a unique records for each branch.
     Functions:
-        init(path, folder, level, handler) - initialize the debugger.
-        debug_func - debugger decorator, wraps the callee function and collects required information.
-        debug - callable function of the decorator, enables the debugger to pass arguments in the decorator.
-    Usage:
-        To initialize the debugger:
-            from utils import debugger
-            debugger.init(path, folder, level, debug_scope)
-        To use the debugger:
-            from utils.debugger import debugger
-            @debugger.debug
-            def sammple_func():
-                pass
+        load - loads all YAML files from the specified path.
+        get_scope - takes a dictionary with nested dictionaries and returns a dictionaries with all paths to branches.
+        parser - parses a dictionary  with nested dictionaries an create a dictionaries with all paths to branches.
  """
+# Load ADT generator config files from path
 def load(path):
+    '''
+    Loads YAML files from path and creates a dictionary with all YAML objects.
+    Requires ruamel.yaml
+    :param path: path to the folder
+    :return: dictionary with YAML objects
+    '''
     import os
     configs_path = path + '/configs'
     if not os.path.exists(configs_path):
@@ -51,36 +40,46 @@ def load(path):
             configs[os.path.basename(file)] = config_yaml
     return configs
 
+# Get tree's branches from a config
 def get_scope(config):
-    scope = parser(1)
+    '''
+    Receives a dictionary and returns a new dictionary with all paths to branches.
+    :param config: dictionary
+    :return: dictionary
+    '''
+    scope = _parser(config)
     return scope
 
-_scope = dict()
-_scope_counter = 0
+# parser function globals
+_scope = dict() # PRIVATE - dictionary with all branches
+_key = 0 # PRIVATE - key of the dictionary (implemented as a counter)
 
-def parser(config):
-    print(type(config))
+# Create paths to branches for a config
+def _parser(config):
+    '''
+    Receives a dictionary and returns a new dictionary with all paths to branches.
+    Hidden function implemented with a recursion.
+    :param config: dictionary
+    :return: dictionary
+    '''
     global _scope
-    global _scope_counter
+    global _key
     if isinstance(config, dict):
         for key, values in config.items():
             try:
-                _scope[str(_scope_counter)] += '.' + key
+                _scope[str(_key)] += '.' + key
             except:
-                _scope[str(_scope_counter)] = key
+                _scope[str(_key)] = key
             if isinstance(values, dict):
-                parser(values)
+                _parser(values)
             else:
                try:
-                   first = _scope_counter
-                   _scope_counter += 1
+                   parent_key = _key
+                   _key += 1
                    for value in values:
-                       _scope[str(_scope_counter)] = _scope[str(_scope_counter - 1)] + '.' + value
-                       _scope_counter += 1
-                   _scope.pop(str(first))
+                       _scope[str(_key)] = _scope[str(parent_key)] + '.' + value
+                       _key += 1
+                   _scope.pop(str(parent_key))
                except:
                    pass
         return _scope
-    else:
-        print(2)
-        exit(1)
