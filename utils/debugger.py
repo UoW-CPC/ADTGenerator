@@ -21,7 +21,7 @@
         - full, collects low + callee function globals.
         debug_scope: dictionary with packages, modules, functions to include in the debugging phase [default value -  empty dict, debugging enabled for the whole project]
     Functions:
-        init(path, folder, level, handler) - initialize the debugger.
+        init - initialize the debugger.
         debug_func - debugger decorator, wraps the callee function and collects required information.
         debug - callable function of the decorator, enables the debugger to pass arguments in the decorator.
     Usage:

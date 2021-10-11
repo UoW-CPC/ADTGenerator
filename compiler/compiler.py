@@ -1,5 +1,39 @@
-#compiler.py
-
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#----------------------------------------------------------------------------
+# Created By  : Dimitris Kagialis
+# Created Date: 05/10/2021
+# version ='1.0'
+# ---------------------------------------------------------------------------
+""" Compiler module
+    Logs program flow and nested calls.
+    Implementation:
+        Use of the built-in logging package.
+        Debugger can be initialized only once.
+        Use of a decorator to wrap callee function and collect required information.
+    Configuration parameters:
+        path: path to debugging logs folder [Default value - project root path]
+        folder: debugging logs folder name [Default value 'debug']
+        level: debugging level - allowed values 'None', 'high', 'low', 'full' [default value 'None']
+        - None, the debugger is disabled.
+        - high, collects the caller module, function and line, and the callee module, function and line.
+        - low, collects high + input arguments and return.
+        - full, collects low + callee function globals.
+        debug_scope: dictionary with packages, modules, functions to include in the debugging phase [default value -  empty dict, debugging enabled for the whole project]
+    Functions:
+        init - initialize the debugger.
+        debug_func - debugger decorator, wraps the callee function and collects required information.
+        debug - callable function of the decorator, enables the debugger to pass arguments in the decorator.
+    Usage:
+        To initialize the debugger:
+            from utils import debugger
+            debugger.init(path, folder, level, debug_scope)
+        To use the debugger:
+            from utils.debugger import debugger
+            @debugger.debug
+            def sammple_func():
+                pass
+ """
 #init logger
 import os.path
 import sys
@@ -14,8 +48,10 @@ _templates_modules = None
 
 #init compiler (set jinja globals and logging level)
 def init(templates_path, templates_modules):
-    globals()['_templates_path'] = templates_path
-    globals()['_templates_modules'] = templates_modules
+    global _templates_path
+    global _templates_modules
+    _templates_path = templates_path
+    _templates_modules = templates_modules
     logger.info('Compiler has been initiated')
 
 

@@ -15,7 +15,7 @@
         level: logging level - allowed values 'info', 'warning' [default value 'info']
         handler: logging handler - allowed values 'file', 'screen' [default value 'file'] - 'screen' saves also to file.
     Functions:
-        init(path, folder, level, handler) - initialize the logger
+        init - initialize the logger
     Usage:
         To initialize the logger:
             from utils import logger

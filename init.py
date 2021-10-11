@@ -8,11 +8,11 @@
 """ Init module
     Loads ADT generator configs from paths and initiate its components.
     Functions:
-    init: initialize ADT generator components based on the loaded configs
-    init_logger: initialized the logger
-    init_debugger: initialized the debugger
-    init_compiler: initialized the compiler
-    init_restapi: initialized the restapi
+        init - initialize ADT generator components based on the loaded configs
+        init_logger - initialized the logger
+        init_debugger - initialized the debugger
+        init_compiler - initialized the compiler
+        init_restapi - initialized the restapi
  """
 # Packages wide imports
 import sys
