@@ -4,18 +4,12 @@
 # Created By  : Dimitris Kagialis
 # Created Date: 05/10/2021
 # version ='1.0'
+# Contributors:
+# Updated at  : 12/10/2021
+# Tested at   : 12/10/2021
 # ---------------------------------------------------------------------------
 """ Logger module
-    Implementation:
-        Use of the built-in logging package.
-        Logger can be initialized only once.
-    Configuration parameters:
-        path: path to logs folder [Default value project root path]
-        folder: logs folder name [Default value 'logs']
-        level: logging level - allowed values 'info', 'warning' [default value 'info']
-        handler: logging handler - allowed values 'file', 'screen' [default value 'file'] - 'screen' saves also to file.
-    Functions:
-        init - initialize the logger
+    Project global logger.
     Usage:
         To initialize the logger:
             from utils import logger
@@ -24,6 +18,17 @@
             from utils.logger import logger
             logger.info('msg')
             logger.warning('msg')
+    Configuration parameters:
+       path: path to logs folder [Default value project root path]
+       folder: logs folder name [Default value 'logs']
+       level: logging level - allowed values 'info', 'warning' [default value 'info']
+       handler: logging handler - allowed values 'file', 'screen' [default value 'file'] - 'screen' saves also to file.
+    Functions:
+        init - initialize the logger
+    Implementation:
+        Use of the built-in logging package.
+        Logger can be initialized only once.
+    Tests: -
  """
 
 # Packages wide imports

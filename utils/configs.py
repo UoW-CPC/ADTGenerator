@@ -4,17 +4,21 @@
 # Created By  : Dimitris Kagialis
 # Created Date: 11/10/2021
 # version ='1.0'
+# Contributors:
+# Updated at  : 12/10/2021
+# Tested at   : 12/10/2021
 # ---------------------------------------------------------------------------
 """ Configs module
-    Supportive functions to load ADT-generator components' configuration from YAML files
-    and get configs trees from nested YAML elements.
+    Usage:
+        Supportive functions to load ADT-generator components' configuration from YAML files
+        and get configs trees from nested YAML elements.
     Implementation:
         Use of ruamel.yaml package to load configs.
         Use of recursion to parse a tree of YAML elements and create a unique records for each branch [Used by debugger].
     Functions:
         load - loads all YAML files from the specified path.
         get_scope - takes a dictionary with nested dictionaries and returns a dictionaries with all paths to branches.
-        parser - parses a dictionary  with nested dictionaries an create a dictionaries with all paths to branches.
+        _parser - [PRIVATE] parses a dictionary  with nested dictionaries an create a dictionaries with all paths to branches.
  """
 # Load ADT generator config files from path
 def load(path):
