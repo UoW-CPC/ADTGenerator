@@ -13,7 +13,7 @@
         Supportive functions to load ADT-generator components' configuration from YAML files
         and get configs trees from nested YAML elements.
     Implementation:
-        Use of ruamel.yaml package to load configs.
+        Requirement: Use of ruamel.yaml package to load configs.
         Use of recursion to parse a tree of YAML elements and create a unique records for each branch [Used by debugger].
     Functions:
         load - loads all YAML files from the specified path.
