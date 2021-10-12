@@ -7,7 +7,7 @@
 - mdt.yml
 
 ## Usage
-Compiler loads a template and passes it to Jinja2 alogn with a dictionary containing the required metadata
+Compiler loads a template and passes it to Jinja2 alogn with a dictionary containing the required metadata.
 
 ## Configuration
 Templates folder is configurable and can be moved to a different path.
