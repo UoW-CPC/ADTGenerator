@@ -1,9 +1,7 @@
 # Compiler
 >Populate data in YAML template by using Jinja2.
 
-
 ## Usage
-
 ### Initiate the compiler
 To use the compiler first you must initiate it by passing templates path and the list of functions required by the template.
 ```
@@ -11,11 +9,11 @@ from compiler import compiler
 compiler.init(templates_path,modules)
 ```
 Configuration parameters
-- [templates_path] path to YAML templates folder (Default value 'None' sets the path under the compiler folder)
-- [modules] list of modules and their functions to import in Jinja2 (Default value an empty list)
+- [templates_path] path to YAML templates folder (Default value: None, sets the path under the compiler folder)
+- [modules] list of modules and their functions to pass in Jinja2 (Default value: empty list)
 
 ### Render a template
-To render a template pass to the compiler the template name to use and a dictionary with the data required by the template.
+To render a template pass to the compiler the template name and a dictionary with the data required by the template.
 ```
 from compiler import compiler
 data = data_dictionary
@@ -28,7 +26,6 @@ DT = compiler.compile(template, data)
 
 ### Tests and sample data
 Unittest are defined under path tests/test_compiler and test data under path tests/test_data.
-
 #### Test Case
 module: test_compiler.py
 
