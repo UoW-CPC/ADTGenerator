@@ -10,11 +10,11 @@
 # ---------------------------------------------------------------------------
 """ ADT-generator main
     Usage:
-    Initiate program packages with a function init.
+    Initiate program components with through an init function.
     List of components:
         RestAPI
         Compiler
-        Logger   - always enabled
+        Logger - always enabled
         Debugger - disabled by default
     Implementation:
         Functional programming
@@ -22,13 +22,14 @@
 
  """
 
-# Packages wide imports - step 1
+# Packages global imports - step 1
 import sys # to get root path
 from init import init # to initiate ADT-generator
 
-# Initiate ADT-generator modules - step 2
+# Initiate ADT-generator components - step 2
 # Question: how to pass the path? eg. ENV variable
 
+# WARNING: init must run before importing any components
 init(sys.path[0])
 
 # Import logger and log first record - step 3

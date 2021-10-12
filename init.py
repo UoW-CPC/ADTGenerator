@@ -4,23 +4,30 @@
 # Created By  : Dimitris Kagialis
 # Created Date: 05/10/2021
 # version ='1.0'
+# Contributors:
+# Updated at  : 12/10/2021
+# Tested at   : 12/10/2021
 # ---------------------------------------------------------------------------
 """ Init module
+    Usage:
     Loads ADT generator configs from paths and initiate its components.
     Functions:
-        init - initialize ADT generator components based on the loaded configs
-        init_logger - initialized the logger
-        init_debugger - initialized the debugger
-        init_compiler - initialized the compiler
-        init_restapi - initialized the restapi
+        init - initiate ADT generator components based on the loaded configs
+        init_logger - initiate the logger
+        init_debugger - initiate the debugger
+        init_compiler - initiate the compiler
+        init_restapi - initiate the restapi
+    Implementation:
+        Functional programming
+    Tests:
  """
-# Packages wide imports
+# Packages global imports
 import sys
 
 # Function to initiate the ADT-generator
 def init(path):
     '''
-    Load config YAML files from path and initiate components based on the loaded config
+    Load config YAML files from path and initiate components based on the loaded configs
     :param path: path to config files
     :return: None
     '''
@@ -62,7 +69,7 @@ def init_logger(config):
     # Import logger and initiate
     from utils import logger
     logger.init(path, folder, level, handler)
-    # test that logger can be initialized only once
+    # Test that logger can be initiated only once
     logger.init()
 
 # Function to initiate the debugger
@@ -94,10 +101,10 @@ def init_debugger(config):
         debug_scope = configs.get_scope(config['debugger']['packages'])
     except:
         debug_scope = dict
-    # Import logger and initiate
+    # Import debugger and initiate
     from utils import debugger
     debugger.init(path, folder, level, debug_scope)
-    # test that logger can be initialized only once
+    # test that debugger can be initiated only once
     debugger.init()
     debugger.init(sys.path[0], folder)
 
@@ -123,18 +130,24 @@ def init_compiler(config):
     if folder == None:
         path = 'compiler/templates'
     try:
-        import_modules = config['compiler']['import_modules']
+        _modules = config['compiler']['modules']
     except:
-        import_modules = None
+        _modules = None
     modules = []
     # Import modules to the compiler
-    for module in import_modules:
-        modules.append([module,import_modules[module]['import_statement'],import_modules[module]['functions']])
+    for module in _modules:
+        modules.append([module,_modules[module]['import'],_modules[module]['functions']])
+    # absolute path to templates
     abs_path = path + '/' + folder
     # Import compiler and initiate
     from compiler import compiler
     compiler.init(abs_path,modules)
 
 def init_restapi(config):
+    '''
+    Initiate the restapi based on the provided config
+    :param config: dictionary with restapi configs
+    :return: None
+    '''
+    # print(config)
     pass
-    #print(config)
