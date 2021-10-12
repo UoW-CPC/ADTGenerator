@@ -24,7 +24,7 @@
 
  """
 
-# Packages global imports - step 1
+# Module global imports - step 1
 import sys # to get root path
 from utils.init import init # to initiate ADT-generator
 
@@ -54,7 +54,8 @@ if __name__ == "__main__":
     from tests.test_compiler import test_compiler_dicts
     metadata = test_compiler_dicts.mdt
     test_run = compiler.compile("MDT.yaml", metadata)
-    #print(test_run)
+    print(test_run)
+    #print(type(test_run))
 
     #  Debugging
     # sample function to present debugger usage
@@ -77,8 +78,8 @@ if __name__ == "__main__":
         return 'test debugging from test'
 
     #Test debugger and logger
-    test()
-    from tests.test_adt_generator import add,subsubadd
-    logger.info('Call package functions from main')
-    add(1, 1)
-    subsubadd(1, 1)
+    # test()
+    # from tests.test_adt_generator import add,subsubadd
+    # logger.info('Call package functions from main')
+    # add(1, 1)
+    # subsubadd(1, 1)

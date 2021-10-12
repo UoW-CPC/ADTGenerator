@@ -31,7 +31,7 @@
     Tests: -
  """
 
-# Packages wide imports
+# Module global imports
 import sys
 
 # Logger global object

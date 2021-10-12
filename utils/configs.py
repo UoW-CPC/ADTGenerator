@@ -20,6 +20,7 @@
         get_scope - takes a dictionary with nested dictionaries and returns a dictionaries with all paths to branches.
         _parser - [PRIVATE] parses a dictionary  with nested dictionaries an create a dictionaries with all paths to branches.
  """
+
 # Load ADT generator config files from path
 def load(path):
     '''

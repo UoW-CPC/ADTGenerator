@@ -38,7 +38,7 @@
         Use of a decorator to wrap callee function and collect required information.
     Tests: -
  """
-# Packages wide imports
+# Module global imports
 import sys
 
 # Debugger global object

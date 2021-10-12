@@ -24,7 +24,7 @@
         Functional programming
     Tests: -
  """
-# Packages global imports
+# Module global imports
 import sys
 
 # Function to initiate the ADT-generator
@@ -135,7 +135,7 @@ def init_compiler(config):
     try:
         _modules = config['compiler']['modules']
     except:
-        _modules = None
+        _modules = []
     # list of modules to import [used by jinja2]
     modules = []
     for module in _modules:
