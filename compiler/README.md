@@ -2,7 +2,7 @@
 >Populate data in YAML template by using Jinja2.
 
 
-## Usage:
+## Usage
 
 ### Initiate the compile
 To use the compiler first you must initiate it by passing templates path and the list of functions required by the template.
@@ -10,11 +10,11 @@ To use the compiler first you must initiate it by passing templates path and the
 from compiler import compiler
 compiler.init(templates_path,modules)
 ```
-Configuration parameters:
+Configuration parameters
 - [templates_path] path to YAML templates folder (Default value 'None' sets the path under the compiler folder)
 - [modules] list of modules and their functions to import in Jinja2 (Default value an empty list)
 
-### Render a template:
+### Render a template
 To render a template pass to the compiler the template name to use and a dictionary with the data required by the template.
 ```
 from compiler import compiler
