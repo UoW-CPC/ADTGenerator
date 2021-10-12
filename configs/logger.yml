@@ -1,8 +1,10 @@
+# Logger configs file. If not exists logger applies default values.
+# You can comment any of the configs and default will be applied
 logger:
   # Set path to logs
   path: '/Users/dimitriskagialis/adt_generator/'
   # Set logs folder
-  folder: 'logs-1'
+  #folder: 'logs-1'
   # Set logging level [allowed values 'info' or 'warning']
   level: 'info'
   # Set logging handler [allowed values 'file' or 'screen']
