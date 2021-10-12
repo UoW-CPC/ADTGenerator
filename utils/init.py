@@ -9,8 +9,11 @@
 # Tested at   : 12/10/2021
 # ---------------------------------------------------------------------------
 """ Init module
-    Usage:
     Loads ADT generator configs from paths and initiate its components.
+    Usage:
+        To initialize the components:
+            from utils.init import init
+            init(path)
     Functions:
         init - initiate ADT generator components based on the loaded configs
         init_logger - initiate the logger
@@ -19,7 +22,7 @@
         init_restapi - initiate the restapi
     Implementation:
         Functional programming
-    Tests:
+    Tests: -
  """
 # Packages global imports
 import sys
