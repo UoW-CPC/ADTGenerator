@@ -1,6 +1,6 @@
 def func1(key):
     dict1 = {"var1":1,"var2":2,"var3":3}
-    dict2 = {"var3": 1, "var4": 2, "var5": 3}
+    dict2 = {"var3": 3, "var4": 4, "var5": 5}
     if key == 1: return dict1
     if key == 2: return dict2
 def func2(key):
