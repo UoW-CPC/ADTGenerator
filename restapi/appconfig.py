@@ -1,9 +1,14 @@
 import yaml, logging,logging.config, argparse
-global CONFIG
 log = None
+CONFIG = None
+service_host = None
+service_port = None
+rest_root_path = None
+secrets_json_path = None
 
-class app_cfg:
 
+def init_config():
+     global CONFIG, log, service_host, service_port, rest_root_path, secrets_json_path
      parser = argparse.ArgumentParser(description='DigitBrain ADT Generator: This service is used for compiling DigitBrain assets towards MiCADO ADT')
 
 
