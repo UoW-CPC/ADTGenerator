@@ -1,11 +1,11 @@
 logger:
   # Set path to logs
-  path: '/Users/dimitriskagialis/Gen/l/'
+  path: '/Users/dimitriskagialis/adt_generator/'
   # Set logs folder
-  folder: 'mylogs'
+  folder: 'logs-1'
   # Set logging level [allowed values 'info' or 'warning']
   level: 'info'
   # Set logging handler [allowed values 'file' or 'screen']
   handler: 'file'
 
-  #find standard config for the logger
+  # TODO: check standard config for the logger
