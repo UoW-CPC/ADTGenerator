@@ -8,23 +8,25 @@
 # Updated at  : 12/10/2021
 # Tested at   : 12/10/2021
 # ---------------------------------------------------------------------------
-""" ADT-generator main
+""" ADT-generator main module
+    Initiate program components by calling an init function.
     Usage:
-    Initiate program components with through an init function.
+        Start the program from that modules.
     List of components:
         RestAPI
         Compiler
         Logger - always enabled
         Debugger - disabled by default
+    Functions: -
     Implementation:
         Functional programming
-    Tests:
+    Tests: -
 
  """
 
 # Packages global imports - step 1
 import sys # to get root path
-from init import init # to initiate ADT-generator
+from utils.init import init # to initiate ADT-generator
 
 # Initiate ADT-generator components - step 2
 # Question: how to pass the path? eg. ENV variable
@@ -49,10 +51,10 @@ if __name__ == "__main__":
 
     # Compiler
     from compiler import compiler
-    from tests import test_compiler_dicts
+    from tests.test_compiler import test_compiler_dicts
     metadata = test_compiler_dicts.mdt
     test_run = compiler.compile("MDT.yaml", metadata)
-    print(test_run)
+    #print(test_run)
 
     #  Debugging
     # sample function to present debugger usage
