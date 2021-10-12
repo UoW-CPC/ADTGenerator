@@ -14,9 +14,10 @@ debugger:
       # Module name
       test_adt_generator:
         # Functions
-#       #- subadd
+#       - add
         - subsubadd
-    # module
+
     __main__:
+    compiler:
 
 
