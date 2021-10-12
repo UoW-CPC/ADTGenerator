@@ -10,7 +10,7 @@
     and get configs trees from nested YAML elements.
     Implementation:
         Use of ruamel.yaml package to load configs.
-        Use of recursion to parse a tree of YAML elements and create a unique records for each branch.
+        Use of recursion to parse a tree of YAML elements and create a unique records for each branch [Used by debugger].
     Functions:
         load - loads all YAML files from the specified path.
         get_scope - takes a dictionary with nested dictionaries and returns a dictionaries with all paths to branches.
@@ -40,7 +40,7 @@ def load(path):
             configs[os.path.basename(file)] = config_yaml
     return configs
 
-# Get tree's branches from a config
+# Get paths to branches from a config file [used by debugger]
 def get_scope(config):
     '''
     Receives a dictionary and returns a new dictionary with all paths to branches.
@@ -50,15 +50,15 @@ def get_scope(config):
     scope = _parser(config)
     return scope
 
-# parser function globals
+# _parser function globals
 _scope = dict() # PRIVATE - dictionary with all branches
 _key = 0 # PRIVATE - key of the dictionary (implemented as a counter)
 
-# Create paths to branches for a config
+# PRIVATE: Create paths to branches for a config file
 def _parser(config):
     '''
     Receives a dictionary and returns a new dictionary with all paths to branches.
-    Hidden function implemented with a recursion.
+    Private function implemented with a recursion.
     :param config: dictionary
     :return: dictionary
     '''
