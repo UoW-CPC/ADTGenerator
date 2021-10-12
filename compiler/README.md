@@ -1,10 +1,10 @@
-#Compiler
+# Compiler
 >Populate data in YAML template by using Jinja2.
 
 
 ## Usage:
 
-###Initiate the compile
+### Initiate the compile
 To use the compiler first you must initiate it by passing templates path and the list of functions required by the template.
 ```
 from compiler import compiler
