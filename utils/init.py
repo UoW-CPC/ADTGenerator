@@ -136,15 +136,15 @@ def init_compiler(config):
         _modules = config['compiler']['modules']
     except:
         _modules = None
+    # list of modules to import [used by jinja2]
     modules = []
-    # Import modules to the compiler
     for module in _modules:
         modules.append([module,_modules[module]['import'],_modules[module]['functions']])
-    # absolute path to templates
-    abs_path = path + '/' + folder
+    # Path to templates  [used by jinja2]
+    templates_path = path + '/' + folder
     # Import compiler and initiate
     from compiler import compiler
-    compiler.init(abs_path,modules)
+    compiler.init(templates_path,modules)
 
 def init_restapi(config):
     '''
