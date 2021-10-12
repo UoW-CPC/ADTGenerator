@@ -139,6 +139,7 @@ def init_compiler(config):
     # list of modules to import [used by jinja2]
     modules = []
     for module in _modules:
+        # Append module name, import statement, functions
         modules.append([module,_modules[module]['import'],_modules[module]['functions']])
     # Path to templates  [used by jinja2]
     templates_path = path + '/' + folder
