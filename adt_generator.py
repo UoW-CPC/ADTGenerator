@@ -54,7 +54,7 @@ if __name__ == "__main__":
     from tests.test_compiler import test_compiler_dicts
     metadata = test_compiler_dicts.mdt
     test_run = compiler.compile("MDT.yaml", metadata)
-    print(test_run)
+    #print(test_run)
     #print(type(test_run))
 
     #  Debugging
