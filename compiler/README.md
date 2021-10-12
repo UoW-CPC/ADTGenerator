@@ -12,7 +12,7 @@ compiler.init(templates_path,modules)
 ```
 Configuration parameters:
 - [templates_path] path to YAML templates folder (Default value 'None' sets the path under the compiler folder)
-- [modules] List of modules and their functions to import in Jinja2 (Default value an empty list)
+- [modules] list of modules and their functions to import in Jinja2 (Default value an empty list)
 
 ### Render a template:
 To render a template pass to the compiler the template name to use and a dictionary with the data required by the template.

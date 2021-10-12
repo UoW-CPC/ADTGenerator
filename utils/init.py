@@ -14,6 +14,8 @@
         To initialize the components:
             from utils.init import init
             init(path)
+    Configuration parameters:
+        path: path to config YAML files - Needs to be specified
     Functions:
         init - initiate ADT generator components based on the loaded configs
         init_logger - initiate the logger
