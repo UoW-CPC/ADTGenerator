@@ -4,35 +4,39 @@
 # Created By  : Dimitris Kagialis
 # Created Date: 05/10/2021
 # version ='1.0'
+# Contributors:
+# Updated at  : 12/10/2021
+# Tested at   : 12/10/2021
 # ---------------------------------------------------------------------------
 """ Debugging module
-    Logs program flow and nested calls.
+    Collects information related to program flow and nested calls. Disabled by default.
+    Usage:
+         To initialize the debugger:
+            from utils import debugger
+            debugger.init(path, folder, level, debug_scope)
+        To use the debugger decorate a function:
+            from utils import debugger
+            @debugger.debug
+            def test():
+                pass
+    Configuration parameters:
+        path: path to debugging logs folder [Default value - project root path]
+        folder: debugging logs folder name [Default value 'debugger']
+        level: debugging level - allowed values 'None', 'high', 'low', 'full' [default value 'None']
+        - None, the debugger is disabled.
+        - high, collects the caller module, function and line, and the callee module, function and line.
+        - low, collects 'high' + callee input arguments and return.
+        - full, collects 'low' + callee function globals.
+        debug_scope: dictionary with packages, modules, functions to debug [default value 'empty dict {}' to debug whole program]
+    Functions:
+        init - initialize the debugger.
+        _debug_func - [PRIVATE] debugger decorator, wraps the callee function and collects required information.
+        debug - callable function of the decorator, enables the debugger to pass arguments in the decorator.
     Implementation:
         Use of the built-in logging package.
         Debugger can be initialized only once.
         Use of a decorator to wrap callee function and collect required information.
-    Configuration parameters:
-        path: path to debugging logs folder [Default value - project root path]
-        folder: debugging logs folder name [Default value 'debug']
-        level: debugging level - allowed values 'None', 'high', 'low', 'full' [default value 'None']
-        - None, the debugger is disabled.
-        - high, collects the caller module, function and line, and the callee module, function and line.
-        - low, collects high + input arguments and return.
-        - full, collects low + callee function globals.
-        debug_scope: dictionary with packages, modules, functions to include in the debugging phase [default value -  empty dict, debugging enabled for the whole project]
-    Functions:
-        init - initialize the debugger.
-        debug_func - debugger decorator, wraps the callee function and collects required information.
-        debug - callable function of the decorator, enables the debugger to pass arguments in the decorator.
-    Usage:
-        To initialize the debugger:
-            from utils import debugger
-            debugger.init(path, folder, level, debug_scope)
-        To use the debugger:
-            from utils.debugger import debugger
-            @debugger.debug
-            def sammple_func():
-                pass
+    Tests: -
  """
 # Packages wide imports
 import sys
@@ -101,8 +105,8 @@ def init(path = sys.path[0],folder = 'degugger',level = None, debug_scope = dict
         logger.warning(f'Debugger can be initiated only once.')
 
 from functools import wraps
-# Debugger decorator used for debugging
-def debug_func():
+# PRIVATE: Debugger decorator used for debugging
+def _debug_func():
     def wrap_func(func):
         @wraps(func)
         def wrapped_func(*args, **kwargs):
@@ -119,6 +123,7 @@ def debug_func():
                     debugger.info(f'Stack {_program_counter} begins\n')
             # Wrapped callee function - Runs always
             ret = func(*args, **kwargs)
+            # Uncomment to see function return on screen
             #print(ret)
             # If debugger is initialized, collect information - based on debugging level and scope - and add them to the debugging log.
             if _initialized:
@@ -149,4 +154,4 @@ def debug_func():
     return wrap_func
 
 # Call this to decorate a function
-debug = debug_func()
+debug = _debug_func()
