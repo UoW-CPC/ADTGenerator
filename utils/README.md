@@ -10,7 +10,7 @@ Configuration parameters:
 ## Configs
 ADT generator components' config handling.
 - load configs from YAML files
-- Get lists of nested YAML elements.
+- Get a list with nested YAML elements
 
 Requirements:
 >ruamel.yaml
