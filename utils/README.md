@@ -1,4 +1,4 @@
-#Utils
+# Utils
 > Tools to support ADT generator components.
 
 ## Init
@@ -12,7 +12,7 @@ ADT generator components' config handling.
 - load configs from YAML files
 - Get lists of nested YAML elements.
 
-Requirement:
+Requirements:
 >ruamel.yaml
 
 ## Logger
