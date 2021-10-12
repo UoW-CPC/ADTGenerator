@@ -70,8 +70,6 @@ if __name__ == "__main__":
         logger.info('Call package functions from a get_scope function')
         ttt = 1
         ttt = 2
-        logger.info(globals())
-        logger.info(locals())
         add(1, 1)
         subadd(1, 1)
         add(1, 1)
