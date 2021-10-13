@@ -34,5 +34,4 @@ Then in the client side, it is necessary to send a post request. In the followin
                                        
                  sudo docker run --name adt-generator-app -p 5001:5001 adt-generator-app
 
-- After running the containerised API, you may use the mentioned URLs to interact with the REST API. 
 
