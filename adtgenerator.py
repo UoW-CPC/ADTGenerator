@@ -1,21 +1,21 @@
 from flask import Flask, jsonify, request
 import logging,logging.config, json
 from flask_oidc import OpenIDConnect
-import appconfig
+import adtg_conf
 log = None
 app = Flask(__name__)
 
 app.config.from_object(__name__)
 
-appconfig.init_config()
-logging.config.dictConfig(appconfig.CONFIG['logging'])
+adtg_conf.init_config()
+logging.config.dictConfig(adtg_conf.CONFIG['logging'])
 log = logging.getLogger('adtg_api')
 
 
 # not part of the rest
-oidc_enabled = appconfig.CONFIG.get('service', dict()).get('enable_oidc', False)
+oidc_enabled = adtg_conf.CONFIG.get('service', dict()).get('enable_oidc', False)
 if oidc_enabled:
-    with open(appconfig.secrets_json_path) as json_file:
+    with open(adtg_conf.secrets_json_path) as json_file:
         APP_CONFIG = json.load(json_file)
     app.config.update(APP_CONFIG)
     oidc = OpenIDConnect(app)
@@ -38,7 +38,7 @@ def handled_exception(error):
 
 
 
-@app.route(appconfig.rest_root_path + '/compile/mdt', methods = ["POST"])
+@app.route(adtg_conf.rest_root_path + '/compile/mdt', methods = ["POST"])
 #OIDC decorator should be able to be toggled on/off"
 #solution: https://stackoverflow.com/questions/14636350/toggling-decorators
 #@oidc.accept_token(require_token=CONFIG.get('service', dict()).get('check_user_token', False))
@@ -63,7 +63,7 @@ def compile_mdt():
     log.debug('Compile MDT finished')
     return jsonify(input_data), 200   
     #return 'This is MDT! {}'.format(app.config.get('logging'))  
-@app.route(appconfig.rest_root_path + '/compile/algodt', methods = ["POST"])
+@app.route(adtg_conf.rest_root_path + '/compile/algodt', methods = ["POST"])
 #@oidc.accept_token(require_token=CONFIG.get('service', dict()).get('check_user_token', False))
 def compile_algodt():
     global log
@@ -82,7 +82,7 @@ def compile_algodt():
     log.debug('Compile ALGODT finished')
     return jsonify({'success':'This is ALGODT'}), 200   
 
-@app.route(appconfig.rest_root_path + '/compile/idt', methods = ["POST"])
+@app.route(adtg_conf.rest_root_path + '/compile/idt', methods = ["POST"])
 #@oidc.accept_token(require_token=CONFIG.get('service', dict()).get('check_user_token', False))
 def compile_idt():
     global log
@@ -107,6 +107,6 @@ def compile_idt():
 
 
 if __name__ == '__main__':
-    app.run(debug=appconfig.CONFIG.get('service', dict()).get('flask_debug_mode', True), 
-            host=appconfig.service_host, 
-            port=appconfig.service_port)
+    app.run(debug=adtg_conf.CONFIG.get('service', dict()).get('flask_debug_mode', True), 
+            host=adtg_conf.service_host, 
+            port=adtg_conf.service_port)
