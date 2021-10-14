@@ -16,13 +16,13 @@
 - It is noted that the API is configurable so that it is executable using default or customizable configuration. The execution of the API is possible through calling the API in the server side and sending post requests throug the client side. Accotdingly, in the server side, execute the following command. The configuration could be set to any configuration such as port, config, path, etc. 
 
 #### Example
-`python3 flaskapp.py --config config.yaml --port 1234`
+`python3 flaskapp.py --config ./config/config.yaml --port 1234`
 
 
 Then in the client side, it is necessary to send a post request. In the following example we use a JSON file to post it through a CURL command. 
 
 #### Example
-`url -X POST -H "Content-Type: application/json" -d @mdt.json http://<LOCAL_HOST>:5001/v1/adtg/compile/mdt`
+`url -X POST -H "Content-Type: application/json" -d @examples/mdt.json http://<LOCAL_HOST>:5001/v1/adtg/compile/mdt`
     
 
 ## Building the API
