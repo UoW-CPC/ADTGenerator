@@ -13,7 +13,7 @@
 - All the operations in the API are logged and stored in a configuration dictionary. 
 
 ## Using the API
-- It is noted that the API is configurable so that it is executable using default or customizable configuration. The execution of the API is possible through calling the API in the server side and sending post requests throug the client side. Accotdingly, in the server side, execute the following command. The configuration could be set to any configuration such as port, config, path, etc. 
+- It is noted that the API is configurable so that it is executable using default or customizable configuration. The execution of the API is possible through calling the API in the server side and sending post requests throug the client side. Accordingly, in the server side, execute the following command. Please note that the configuration could be set to any configuration such as port, config, path, etc. 
 
 #### Example
 `python3 flaskapp.py --config ./config/config.yaml --port 1234`
