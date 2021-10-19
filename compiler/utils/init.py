@@ -36,8 +36,8 @@ def init(path):
     :param path: path to config files
     :return: None
     '''
-    from utils import configs
-    _configs =configs.load(path)
+    from compiler.utils import configs
+    _configs = configs.load(path)
     init_logger(_configs.get('logger.yml'))
     init_debugger(_configs.get('debugger.yml'))
     init_compiler(_configs.get('compiler.yml'))
@@ -72,7 +72,7 @@ def init_logger(config):
     except:
         handler = 'file'
     # Import logger and initiate
-    from utils import logger
+    from compiler.utils import logger
     logger.init(path, folder, level, handler)
     # Test that logger can be initiated only once
     logger.init()
@@ -101,13 +101,13 @@ def init_debugger(config):
         level = config['debugger']['level']
     except:
         level = None
-    from utils import configs
+    from compiler.utils import configs
     try:
         debug_scope = configs.get_scope(config['debugger']['packages'])
     except:
         debug_scope = dict
     # Import debugger and initiate
-    from utils import debugger
+    from compiler.utils import debugger
     debugger.init(path, folder, level, debug_scope)
     # test that debugger can be initiated only once
     debugger.init()

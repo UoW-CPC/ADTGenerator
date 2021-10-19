@@ -44,11 +44,11 @@
 
 
 # Import the logger
-from utils.logger import logger
+from compiler.utils.logger import logger
 logger.info('Compiler imported')
 
 # Import the debugger
-from utils import debugger
+from compiler.utils import debugger
 
 # Compiler global
 _templates_path = None # PRIVATE - Path to templates

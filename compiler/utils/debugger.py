@@ -69,7 +69,7 @@ def init(path = sys.path[0],folder = 'degugger',level = None, debug_scope = dict
     global _level
     global _debug_scope
     # Import the logger to log debugger status
-    from utils.logger import logger
+    from compiler.utils.logger import logger
     # Create the debugger if not initialized
     if not _initialized:
         # Evaluate input debugging level

@@ -1,5 +1,6 @@
-from utils.logger import logger
-from utils import debugger
+from compiler.utils.logger import logger
+from compiler.utils import debugger
+
 
 @debugger.debug
 def add(a, b):
