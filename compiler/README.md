@@ -3,10 +3,13 @@
 
 ## Usage
 ### Initiate the compiler
-To use the compiler first you must initiate it by passing templates path and the list of functions required by the template.
+To use the compiler first you must initiate it by passing its configuration
+ - templates path
+ - functions required by the template
+
 ```
 from compiler import compiler
-compiler.init(templates_path,modules)
+compiler.init(configs)
 ```
 Configuration parameters
 - [templates_path] path to YAML templates folder (Default value: None, sets the path under the compiler folder)

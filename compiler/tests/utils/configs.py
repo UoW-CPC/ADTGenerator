@@ -30,20 +30,20 @@ def load(path):
     :return: dictionary with YAML objects
     '''
     import os
-    configs_path = path + '/configs'
-    if not os.path.exists(configs_path):
-        os.makedirs(configs_path)
-    import glob
+    # configs_path = path + '/configs'
+    # if not os.path.exists(configs_path):
+    #     os.makedirs(configs_path)
+    # import glob
     from ruamel.yaml import YAML
     configs = dict()
-    for file in glob.glob(f'{configs_path}/*.yml'):
-        with open(file, "r") as config:
-            yaml = YAML()
-            yaml.preserve_quotes = True
-            yaml.width = 800
-            config_yaml = yaml.load(config)
-            configs[os.path.basename(file)] = config_yaml
-    return configs
+
+    # for file in glob.glob(f'{configs_path}/*.yml'):
+    with open(path, "r") as config:
+        yaml = YAML()
+        yaml.preserve_quotes = True
+        yaml.width = 800
+        config_yaml = yaml.load(config)
+    return config_yaml['compiler']
 
 # Get paths to branches from a config file [used by debugger]
 def get_scope(config):

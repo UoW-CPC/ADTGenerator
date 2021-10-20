@@ -1,0 +1,25 @@
+# Compiler configs file. If not exists compiler applies default values.
+# You can comment any second level configs and default will be applied.
+compiler:
+  # Set path to templates
+  #path: '/path'
+  # Set templates folder
+  #folder: 'templates'
+  # List of modules to pass in Jinja2 (for use in templates).
+  # WARNING 1: import, functions definitions are mandatory.
+  # WARNING 2: you can not pass a package to jinja2, only functions
+  # WARNING 3: because you pass only function, names must be unique among modules, otherwise the last defined will overwrite the others.
+  modules:
+      # Module name
+      test_compiler_passing_funcs_A:
+        # Import statement
+        import: 'from tests.test_compiler import test_compiler_passing_funcs_A'
+        # Functions to import
+        functions:
+          - func1
+          - func2
+      test_compiler_passing_funcs_B:
+        import: 'from tests.test_compiler import test_compiler_passing_funcs_B'
+        functions:
+          - func3
+          - func4

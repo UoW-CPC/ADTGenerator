@@ -8,7 +8,7 @@
 # Updated at  : 12/10/2021
 # Tested at   : 12/10/2021
 # ---------------------------------------------------------------------------
-""" Compiler module
+"""Compiler module
     Creates DTs (Description Templates) by using Jinja2.
     Usage:
         To initiate the compile:
@@ -42,21 +42,23 @@
 # TODO: update unit tests
 
 
-
-# Import the logger
-from compiler.utils.logger import logger
-logger.info('Compiler imported')
-
-# Import the debugger
-from compiler.utils import debugger
+# import logging
+#
+# log = logging.getLogger('Compiler')
+# # Import the logger
+# from utils.logger import logger
+# logger.info('Compiler imported')
+#
+# # Import the debugger
+# from utils import debugger
 
 # Compiler global
 _templates_path = None # PRIVATE - Path to templates
 _modules = [] # PRIVATE - List of modules to import in Jinja2
 
 # Function to initiate the compiler
-@debugger.debug
-def init(templates_path, modules):
+
+def init(config, log):
     '''
     Compiler init function:
     Set globals templates_path, modules based on input arguments.
@@ -64,15 +66,33 @@ def init(templates_path, modules):
     :param modules: List of modules to import in Jinja2
     :return: None
     '''
+    import sys
+    try:
+        path = config['templates']['directory']
+    except:
+        path = sys.path[0] + '/templates'
+    if path == None:
+        path = sys.path[0] + '/templates'
+    try:
+        _moduless = config['modules']
+    except:
+        _moduless = []
+    # list of modules to import [used by jinja2]
+    # print(_modules)
+    modules = []
+    for module in _moduless:
+        # Append module name, import statement, functions
+        modules.append([module,_moduless[module]['import'],_moduless[module]['functions']])
+    # Path to templates  [used by jinja2]
+
     global _templates_path
     global _modules
-    _templates_path = templates_path
+    _templates_path = path
     _modules = modules
-    logger.info('Compiler has been initiated')
+    log.info('Compiler has been initiated')
 
 # Function to get a DT of specific type based on the provided metadata
-@debugger.debug
-def compile(type, metadata):
+def compile(type, metadata, log):
     '''
     Compiler compile function:
     Get a DT by providing the type of the DT along with required metadata.
@@ -80,30 +100,30 @@ def compile(type, metadata):
     :param metadata: Dictionary with values to populate in the template.
     :return: String with the DT
     '''
-    logger.info(f'Attempting to render a(n) {type}')
+    log.info(f'Attempting to render a(n) {type}')
     from jinja2 import Environment, FileSystemLoader
     #load the templates
     env = Environment(loader=FileSystemLoader(_templates_path))
     # Try to load the template, if not exists return an error
-    logger.info(f'Loading template: {type}')
+    log.info(f'Loading template: {type}')
     try:
         dt = env.get_template(type)
     except:
-        logger.error(f'TemplateNotFound: {type}')
+        log.error(f'TemplateNotFound: {type}')
         return f'TemplateNotFound: {type}'
-    logger.info(f'Template loaded')
-    logger.info(f'Importing modules and functions (if any)')
+    log.info(f'Template loaded')
+    log.info(f'Importing modules and functions (if any)')
     # Each module contains: position [0] module name, [1] import statement, [2] functions
     for module in _modules:
         # Try to import a module, if not exists return an error
         try:
             # execute import statement
             exec(module[1])
-            logger.info(f'module imported: [{module[0]}]')
+            log.info(f'module imported: [{module[0]}]')
         except Exception as e:
-            logger.error(f'ModuleNotFoundError: {e}')
+            log.error(f'ModuleNotFoundError: {e}')
             return f'ModuleNotFoundError: {e}'
-        logger.info(f'Loading module [{module[0]}] functions to jinja2 (if any)')
+        log.info(f'Loading module [{module[0]}] functions to jinja2 (if any)')
         # Try to load functions for a module, if not exist return an error
         try:
             for function in module[2]:
@@ -112,19 +132,19 @@ def compile(type, metadata):
                     # Evaluate a function and add it to the jinja2 globals
                     function_to_run = eval(function_call)
                     dt.globals[function] = function_to_run
-                    logger.info(f'Function loaded: [{function}]')
+                    log.info(f'Function loaded: [{function}]')
                 except Exception as e:
                     print(f'Function [{function}] not exist: {e}')
-                    logger.error(f'Function [{function}] not exist: {e}')
+                    log.error(f'Function [{function}] not exist: {e}')
         except:
-            logger.warning('No functions loaded to jinja2')
-    logger.info('Trying to compile the DT')
+            log.warning('No functions loaded to jinja2')
+    log.info('Trying to compile the DT')
     try:
         dt = dt.render(metadata)
-        logger.info('Compilation completed successfully')
+        log.info('Compilation completed successfully')
         return dt
     except Exception as e:
-        logger.error(f'Compilation failed: {e}')
+        log.error(f'Compilation failed: {e}')
         return f'Compilation failed: {e}'
 
 
