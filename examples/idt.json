@@ -1,3 +1,15 @@
 {
-    "content":"This is IDT"
-}
+    "description":{
+       "id":"algorithm_10824912410291",
+       "name":"Object Detection Algorithm for detection of faulty weld seams",
+       "description":"This algorithm can be used to solve a specifc problem, and applies some fancy technologies.",
+       "classificationSchema":"ML",
+       "type":[
+          "neural network",
+          "deep learning"
+       ],
+       "author":"DFKI",
+       "date":"06/04/2021",
+       "version":"1.0"
+    }
+ }
