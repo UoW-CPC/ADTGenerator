@@ -2,10 +2,16 @@ from flask import Flask, jsonify, request
 import logging,logging.config, json
 from flask_oidc import OpenIDConnect
 import adtg_conf
+from compiler import compiler
+from compiler.tests import test_compiler_dicts
+
 log = None
+
+
 app = Flask(__name__)
 
 app.config.from_object(__name__)
+
 
 adtg_conf.init_config()
 logging.config.dictConfig(adtg_conf.CONFIG['logging'])
@@ -37,7 +43,6 @@ def handled_exception(error):
     return jsonify(error.to_dict())
 
 
-
 @app.route(adtg_conf.rest_root_path + '/compile/mdt', methods = ["POST"])
 #OIDC decorator should be able to be toggled on/off"
 #solution: https://stackoverflow.com/questions/14636350/toggling-decorators
@@ -52,35 +57,32 @@ def compile_mdt():
         raise RequestException(400, 'No valid JSON input found')
      
     log.debug('This is a JSON request: {0}'.format(input_data))
-    
-    #check the type of input_data then log it
-    # check how the input data could be converted to JSON
-    #print(json.dumps(parsed, indent=4, sort_keys=True))
+    print(input_data)
     # Token verification
     # ...
     # invoking library here ...
-    # .........
+    result = compiler.compile("mdt.yaml", input_data, log)
     log.debug('Compile MDT finished')
-    return jsonify(input_data), 200   
-    #return 'This is MDT! {}'.format(app.config.get('logging'))  
+    return jsonify(result), 200   
 @app.route(adtg_conf.rest_root_path + '/compile/algodt', methods = ["POST"])
 #@oidc.accept_token(require_token=CONFIG.get('service', dict()).get('check_user_token', False))
 def compile_algodt():
     global log
     log.debug('Compile ALGODT started')
     if oidc_enabled:
-        token = oidc.get_access_token()
-
-    input_data = request.stream.read()
+        token = oidc.get_access_token()    
+    input_data = request.json
     if not input_data:
-        raise RequestException(400, 'Empty POST data')
-    log.debug('Received data: {0}'.format(input_data))
+        raise RequestException(400, 'No valid JSON input found')
+     
+    log.debug('This is a JSON request: {0}'.format(input_data))
+    print(input_data)
     # Token verification
     # ...
-    # invoking library here ... #
-    # .........
-    log.debug('Compile ALGODT finished')
-    return jsonify({'success':'This is ALGODT'}), 200   
+    # invoking library here ...
+    result = compiler.compile("algodt.yaml", input_data, log)
+    log.debug('Compile AlgoDT finished')
+    return jsonify(result), 200     
 
 @app.route(adtg_conf.rest_root_path + '/compile/idt', methods = ["POST"])
 #@oidc.accept_token(require_token=CONFIG.get('service', dict()).get('check_user_token', False))
@@ -88,18 +90,19 @@ def compile_idt():
     global log
     log.debug('Compile IDT started')
     if oidc_enabled:
-        token = oidc.get_access_token()
-
-    input_data = request.stream.read()
+        token = oidc.get_access_token()    
+    input_data = request.json
     if not input_data:
-        raise RequestException(400, 'Empty POST data')
-    log.debug('Received data: {0}'.format(input_data))
-    # Token versification
+        raise RequestException(400, 'No valid JSON input found')
+     
+    log.debug('This is a JSON request: {0}'.format(input_data))
+    print(input_data)
+    # Token verification
     # ...
-    # invoking library here ... #
-    # .........
+    # invoking library here ...
+    result = compiler.compile("idt.yaml", input_data, log)
     log.debug('Compile IDT finished')
-    return jsonify({'success':'This is IDT'}), 200  
+    return jsonify(result), 200    
 
 # composing code comes here once the results are gotten from compile libraries and functions
 # def compose_dt(mdt_test, algodt_test, idt_test):
@@ -107,6 +110,8 @@ def compile_idt():
 
 
 if __name__ == '__main__':
+    from adtg_conf import CONFIG
+    compiler.init(CONFIG['compiler'], log)
     app.run(debug=adtg_conf.CONFIG.get('service', dict()).get('flask_debug_mode', True), 
             host=adtg_conf.service_host, 
             port=adtg_conf.service_port)
