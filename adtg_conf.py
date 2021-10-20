@@ -12,7 +12,7 @@ def init_config():
      parser = argparse.ArgumentParser(description='DigitBrain ADT Generator: This service is used for compiling DigitBrain assets towards MiCADO ADT')
 
 
-     parser.add_argument('--config', dest = 'config_path', default = './config_test.yaml' ,
+     parser.add_argument('--config', dest = 'config_path', default = './config/config.yaml' ,
                          help='Specifies the path to the configuration file')
 
      parser.add_argument('--host', dest='service_host', type = str, 
