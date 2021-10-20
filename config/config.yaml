@@ -11,24 +11,24 @@ service:
     
 compiler:
     templates:
-        directory: "path"
+        directory: "/home/hamed/DigitBrain_ADT_GENERATOR/compiler/templates"
         idt_jinja_tmpl: "filename"
         mdt_jinja_tmpl: "filename"
         algodt_jinja_tmpl: "filename"
     modules:
         # Module name
-        test_compiler_passing_fxuncs_A:
+        test_compiler_passing_funcs_A:
             # Import statement
-            import: 'from tests.test_compiler import test_compiler_passing_funcs_A'
+            import: 'from compiler.tests.test_compiler import test_compiler_passing_funcs_A'
             # Functions to import
             functions:
                 - func1
                 - func2
         test_compiler_passing_funcs_B:
-            import: 'from tests.test_compiler import test_compiler_passing_funcs_B'
+            import: 'from compiler.tests.test_compiler import test_compiler_passing_funcs_B'
             functions:
                 - func3
-                - func4
+            
 
 logging:
     version: 1
