@@ -22,7 +22,7 @@
 Then in the client side, it is necessary to send a post request. In the following example we use a JSON file to post it through a CURL command. 
 
 #### Example
-`url -X POST -H "Content-Type: application/json" -d @examples/mdt.json http://<LOCAL_HOST>:5001/v1/adtg/compile/mdt`
+`curl -X POST -H "Content-Type: application/json" -d @examples/mdt.json http://<LOCAL_HOST>:5001/v1/adtg/compile/mdt`
     
 
 ## Building the API
