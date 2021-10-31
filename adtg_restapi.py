@@ -7,6 +7,7 @@ from compiler import compiler
 
 log = None
 app = None
+oidc = None
 oidc_enabled = False
 
 def perform_compile(type):
@@ -28,16 +29,25 @@ def perform_compile(type):
 
 
 def init():
-    global log, app
+    global log, app, oidc, oidc_enabled, perform_compile
 
     logging.config.dictConfig(adtg_conf.CONFIG['logging'])
     log = logging.getLogger('adtg')
 
     app = Flask(__name__)
     app.config.from_object(__name__)
-
+    
+    oidc_enabled = adtg_conf.CONFIG.get('service', dict()).get('enable_oidc', False)
+    oidc_require_token = adtg_conf.CONFIG.get('service', dict()).get('check_user_token', False)
+    if oidc_enabled:
+        with open(adtg_conf.secrets_json_path) as json_file:
+            APP_CONFIG = json.load(json_file)
+        app.config.update(APP_CONFIG)
+        oidc = OpenIDConnect(app)
+        perform_compile = (oidc.accept_token(require_token=oidc_require_token))(perform_compile)
+        
     endpoint=adtg_conf.rest_root_path+'/compile/<type>'
     #log.debug("Registering compilation of "+target+" at endpoint "+endpoint)
-    app.add_url_rule(endpoint, methods=['POST'], view_func=perform_compile,)
+    app.add_url_rule(endpoint, methods=['POST'], view_func=perform_compile)
 
     return
