@@ -58,7 +58,7 @@ _modules = [] # PRIVATE - List of modules to import in Jinja2
 
 # Function to initiate the compiler
 
-def init(config, log):
+def init(path=None, imodules=[], log=None):
     '''
     Compiler init function:
     Set globals templates_path, modules based on input arguments.
@@ -67,29 +67,21 @@ def init(config, log):
     :return: None
     '''
     import sys
-    try:
-        path = config['templates']['directory']
-    except:
+    if not path:
         path = sys.path[0] + '/templates'
-    if path == None:
-        path = sys.path[0] + '/templates'
-    try:
-        _moduless = config['modules']
-    except:
-        _moduless = []
     # list of modules to import [used by jinja2]
     # print(_modules)
     modules = []
-    for module in _moduless:
+    for module in imodules:
         # Append module name, import statement, functions
-        modules.append([module,_moduless[module]['import'],_moduless[module]['functions']])
+        modules.append([module,imodules[module]['import'],imodules[module]['functions']])
     # Path to templates  [used by jinja2]
 
     global _templates_path
     global _modules
     _templates_path = path
     _modules = modules
-    log.info('Compiler has been initiated')
+    log.info('Compiler has been initialised.')
 
 # Function to get a DT of specific type based on the provided metadata
 def compile(type, metadata, log):
@@ -108,7 +100,8 @@ def compile(type, metadata, log):
     log.info(f'Loading template: {type}')
     try:
         dt = env.get_template(type)
-    except:
+    except Exception as e:
+        log.error(e.message)
         log.error(f'TemplateNotFound: {type}')
         return f'TemplateNotFound: {type}'
     log.info(f'Template loaded')

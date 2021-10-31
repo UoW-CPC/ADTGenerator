@@ -2,19 +2,19 @@ service:
     host: "127.0.0.1"
     port: 4000
     rest_root_path: "/v1/adtg"
-    flask_debug_mode: false
+    flask_debug_mode: True
     
     enable_oidc: false
-    secrets_json_path: "./secret.json"
+    secrets_json_path: "/home/ubuntu/github-adtg/config/secret.json"
     check_user_token: false
     apply_user_token: false
     
 compiler:
+    template_directory: "/home/ubuntu/github-adtg/compiler/templates"
     templates:
-        directory: "/home/hamed/DigitBrain_ADT_GENERATOR/compiler/templates"
-        idt_jinja_tmpl: "filename"
-        mdt_jinja_tmpl: "filename"
-        algodt_jinja_tmpl: "filename"
+        idt: "idt.yaml"
+        mdt: "mdt.yaml"
+        algodt: "algodt.yaml"
     modules:
         # Module name
         test_compiler_passing_funcs_A:
@@ -37,8 +37,8 @@ logging:
         handlers: [console, file]
     formatters:
         simpleFormatter:
-            #format: "%(module)s %(asctime)s %(levelname)s %(message)s"
-            format: "%(asctime)s %(levelname)s %(message)s"
+            format: "%(module)s %(asctime)s %(levelname)s %(message)s"
+            #format: "%(asctime)s %(levelname)s %(message)s"
     handlers:
         console:
             class: logging.StreamHandler
@@ -52,7 +52,7 @@ logging:
             level: DEBUG
             filename: record.log
     loggers:
-        adtg_api:
+        adtg:
             propagate: false
             handlers: [console, file]
         adtg_compiler:
