@@ -78,6 +78,7 @@ def compile_mdt():
         
 
 @app.route(adtg_conf.rest_root_path + '/compile/algodt', methods = ["POST"])
+@validate_json
 #@oidc.accept_token(require_token=CONFIG.get('service', dict()).get('check_user_token', False))
 def compile_algodt():
     global log
@@ -95,6 +96,7 @@ def compile_algodt():
          
 
 @app.route(adtg_conf.rest_root_path + '/compile/idt', methods = ["POST"])
+@validate_json
 #@oidc.accept_token(require_token=CONFIG.get('service', dict()).get('check_user_token', False))
 def compile_idt():
     global log
