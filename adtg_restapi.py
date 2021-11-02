@@ -21,14 +21,14 @@ def validate_json(f):
         except BadRequest as e:
             msg = "POST request must be a valid json"
             log.error(msg)
-            return jsonify({"error": msg}), 400
+            return jsonify({"Bad Request": msg, "error code": 400})
         return f(*args, **kw)
     return wrapper
 
 @app.errorhandler(404)
 def page_not_found(error):
-   log.error('Page not found'), 400
-   return jsonify({"Error":"Page not found; something went wrong!"}), 404
+   log.error('Page not found'), 404
+   return jsonify({"error_code": 404, "message":"Page not found; something went wrong!"})
 
 @app.errorhandler(InternalServerError)
 def handle_unexpected_error(e: Exception) -> EndpointResult:
