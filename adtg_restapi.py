@@ -59,7 +59,7 @@ def perform_compile(type):
 def init():
     global log, app, oidc, oidc_enabled, perform_compile
 
-    adtg_conf.init_config()
+    adtg_conf.init()
     logging.config.dictConfig(adtg_conf.CONFIG['logging'])
     log = logging.getLogger('adtg')
 
