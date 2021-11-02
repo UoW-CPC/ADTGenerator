@@ -1,8 +1,16 @@
-import logging.config
-import adtg_conf, adtg_restapi
+import logging,logging.config, adtg_restapi
+import adtg_conf
 from compiler import compiler
+import adtg_restapi
 
 
+adtg_conf.init_config()
+logging.config.dictConfig(adtg_conf.CONFIG['logging'])
+log = logging.getLogger('adtg')
+log.debug("CONFIG = "+str(adtg_conf.CONFIG))
+compiler_log = logging.getLogger('adtg_compiler')
+compiler.init(adtg_conf.CONFIG.get('compiler',dict()).get('template_directory',None),
+adtg_conf.CONFIG.get('compiler',dict()).get('modules',None), log)
 adtg_restapi.init()
 
 
