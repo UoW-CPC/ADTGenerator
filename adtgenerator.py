@@ -4,7 +4,7 @@ from compiler import compiler
 import adtg_restapi
 
 
-adtg_conf.init_config()
+adtg_conf.init()
 logging.config.dictConfig(adtg_conf.CONFIG['logging'])
 log = logging.getLogger('adtg')
 log.debug("CONFIG = "+str(adtg_conf.CONFIG))
