@@ -7,7 +7,7 @@ rest_root_path = None
 secrets_json_path = None
 
 
-def init():
+def init_config():
      global CONFIG, log, service_host, service_port, rest_root_path, secrets_json_path
      parser = argparse.ArgumentParser(description='DigitBrain ADT Generator: This service is used for compiling DigitBrain assets towards MiCADO ADT')
 
