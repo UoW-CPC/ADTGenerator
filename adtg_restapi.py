@@ -42,7 +42,7 @@ def handle_unexpected_error(e: Exception) -> EndpointResult:
         'error_type': 'Internal Server Error',
     }), InternalServerError.code
 
-
+@validate_json
 def perform_compile(type):
     global log
     log.debug('Compile '+type+' started')
@@ -55,7 +55,7 @@ def perform_compile(type):
         template_file = adtg_conf.CONFIG.get('compiler',dict()).get('templates',dict()).get(type)
         result = compiler.compile(template_file, input_data, log)
         log.debug('Compile '+type+' finished')
-        return jsonify(result), 200   
+        return json.loads(json.dumps(result, sort_keys=True, indent=4, separators=(',', ': ')))
     except Exception as e:
         return jsonify({"error": str(e)})
 
