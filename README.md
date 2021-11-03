@@ -22,8 +22,7 @@
 Then in the client side, it is necessary to send a post request. In the following example we use a JSON file to post it through a CURL command. 
 
 #### Example
-`curl -X POST -H "Content-Type: application/json" -d @examples/mdt.json http://<LOCAL_HOST>:5001/v1/adtg/compile/mdt`
-    
+`./compile-mdt.sh mdt.json`    
 
 ## Building the API
 - It is a best practice to dockerise the API and run it accordingly. To do this, first of all it is required to build the application using the following command:
