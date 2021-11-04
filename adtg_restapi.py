@@ -30,9 +30,9 @@ def validate_json(f):
     return wrapper
 
 @app.errorhandler(404)
-def page_not_found(error):
-   log.error('Page not found'), 404
-   return jsonify({"error_code": 404, "message":"Page not found; something went wrong!"})
+def route_not_found(error):
+   log.error('REST route not supported'), 404
+   return jsonify({"error_code": 404, "message":"the specified rest route is not supported by adtgenerator!"})
 
 @app.errorhandler(InternalServerError)
 def handle_unexpected_error(e: Exception) -> EndpointResult:
