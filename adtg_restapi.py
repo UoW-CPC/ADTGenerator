@@ -48,6 +48,8 @@ def perform_compile(type):
     log.debug('Compile '+type+' started')
     if oidc_enabled:
         token = oidc.get_access_token()    
+    if type not in adtg_conf.CONFIG.get('compiler',dict()).get('templates',dict()).keys():
+        raise RequestException(400, 'No valid type for compilation defined!')
     input_data = request.get_json()
     log.debug('This is a JSON request: {0}'.format(input_data))
    

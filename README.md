@@ -22,16 +22,15 @@
 Then in the client side, it is necessary to send a post request. In the following example we use a JSON file to post it through a CURL command. 
 
 #### Example
-`curl -X POST -H "Content-Type: application/json" -d @examples/mdt.json http://<LOCAL_HOST>:5001/v1/adtg/compile/mdt`
-    
+`./compile-mdt.sh mdt.json`    
 
 ## Building the API
 - It is a best practice to dockerise the API and run it accordingly. To do this, first of all it is required to build the application using the following command:
 
-                               sudo docker build --tag adt-generator-app .
+                               sudo docker build --tag adtgenerator .
 
 - Once the image was build, the next step is running the API by executing the following command:
                                        
-                 sudo docker run --name adt-generator-app -p 5001:5001 adt-generator-app
+                 sudo docker run --name adtgenerator -p 5001:5001 adtgenerator
 
 
