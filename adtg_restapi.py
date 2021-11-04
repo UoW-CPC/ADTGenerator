@@ -1,7 +1,11 @@
 from flask import Flask, jsonify, request
 import logging,logging.config, json
 from flask_oidc import OpenIDConnect
+from werkzeug.exceptions import BadRequest, InternalServerError
 import adtg_conf
+from compiler import compiler
+from functools import wraps
+from typing import Any as EndpointResult
 
 from compiler import compiler
 
@@ -13,22 +17,32 @@ oidc_enabled = False
 app = Flask(__name__)
 app.config.from_object(__name__)
 
-class RequestException(Exception):
-    def __init__(self, status_code, reason, *args):
-        super(RequestException, self).__init__(*args)
-        self.status_code, self.reason = status_code, reason
-    def to_dict(self):
-        return dict(status_code=self.status_code,
-                    reason=self.reason,
-                    message=str(self))
+def validate_json(f):
+    @wraps(f)
+    def wrapper(*args, **kw):                  
+        try:
+            request.get_json()
+        except BadRequest as e:
+            msg = "POST request must be a valid json"
+            log.error(msg)
+            return jsonify({"Bad Request": msg, "error code": 400})
+        return f(*args, **kw)
+    return wrapper
 
-@app.errorhandler(RequestException)
-def handled_exception(error):
-    log.error('An exception occured: %r', error)
-    #print error.to_dict()
-    return jsonify(error.to_dict())
+@app.errorhandler(404)
+def page_not_found(error):
+   log.error('Page not found'), 404
+   return jsonify({"error_code": 404, "message":"Page not found; something went wrong!"})
 
+@app.errorhandler(InternalServerError)
+def handle_unexpected_error(e: Exception) -> EndpointResult:
+    log.exception('Unknown error', exc_info=e)
+    return jsonify({
+        'error_code': '500',
+        'error_type': 'Internal Server Error',
+    }), InternalServerError.code
 
+@validate_json
 def perform_compile(type):
     global log
     log.debug('Compile '+type+' started')
@@ -36,19 +50,16 @@ def perform_compile(type):
         token = oidc.get_access_token()    
     if type not in adtg_conf.CONFIG.get('compiler',dict()).get('templates',dict()).keys():
         raise RequestException(400, 'No valid type for compilation defined!')
-
-    input_data = request.json
-    if not input_data:
-        raise RequestException(400, 'No valid JSON input found')
-     
+    input_data = request.get_json()
     log.debug('This is a JSON request: {0}'.format(input_data))
-    print(input_data)
    
-    template_file = adtg_conf.CONFIG.get('compiler',dict()).get('templates',dict()).get(type)
-    result = compiler.compile(template_file, input_data, log)
-    log.debug('Compile '+type+' finished')
-    return jsonify(result), 200   
-
+    try:
+        template_file = adtg_conf.CONFIG.get('compiler',dict()).get('templates',dict()).get(type)
+        result = compiler.compile(template_file, input_data, log)
+        log.debug('Compile '+type+' finished')
+        return json.loads(json.dumps(result, sort_keys=True, indent=4, separators=(',', ': ')))
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 def init():
     global log, app, oidc, oidc_enabled, perform_compile
