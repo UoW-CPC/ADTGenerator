@@ -3,8 +3,8 @@
 # ----------------------------------------------------------------------------
 # Created By  : Dimitris Kagialis
 # Created Date: 05/10/2021
-# version ='1.0'
-# Contributors:
+# version ='1.1'
+# Contributors: Jozsef Kovacs
 # Updated at  : 16/11/2021
 # Tested at   : 16/11/2021
 # ---------------------------------------------------------------------------
