@@ -88,15 +88,15 @@ model:
 imported_function_func1:
 {%- for key in func1(1).items() %}
 {%- set key, value = key %}
-  - {{key}}: {{value}}
+- {{key}}: {{value}}
 {%- endfor %}
 imported_function_func2:
 {%- for key in func2(1).items() %}
 {%- set key, value = key %}
-  - {{key}}: {{value}}
+- {{key}}: {{value}}
 {%- endfor %}
 imported_function_func3:
 {%- for key in func3(1).items() %}
 {%- set key, value = key %}
-  - {{key}}: {{value}}
+- {{key}}: {{value}}
 {%- endfor %}

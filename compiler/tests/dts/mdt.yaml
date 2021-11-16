@@ -133,9 +133,15 @@ model:
   modelRecommendedAuthTools:
     - "SavedModel1 (Tensorflo3)"
     - "SavedModel2 (Tensorflo4)"
-    - var1: 1
-    - var2: 2
-    - var3: 3
-    - var11: 11
-    - var22: 22
-    - var33: 33
+imported_function_func1:
+- var1: 1
+- var2: 2
+- var3: 3
+imported_function_func2:
+- var11: 11
+- var22: 22
+- var33: 33
+imported_function_func3:
+- var111: 111
+- var222: 222
+- var333: 333
