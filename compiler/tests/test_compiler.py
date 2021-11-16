@@ -1,10 +1,11 @@
 import unittest
 import os
+import sys
 import logging
 from io import StringIO
 from ruamel.yaml import YAML
 
-from compiler.compiler import compile,init
+from compiler.compiler import compile, init
 from compiler.utils.configs import load
 from compiler.tests.sample_dicts import *
 
@@ -16,70 +17,48 @@ log.debug('compiler unit-testing')
 # load sample config
 config = load('./configs/compiler-unittest.yml')
 
-class ComplilerTestCase(unittest.TestCase):
+
+# function to load sample DTs
+# noinspection PyShadowingBuiltins
+def load_sample_dts(type: str) -> str:
+    yaml = YAML()
+    yaml.preserve_quotes = True
+    yaml.width = 800
+    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    __location__ = os.path.realpath((os.path.join(__location__, 'dts')))
+    with open(os.path.join(__location__, type), "r") as dt:
+        dt_yaml = yaml.load(dt)
+        dt_stream = StringIO()
+        yaml.dump(dt_yaml, dt_stream)
+        dt_str = dt_stream.getvalue()
+        dt_str = dt_str[:dt_str.rfind('\n')]
+    return dt_str
+
+
+# noinspection PyMethodMayBeStatic
+class TestCompiler(unittest.TestCase):
+
+    def test_init(self):
+        init(log= log)
+        from compiler.compiler import _modules, _templates_path
+        assert _templates_path == sys.path[0] + '/templates'
+        assert _modules == {}
+
     def test_algodt(self):
-        __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-        __location__ = os.path.realpath((os.path.join(__location__,'dts')))
-        with open(os.path.join(__location__, 'algodt.yaml'), "r") as dt:
-            yaml = YAML()
-            yaml.preserve_quotes = True
-            yaml.width = 800
-            template_yaml = yaml.load(dt)
-            template_stream = StringIO()
-            yaml.dump(template_yaml, template_stream)
-            template = template_stream.getvalue()
-            template = template[:template.rfind('\n')]
-            # print("----")
-            # print("YAML FILE")
-            # print(template)
-            # print("----")
-            # print("JINJA TEMPLATE")
-            init(config['template_directory'], config['modules'], log)
-            # print(compile("AlgoDT.yaml", algodt, log))
-            assert compile("AlgoDT.yaml", algodt, log) == template
+        init(config['template_directory'], config['modules'], log)
+        sample_dt = load_sample_dts("algodt.yaml")
+        assert compile("AlgoDT.yaml", algodt, log) == sample_dt
 
     def test_idt(self):
-        __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-        __location__ = os.path.realpath((os.path.join(__location__, 'dts')))
-        with open(os.path.join(__location__, 'idt.yaml'), "r") as dt:
-            yaml = YAML()
-            yaml.preserve_quotes = True
-            yaml.width = 800
-            template_yaml = yaml.load(dt)
-            template_stream = StringIO()
-            yaml.dump(template_yaml, template_stream)
-            template = template_stream.getvalue()
-            template = template[:template.rfind('\n')]
-           #  print("----")
-           #  print("YAML FILE")
-           # # print(template)
-           #  print("----")
-           #  #print("JINJA TEMPLATE")
-            init(config['template_directory'], config['modules'], log)
-            # print(compile("IDT.yaml", idt, log))
-            assert compile("IDT.yaml", idt, log) == template
+        init(config['template_directory'], config['modules'], log)
+        sample_dt = load_sample_dts('idt.yaml')
+        assert compile("IDT.yaml", idt, log) == sample_dt
 
     def test_mdt(self):
-        __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-        __location__ = os.path.realpath((os.path.join(__location__, 'dts')))
-        with open(os.path.join(__location__, 'mdt.yaml'), "r") as dt:
-            yaml = YAML()
-            yaml.preserve_quotes = True
-            yaml.width = 800
-            template_yaml = yaml.load(dt)
-            #print(template_yaml)
-            template_stream = StringIO()
-            yaml.dump(template_yaml, template_stream)
-            template = template_stream.getvalue()
-            template = template[:template.rfind('\n')]
-            # print("----")
-            # print("YAML FILE")
-            # print(template)
-            # print("----")
-            # print("JINJA TEMPLATE")
-            init(config['template_directory'], config['modules'], log)
-            # print(compile("MDT.yaml", mdt, log))
-            assert compile("MDT.yaml", mdt, log) == template
+        init(config['template_directory'], config['modules'], log)
+        sample_dt = load_sample_dts('mdt.yaml')
+        # print(compile("MDT.yaml", mdt, log))
+        assert compile("MDT.yaml", mdt, log) == sample_dt
 
 
 if __name__ == '__main__':
