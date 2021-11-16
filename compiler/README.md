@@ -1,5 +1,5 @@
 # Compiler
->Populate data in YAML template by using Jinja2.
+>Populate data into YAML template by using Jinja2.
 
 ## Usage
 ### Initiate the compiler
@@ -42,3 +42,24 @@ steps:
 
 Requirements:
 >ruamel.aml
+
+
+TMP
+Configuration parameters:
+       templates_path: path to YAML templates folder [Default value 'None' sets the path under the compiler]
+       modules: List of modules to import in Jinja2 [Default value 'None']
+    Functions:
+        init - initialize the compiler by setting templates path, and modules
+        compile - select a template and provide metadeta to jinja to get a DT
+    Implementation:
+        Requirement - Jinja2
+        Functional programming.
+    Tests:
+        Unit test wih pytest:
+            module: tests.test_compiler.test_compiler.py
+                    Test scope: asserts if the output DT is equal with a sample DT in YAML format
+                    Test steps:
+                                1. initiate the compiler
+                                2. render a template with sample data
+                                3. assert if output is equal to a sample expected sample DT
+                    Requirement: ruamel.aml
