@@ -1,0 +1,62 @@
+tosca_definitions_version: tosca_simple_yaml_1_2
+
+metadata:
+  id: "{{ description['id'] }}"
+  name: "{{ description['name'] }}"
+  author: "{{ description['author'] }}"
+  date: "{{ description['date'] }}"
+  version: "{{ description['version'] }}"
+  classificationSchema: "{{ description['classificationSchema'] }}"
+  type:
+  {%- for type in description["type"] %}
+  - "{{ type }}"
+  {%- endfor %}
+
+description: "{{ description['description'] }}"
+
+imports:
+- https://raw.githubusercontent.com/micado-scale/tosca/digitbrain/micado_types.yaml
+{%- for microservice in algorithm["abstractHostDefinition"].keys() %}
+- "ms-{{ microservice }}.yml"
+{%- endfor %}
+{%- for host in algorithm["abstractHostDefinition"].values()|unique %}
+- "inf-{{ host }}.yml"
+{%- endfor %}
+
+repositories:
+  docker_hub: https://hub.docker.com/
+  dbs_registry: https://dbs-container-repo.emgora.eu/v2/
+
+topology_template:
+  inputs:
+    {%- for microservice in algorithm["listOfMicroservices"] %}
+      {%- for param in microservice["parameters"]["parameters"] %}
+      "{{ param['name'] }}-{{ microservice['name'] }}-{{ microservice['id'] }}":
+        type: "{{ param['type'] }}"
+        description: "{{ param['description'] }}"
+        {%- if param['defaultValue'] != NULL %}
+        default: "{{ param['defaultValue'] }}"
+        {%- endif %}
+        {%- if param['mandatory'] != NULL %}
+        required: "{{ param['mandatory'] }}"
+        {%- endif %}
+      {%- endfor %}
+    {%- endfor %}
+        
+  node_templates:
+    {%- for microservice in algorithm["listOfMicroservices"] %}
+    "{{ microservice['description']['name'] }}-{{ microservice['description']['id'] }}":
+      type: "dbs.microservice.{{ microservice['description']['name'] }}.{{ microservice['description']['id'] }}"
+      properties:
+      {%- for param in microservice["parameters"]["parameters"] %}
+        "{{ param['name'] }}":
+          get_input: "{{ param['name'] }}-{{ microservice['name'] }}-{{ microservice['id'] }}"
+      {%- endfor %}
+      requirements:
+      - "{{ algorithm['abstractHostDefinition'][{{ microservice['name'] }}-{{ microservice['id'] }}] }}"
+    {%- endfor %}
+
+    {%- for host in algorithm["abstractHostDefinition"].values()|unique %}
+    "{{ host }}":
+      type: "dbs.infrastructure.{{ host }}"
+    {%- endfor %}

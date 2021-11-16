@@ -1,0 +1,30 @@
+tosca_definitions_version: tosca_simple_yaml_1_2
+
+metadata:
+  id: "{{ dma['id'] }}"
+  name: "{{ dma['name'] }}"
+  author: "{{ dma['author'] }}"
+  created_at: "{{ dma['created_at'] }}"
+  version: "{{ dma['version'] }}"  
+  licensor: "{{ dma['licensor'] }}"
+
+description: "{{ dma['scope'] }}"
+
+imports:
+  - https://raw.githubusercontent.com/micado-scale/tosca/digitbrain/micado_types.yaml
+
+node_types:
+  "dbs.infrastructure.{{ deployment['host_name'] }}":
+    derived_from: dbs.infrastructure
+
+topology_template:
+
+  substitution_mappings:
+    node_type: "dbs.infrastructure.{{ deployment['host_name'] }}"
+        
+  node_templates:
+    deployment_id: "{{ deployment['deployment_id'] }}"
+    instance_type_id: "{{ deployment['instance_type_id'] }}"
+    key_pair_id: "{{ deployment['key_pair_id'] }}"
+    opened_port: "{{ deployment['opened_port'] }}"
+    endpoint: "{{ deployment['endpoint'] }}"
