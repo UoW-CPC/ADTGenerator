@@ -20,7 +20,7 @@ _modules: dict  # PRIVATE - dictionary of modules to import in Jinja2
 
 
 # Function to initiate the compiler
-def init(templates_path: str, modules: dict, log: logging) -> None:
+def init(templates_path: str = None, modules: dict = None, log: logging = None) -> None:
     """Set templates_path, and modules to import in Jinja2.
 
     :param templates_path: Path to templates
