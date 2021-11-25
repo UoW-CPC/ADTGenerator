@@ -14,23 +14,23 @@
 
 import logging
 import compiler
-from utils.configs import load
+from utils.configs import load_compiler_config
 from tests import sample_dicts
 
 log = logging.getLogger('testing-compiler')
-log.setLevel(logging.INFO)
+log.setLevel(logging.DEBUG)
 
-log.debug('Testing compiler')
+log.debug('testing compiler')
 
-# load sample config
-config = load('./tests/configs/compiler.yml')
+# load_compiler_config sample config
+config = load_compiler_config('./tests/configs/compiler.yml')
 
 # noinspection PyUnresolvedReferences
 compiler.init(config['template_directory'], config['modules'], log)
 
-metadata = sample_dicts.mdt
+metadata = sample_dicts.algodt
 
 # noinspection PyUnresolvedReferences
-test_run = compiler.compile("MDT.yaml", metadata, log)
+test_run = compiler.compile("algodt.yaml", metadata, log)
 print(test_run)
 print(type(test_run))
