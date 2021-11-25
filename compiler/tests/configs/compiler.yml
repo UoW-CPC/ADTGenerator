@@ -10,15 +10,7 @@ compiler:
 #  # WARNING 2: you can not pass a package to jinja2, only functions
 #  # WARNING 3: because you pass only function, names must be unique among modules, otherwise the last defined will overwrite the others.
     modules:
-        # Module name
-        test_compiler_passing_funcs_A:
-            # Import statement
-            import: 'from tests.sample_functions import test_compiler_passing_funcs_A'
-            # Functions to import
+        translator:
+            import: 'from utils import translator'
             functions:
-                - func1
-                - func2
-        test_compiler_passing_funcs_B:
-            import: 'from tests.sample_functions import test_compiler_passing_funcs_B'
-            functions:
-                - func3
+                - translate
