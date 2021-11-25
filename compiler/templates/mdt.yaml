@@ -35,11 +35,11 @@ repositories:
   dbs_registry: https://dbs-container-repo.emgora.eu/v2/
 
 node_types:
-  dbs.microservice.{{ name }}.{{ id }}:
+  dbs.microservice.{{ id }}:
     derived_from: dbs.microservice
     properties:
       {%- for param in parameters %}
-      "{{ param['name'] }}":
+      {{ param['name'] }}:
         type: "{{ param['type'] }}"
         description: "{{ param['description'] }}"
         {%- if param[ 'defaultValue' ] != NULL %}
@@ -52,22 +52,20 @@ node_types:
 
 topology_template:
   inputs:
-    {%- for inputs in inputData %}
-      {%- for input in inputs.items() -%}
-      {%- set input, values = input %}
-      {%- if values is string %}
-      {{input}}: {{values}}
-      {%- elif values is iterable and (values is not string and values is not mapping) %}
-      {{input}}:
-      {%- for value in values %}
-        -{{value}}
-      {%- endfor %}
+    {%- for param in parameters %}
+    {{ param[ 'name' ]}}:
+      type: "{{ param['type'] }}"
+      description: "{{ param['description'] }}"
+      {%- if param[ 'defaultValue' ] != NULL %}
+      default: "{{ param['defaultValue'] }}"
+      {%- endif %}
+      {%- if param[ 'mandatory' ] != NULL %}
+      required: "{{ param['mandatory'] }}"
       {%- endif %}
       {%- endfor %}
-    {%- endfor %}
 
 substitution_mappings:
-  node_type: "dbs.microservice.{{ name }}.{{ id }}"
+  node_type: "dbs.microservice.{{ id }}"
 
 {{ translate(deploymentData) }}
 
