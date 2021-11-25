@@ -6,7 +6,7 @@ from io import StringIO
 from ruamel.yaml import YAML
 
 from compiler.compiler import compile, init
-from compiler.utils.configs import load
+from compiler.utils.configs import load_compiler_config
 from compiler.tests.sample_dicts import *
 
 log = logging.getLogger('testing-compiler')
@@ -14,11 +14,11 @@ log.setLevel(logging.DEBUG)
 
 log.debug('compiler unit-testing')
 
-# load sample config
-config = load('./configs/compiler-unittest.yml')
+# load_compiler_config sample config
+config = load_compiler_config('./configs/compiler-unittest.yml')
 
 
-# function to load sample DTs
+# function to load_compiler_config sample DTs
 # noinspection PyShadowingBuiltins
 def load_sample_dts(type: str) -> str:
     yaml = YAML()

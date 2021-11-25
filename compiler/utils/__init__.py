@@ -1,3 +1,3 @@
 """Utils package
 
-configs.py - load config from path"""
+configs.py - load_compiler_config config from path"""
