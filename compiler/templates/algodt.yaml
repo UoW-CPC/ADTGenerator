@@ -1,25 +1,94 @@
-description:
-  id: "{{ description["id"] }}"
-  name: "{{ description["name"] }}"
-  description: "{{ description["description"] }}"
-  classificationSchema: "{{ description["classificationSchema"] }}"
+tosca_definitions_version: tosca_simple_yaml_1_2
+
+metadata:
+  id: "{{ id }}"
+  name: "{{ name }}"
+  author: "{{ author }}"
+  date: "{{ date }}"
+  version: "{{ version }}"
+  classificationSchema: "{{ classificationSchema }}"
   type:
-  {%- for type in description["type"] %}
-  - "{{ type }}"
+  {%- for _type in type %}
+  - "{{ _type }}"
   {%- endfor %}
-  author: "{{ description["author"] }}"
-  date: {{ description["date"] }}
-  version: "{{ description["version"] }}"
-algorithm:
-  listOfMicroservices:
-  {%- for microservice in algorithm["listOfMicroservices"] %}
-  - {{ microservice }}
+
+description: "{{ description }}"
+
+imports:
+  - https://raw.githubusercontent.com/micado-scale/tosca/digitbrain/micado_types.yaml
+  {%- for microservices in algorithm["abstractHostDefinition"] %}
+    {%- for microservice in microservices.items() -%}
+        {%- set microservice, host = microservice %}
+  - "ms-{{ microservice }}.yml"
   {%- endfor %}
+  {%- endfor %}
+  {%- for microservices in algorithm["abstractHostDefinition"] %}
+    {%- for microservice in microservices.items() -%}
+        {%- set microservice, host = microservice %}
+  - "inf-{{ host }}.yml"
+  {%- endfor %}
+  {%- endfor %}
+
+repositories:
+  docker_hub: https://hub.docker.com/
+  dbs_registry: https://dbs-container-repo.emgora.eu/v2/
+
+topology_template:
+  inputs:
+    {%- for microservices in algorithm["listOfMicroservices"] %}
+     {%- for microservice in microservices.items() %}
+     {%- set microservice, parameters = microservice %}
+     {%- for parameter in parameters.items() %}
+           {%- set parameter, params = parameter %}
+    {%- for param in params %}
+        "{{ param['name'] }}-{{ microservice }}-{{id}}:
+          type: "{{ param['type'] }}"
+          description: "{{ param['description'] }}"
+          {%- if param[ 'defaultValue' ] != NULL %}
+          default: "{{ param['defaultValue'] }}"
+          {%- endif %}
+          {%- if param[ 'mandatory' ] != NULL %}
+          required: "{{ param['mandatory'] }}"
+          {%- endif %}
+    {%- endfor %}
+    {%- endfor %}
+    {%- endfor %}
+    {%- endfor %}
+
+node_templates:
+{%- for microservices in algorithm["listOfMicroservices"] %}
+     {%- for microservice in microservices.items() %}
+     {%- set microservice, parameters = microservice %}
+     {%- for parameter in parameters.items() %}
+           {%- set parameter, params = parameter %}
+    {%- for param in params %}
+    "{{ microservice }}-{{ param['description'] }}-{{id}}":
+        type: "dbs.microservice.{{ microservice }}.{{ id }}"
+        properties:
+            "{{ param['name'] }}":
+               get_input: "{{ microservice }}-{{ param['name'] }}-{{ id }}"
+        requirements:
+          {%- for hosts in algorithm[ "abstractHostDefinition" ] %}
+            {%- for host in hosts %}
+            {%- for value in hosts.values() %}
+            {%- if host == microservice %}
+            - {{ host }}-{{id}}
+            {%- endif %}
+            {%- endfor %}
+            {%- endfor %}
+            {%- endfor %}
+    {%- endfor %}
+    {%- endfor %}
+    {%- endfor %}
+    {%- endfor %}
+
+
   abstractHostDefinition:
   {%- for hosts in algorithm["abstractHostDefinition"] %}
   {%- for host in hosts %}
   {%- for value in hosts.values() %}
-  - {{ host }}: {{ value }}
+    "{{ value }}":
+        type: "dbs.infrastructure.{{ value }}"
   {%- endfor %}
   {%- endfor %}
   {%- endfor %}
