@@ -1,102 +1,73 @@
-description:
-  id: "{{ description["id"] }}"
-  name: "{{ description["name"] }}"
-  author: "{{ description["author"] }}"
-  date: {{ description["date"] }}
-  version: "{{ description["version"] }}"
-  description: "{{ description["description"] }}"
-  classificationSchema: "{{ description["classificationSchema"] }}"
+tosca_definitions_version: tosca_simple_yaml_1_2
+
+metadata:
+  id: "{{ id }}"
+  name: "{{ name }}"
+  author: "{{ author }}"
+  date: {{ date }}
+  version: "{{ version }}"
+  description: "{{ description }}"
+  classificationSchema: "{{ classificationSchema }}"
+  {%- if type != NULL %}
   type:
-  {%- for type in description["type"] %}
-  - "{{ type }}"
+  {%- endif %}
+  {%- for _type in type %}
+  - "{{ _type }}"
   {%- endfor %}
-  {%- if description["software"] != NULL %}
+  {%- if software != NULL %}
   software:
   {%- endif %}
-  {%- for software in description["software"] %}
-  - "{{ software }}"
+  {%- for _software in software %}
+  - "{{ _software }}"
   {%- endfor %}
-  {%- if description["softwareVersion"] != NULL %}
+  {%- if softwareVersion != NULL %}
   softwareVersion:
   {%- endif %}
-  {%- for softwareVersion in description["softwareVersion"] %}
-  - "{{ softwareVersion }}"
+  {%- for _softwareVersion in softwareVersion %}
+  - "{{ _softwareVersion }}"
   {%- endfor %}
-service:
-  containerFormat: "{{ service["containerFormat"] }}"
-  image: "{{ service["image"] }}"
-  deploymentFormat: "{{ service["deploymentFormat"] }}"
-  deploymentData: "{{ service["deploymentData"] }}"
-  {%- if service["dependencyRequirements"]  != NULL %}
-  dependencyRequirements: "{{ service["dependencyRequirements"] }}"
-  {%- endif %}
-  {%- if service["storageRequirements"]  != NULL %}
-  storageRequirements: "{{ service["storageRequirements"] }}"
-  {%- endif %}
-  {%- if service[ "limitations" ]  != NULL %}
-  limitations: "{{ service["limitations"] }}"
-  {%- endif %}
-{%- if containerConfiguration != NULL %}
-containerConfiguration:
-{%- endif %}
-  {%- for key,value in containerConfiguration.items() %}
-  {{ key}}: '{{ value }}'
-  {%- endfor %}
-{%- if containerConfiguration != NULL %}
-hardwareRequirements:
-{%- endif %}
-  {%- for key,value in hardwareRequirements.items() %}
-  {{ key}}: {{ value }}
-  {%- endfor %}
-OSRequirements:
-  {%- for key,value in OSRequirements.items() %}
-  {{ key }}: "{{ value }}"
-  {%- endfor %}
-inputData:
-  inputData:
-  {%- for key,value in inputData["inputData"].items() %}
-  - {{ key }}: "{{ value }}"
-  {%- endfor %}
-  dataObjects:
-  {%- for key,values in inputData[ "dataObjects" ].items() %}
-    {{ key }}:
-  {%- for value in values %}
-    - "{{ value }}"
-  {%- endfor %}
-  {%- endfor %}
-outputData:
-  outputData:
-  {%- for key,value in outputData["outputData"].items() %}
-  - {{ key }}: "{{ value }}"
-  {%- endfor %}
-  dataObjects:
-  {%- for key,values in inputData[ "dataObjects" ].items() %}
-    {{ key }}:
-  {%- for value in values %}
-    - "{{ value }}"
-  {%- endfor %}
-  {%- endfor %}
-{%- if containerConfiguration != NULL %}
-model:
-{%- endif -%}
-{% for key,values in model.items() %}
-  {{ key }}:
-{%- for value in values %}
-  - "{{ value }}"
-{%- endfor %}
-{%- endfor %}
-imported_function_func1:
-{%- for key in func1(1).items() %}
-{%- set key, value = key %}
-- {{key}}: {{value}}
-{%- endfor %}
-imported_function_func2:
-{%- for key in func2(1).items() %}
-{%- set key, value = key %}
-- {{key}}: {{value}}
-{%- endfor %}
-imported_function_func3:
-{%- for key in func3(1).items() %}
-{%- set key, value = key %}
-- {{key}}: {{value}}
-{%- endfor %}
+
+imports:
+  - https://raw.githubusercontent.com/micado-scale/tosca/digitbrain/micado_types.yaml
+
+repositories:
+  docker_hub: https://hub.docker.com/
+  dbs_registry: https://dbs-container-repo.emgora.eu/v2/
+
+node_types:
+  dbs.microservice.{{ name }}.{{ id }}:
+    derived_from: dbs.microservice
+    properties:
+      {%- for param in parameters %}
+      "{{ param['name'] }}":
+        type: "{{ param['type'] }}"
+        description: "{{ param['description'] }}"
+        {%- if param[ 'defaultValue' ] != NULL %}
+        default: "{{ param['defaultValue'] }}"
+        {%- endif %}
+        {%- if param[ 'mandatory' ] != NULL %}
+        required: "{{ param['mandatory'] }}"
+        {%- endif %}
+      {%- endfor %}
+
+topology_template:
+  inputs:
+    {%- for inputs in inputData %}
+      {%- for input in inputs.items() -%}
+      {%- set input, values = input %}
+      {%- if values is string %}
+      {{input}}: {{values}}
+      {%- elif values is iterable and (values is not string and values is not mapping) %}
+      {{input}}:
+      {%- for value in values %}
+        -{{value}}
+      {%- endfor %}
+      {%- endif %}
+      {%- endfor %}
+    {%- endfor %}
+
+substitution_mappings:
+  node_type: "dbs.microservice.{{ name }}.{{ id }}"
+
+{{ translate(deploymentData) }}
+
