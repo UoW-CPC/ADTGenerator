@@ -5,15 +5,15 @@
 ### Initiate the compiler
 To use the compiler first you must initiate it by passing its configuration
  - templates path
- - functions required by the template
+ - python modules required by the template
 
 ```
 from compiler import compiler
-compiler.init(configs)
+compiler.init(templates_path, modules)
 ```
 Configuration parameters
 - [templates_path] path to YAML templates folder (Default value: None, sets the path under the compiler folder)
-- [modules] list of modules and their functions to pass in Jinja2 (Default value: empty list)
+- [modules] list of modules with their import statements and functions to pass in Jinja2 (Default value: empty list)
 
 ### Render a template
 To render a template pass to the compiler the template name and a dictionary with the data required by the template.
@@ -23,16 +23,20 @@ data = data_dictionary
 template = "template"
 DT = compiler.compile(template, data)
 ```
+Compile function returns a String object.
 
 ### Requirements
 >Jinja2==3.0.1
 
-### Tests and sample data
-Unittest are defined under path tests/test_compiler and test data under path tests/test_data.
+### Tests and sample input - output
+Unittests are defined in module tests/test_compiler.py
+Sample input data in module tests/sample_dicts.py
+Sample output in YAML format in directory tests/dts
+
 #### Test Case
 module: test_compiler.py
 
-scope: asserts if the Jinja2 output is equal with a sample YAML file.
+scope: asserts if  compile function output is equal with a sample YAML file.
 
 steps:
 1. initiate the compiler
@@ -42,24 +46,3 @@ steps:
 
 Requirements:
 >ruamel.aml
-
-
-TMP
-Configuration parameters:
-       templates_path: path to YAML templates folder [Default value 'None' sets the path under the compiler]
-       modules: List of modules to import in Jinja2 [Default value 'None']
-    Functions:
-        init - initialize the compiler by setting templates path, and modules
-        compile - select a template and provide metadeta to jinja to get a DT
-    Implementation:
-        Requirement - Jinja2
-        Functional programming.
-    Tests:
-        Unit test wih pytest:
-            module: tests.test_compiler.test_compiler.py
-                    Test scope: asserts if the output DT is equal with a sample DT in YAML format
-                    Test steps:
-                                1. initiate the compiler
-                                2. render a template with sample data
-                                3. assert if output is equal to a sample expected sample DT
-                    Requirement: ruamel.aml
