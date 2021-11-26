@@ -400,7 +400,7 @@ ddt = {
 }
 
 
-mdt = {
+mdt_kube = {
 'id': 'microservice_12312124',
 'name': 'Object Detection for faulty parts',
 'author': 'DFKI',

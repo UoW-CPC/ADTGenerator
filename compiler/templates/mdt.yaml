@@ -6,26 +6,15 @@ metadata:
   author: "{{ author }}"
   date: {{ date }}
   version: "{{ version }}"
-  description: "{{ description }}"
   classificationSchema: "{{ classificationSchema }}"
   {%- if type != NULL %}
   type:
   {%- endif %}
   {%- for _type in type %}
-  - "{{ _type }}"
+    - "{{ _type }}"
   {%- endfor %}
-  {%- if software != NULL %}
-  software:
-  {%- endif %}
-  {%- for _software in software %}
-  - "{{ _software }}"
-  {%- endfor %}
-  {%- if softwareVersion != NULL %}
-  softwareVersion:
-  {%- endif %}
-  {%- for _softwareVersion in softwareVersion %}
-  - "{{ _softwareVersion }}"
-  {%- endfor %}
+
+description: "{{ description }}"
 
 imports:
   - https://raw.githubusercontent.com/micado-scale/tosca/digitbrain/micado_types.yaml
@@ -46,7 +35,7 @@ node_types:
         default: "{{ param['defaultValue'] }}"
         {%- endif %}
         {%- if param[ 'mandatory' ] != NULL %}
-        required: "{{ param['mandatory'] }}"
+        required: {{ param['mandatory'] }}
         {%- endif %}
       {%- endfor %}
 
@@ -60,9 +49,9 @@ topology_template:
       default: "{{ param['defaultValue'] }}"
       {%- endif %}
       {%- if param[ 'mandatory' ] != NULL %}
-      required: "{{ param['mandatory'] }}"
+      required: {{ param['mandatory'] }}
       {%- endif %}
-      {%- endfor %}
+    {%- endfor %}
 
 substitution_mappings:
   node_type: "dbs.microservice.{{ id }}"
