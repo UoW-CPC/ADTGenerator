@@ -3,7 +3,7 @@
 
 ## Templates
 - algodt.yml
-- idt.yml
+- ddt.yml
 - mdt.yml
 
 ## Usage
