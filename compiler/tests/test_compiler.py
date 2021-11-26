@@ -24,6 +24,7 @@ def load_sample_dts(type: str) -> str:
     yaml = YAML()
     yaml.preserve_quotes = True
     yaml.width = 800
+    yaml.boolean_representation = ['False', 'True']
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
     __location__ = os.path.realpath((os.path.join(__location__, 'dts')))
     with open(os.path.join(__location__, type), "r") as dt:
@@ -49,16 +50,16 @@ class TestCompiler(unittest.TestCase):
         sample_dt = load_sample_dts("algodt.yaml")
         assert compile("AlgoDT.yaml", algodt, log) == sample_dt
 
-    def test_idt(self):
+    def test_ddt(self):
         init(config['template_directory'], config['modules'], log)
-        sample_dt = load_sample_dts('idt.yaml')
-        assert compile("IDT.yaml", idt, log) == sample_dt
+        sample_dt = load_sample_dts('ddt.yaml')
+        assert compile("dDT.yaml", ddt, log) == sample_dt
 
-    def test_mdt(self):
+    def test_mdt_kube(self):
         init(config['template_directory'], config['modules'], log)
-        sample_dt = load_sample_dts('mdt.yaml')
+        sample_dt = load_sample_dts('mdt_kube.yaml')
         # print(compile("MDT.yaml", mdt, log))
-        assert compile("MDT.yaml", mdt, log) == sample_dt
+        assert compile("MDT.yaml", mdt_kube, log) == sample_dt
 
 
 if __name__ == '__main__':

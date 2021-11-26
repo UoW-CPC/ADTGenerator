@@ -11,7 +11,7 @@ metadata:
 description: "{{ scope }}"
 
 imports:
-  - https://raw.githubusercontent.com/micado-scale/tosca/digitbrain/micado_types.yaml
+- https://raw.githubusercontent.com/micado-scale/tosca/digitbrain/micado_types.yaml
 
 node_types:
   "dbs.deployment.{{ deployment['host_name'] }}":

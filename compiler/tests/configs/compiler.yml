@@ -2,7 +2,7 @@
 compiler:
     template_directory: "/Users/dimitriskagialis/development/Westminster/adt-gen-nov/compiler/templates"
     templates:
-        idt: "idt.yaml"
+        ddt: "ddt.yaml"
         mdt: "mdt.yaml"
         algodt: "algodt.yaml"
 #  # List of modules to pass in Jinja2 (for use in templates).

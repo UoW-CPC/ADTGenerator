@@ -11,13 +11,13 @@ metadata:
   type:
   {%- endif %}
   {%- for _type in type %}
-    - "{{ _type }}"
+  - "{{ _type }}"
   {%- endfor %}
 
 description: "{{ description }}"
 
 imports:
-  - https://raw.githubusercontent.com/micado-scale/tosca/digitbrain/micado_types.yaml
+- https://raw.githubusercontent.com/micado-scale/tosca/digitbrain/micado_types.yaml
 
 repositories:
   docker_hub: https://hub.docker.com/
@@ -53,8 +53,8 @@ topology_template:
       {%- endif %}
     {%- endfor %}
 
-substitution_mappings:
-  node_type: "dbs.microservice.{{ id }}"
+  substitution_mappings:
+    node_type: "dbs.microservice.{{ id }}"
 
 {{ translate(deploymentData) }}
 

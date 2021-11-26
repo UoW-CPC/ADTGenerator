@@ -9,19 +9,19 @@ metadata:
   classificationSchema: "{{ classificationSchema }}"
   type:
   {%- for _type in type %}
-    - "{{ _type }}"
+  - "{{ _type }}"
   {%- endfor %}
 
 description: "{{ description }}"
 
 imports:
-  - https://raw.githubusercontent.com/micado-scale/tosca/digitbrain/micado_types.yaml
-  {%- for microservice in algorithm["abstractHostDefinition"] %}
-  - "ms-{{ microservice }}.yml"
-  {%- endfor %}
-  {%- for host in algorithm[ "abstractHostDefinition" ].values() | unique %}
-  - "dep-{{ host }}.yml"
-  {%- endfor %}
+- https://raw.githubusercontent.com/micado-scale/tosca/digitbrain/micado_types.yaml
+{%- for microservice in algorithm["abstractHostDefinition"] %}
+- "ms-{{ microservice }}.yml"
+{%- endfor %}
+{%- for host in algorithm[ "abstractHostDefinition" ].values() | unique %}
+- "dep-{{ host }}.yml"
+{%- endfor %}
 
 repositories:
   docker_hub: https://hub.docker.com/
@@ -36,11 +36,11 @@ topology_template:
       {%- for _microservice in algorithm[ "abstractHostDefinition" ].items() %}
       {%- set _microservice, host = _microservice %}
       {%- if _microservice == microservice %}
-        - deployment.{{host}}
+      - deployment.{{host}}
       {%- endif %}
       {%- endfor %}
   {%- endfor %}
-  {% for host in algorithm["abstractHostDefinition"].values() | unique %}
+  {%- for host in algorithm["abstractHostDefinition"].values() | unique %}
     deployment.{{ host }}:
       type: "dbs.deployment.{{ host }}"
   {%- endfor %}

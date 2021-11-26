@@ -13,8 +13,10 @@ def translate(topologody_metadata: dict = None, log: logging = None) -> str:
         dt_stream = StringIO()
         yaml.dump(adt_tmp, dt_stream)
         adt_str = dt_stream.getvalue()
-        adt_str = adt_str[:adt_str.rfind('\n')]
-        adt = adt_str
+        adt = ''
+        for line in adt_str.splitlines():
+            adt = adt + '  ' + line + '\n'
+        adt = adt[:adt.rfind('\n')]
         return adt
     elif topologody_type == 'compose':
         adt = translate_compose(topologody_metadata)
@@ -32,13 +34,13 @@ def _check_type(topologody_metadata: dict = None, log: logging = None) -> str:
 
 
 def _translate_manifest(topologody_metadata, log: logging = None):
-    _adt = {"topology_template": {"node_templates": {}}, }
+    _adt = {"node_templates": {} }
     adt = _transform(topologody_metadata, 'manifest', _adt)
     return adt
 
 
 def translate_compose(topologody_metadata, log: logging = None):
-    _adt = {"topology_template": {"node_templates": {}}, }
+    _adt = {"node_templates": {} }
     adt = _transform(topologody_metadata, 'compose', _adt)
     return adt
 
@@ -50,7 +52,7 @@ def _transform(topologody_metadata: dict, topology_type, adt, log: logging = Non
             kind = topologody_metadata["kind"].lower()
             name_kind = f'{name}-{kind}'
             if kind in ['deployment', 'pod', 'statefulset', 'daemonset']:
-                adt['topology_template']['node_templates'][name_kind] = _to_node(topologody_metadata)
+                adt['node_templates'][name_kind] = _to_node(topologody_metadata)
         except KeyError:
             print('error')
     return adt
