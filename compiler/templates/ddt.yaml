@@ -14,7 +14,7 @@ imports:
   - https://raw.githubusercontent.com/micado-scale/tosca/digitbrain/micado_types.yaml
 
 node_types:
-  "dbs.infrastructure.{{ deployment['host_name'] }}":
+  "dbs.deployment.{{ deployment['host_name'] }}":
     derived_from: dbs.deployment
 
 topology_template:
