@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 import logging,logging.config, json, os
 from flask_oidc import OpenIDConnect
 from werkzeug.exceptions import BadRequest, InternalServerError
@@ -46,7 +46,7 @@ def handle_unexpected_error(e: Exception) -> EndpointResult:
 @validate_json
 def compile(type):
     global log
-    log.debug('Compile '+type+' started')
+    log.debug('compile('+type+') invoked')
     if oidc_enabled:
         token = oidc.get_access_token()    
     input_data = request.get_json()
@@ -63,9 +63,9 @@ def compile(type):
 def make_response(success, message, id):
     endpoint = adtg_conf.CONFIG.get('service',dict()).get('public_endpoint')
     rest_root_path = adtg_conf.CONFIG.get('service',dict()).get('rest_root_path')
-    log_route = "/".join([i.strip("/").lstrip("/") for i in [endpoint, rest_root_path, 'download', str(id), 'log']])
+    log_route = "/".join([i.strip("/").lstrip("/") for i in [endpoint, rest_root_path, 'download', str(id), adtg_generate.FILE_LOG]])
     if success:
-        adt_route = "/".join([i.strip("/").lstrip("/") for i in [endpoint, rest_root_path, 'download', str(id), 'adt']])
+        adt_route = "/".join([i.strip("/").lstrip("/") for i in [endpoint, rest_root_path, 'download', str(id), adtg_generate.FILE_OUT]])
     else:
         adt_route = None
     response = dict(success=success,
@@ -77,11 +77,11 @@ def make_response(success, message, id):
 @validate_json
 def generate():
     global log
-    log.debug('Generate started')
+    log.debug('generate() invoked')
     if oidc_enabled:
         token = oidc.get_access_token()    
     input_data = request.get_json()
-    log.debug('This is a JSON request: {0}'.format(input_data))
+    log.debug('Input JSON: {0}'.format(input_data))
    
     try:
         root_wd = adtg_conf.CONFIG.get('service',dict()).get('working_directory',os.getcwd())
@@ -97,12 +97,17 @@ def generate():
         log.debug('Generate failed with exception.')
         return make_response(False, str(e), id)
 
+def download(dir,file):
+    global log
+    log.debug("download() invoked: "+dir+"/"+file)
+    root_wd = adtg_conf.CONFIG.get('service',dict()).get('working_directory',os.getcwd())
+    return send_from_directory(directory=root_wd, path=os.path.join(dir,file))
+
 def init():
-    global log, app, oidc, oidc_enabled, compile, generate
+    global log, app, oidc, oidc_enabled, compile, generate, download
 
     logging.config.dictConfig(adtg_conf.CONFIG['logging'])
     log = logging.getLogger('adtg')
-
     
     oidc_enabled = adtg_conf.CONFIG.get('service', dict()).get('enable_oidc', False)
     oidc_require_token = adtg_conf.CONFIG.get('service', dict()).get('check_user_token', False)
@@ -113,13 +118,18 @@ def init():
         oidc = OpenIDConnect(app)
         compile = (oidc.accept_token(require_token=oidc_require_token))(compile)
         generate = (oidc.accept_token(require_token=oidc_require_token))(generate)
+        download = (oidc.accept_token(require_token=oidc_require_token))(download)
         
     endpoint=adtg_conf.rest_root_path+'/compile/<type>'
-    log.debug("Registering compile method for endpoint "+endpoint)
+    log.debug("Registering compile() method for endpoint "+endpoint)
     app.add_url_rule(endpoint, methods=['POST'], view_func=compile)
     
     endpoint=adtg_conf.rest_root_path+'/generate'
-    log.debug("Registering generate method for endpoint "+endpoint)
+    log.debug("Registering generate() method for endpoint "+endpoint)
     app.add_url_rule(endpoint, methods=['POST'], view_func=generate)
 
+    endpoint=adtg_conf.rest_root_path+'/download/<dir>/<file>'
+    log.debug("Registering download() method for endpoint "+endpoint)
+    app.add_url_rule(endpoint, methods=['GET'], view_func=download)
+ 
     return

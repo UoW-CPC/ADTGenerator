@@ -8,6 +8,12 @@ DIR_OUT='csar'
 FILE_LOG='generate.log'
 FILE_OUT='dma_csar.zip'
 
+def add_log(full_wd, message):
+    f = open(os.path.join(full_wd,FILE_LOG), "a")
+    f.write(message+'\n')
+    f.close()
+    return
+
 def init_working_directory(log, root_wd):
     while(1):
         gen_wd = datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")
@@ -18,10 +24,10 @@ def init_working_directory(log, root_wd):
     os.makedirs(os.path.join(full_wd,DIR_IN))
     os.makedirs(os.path.join(full_wd,DIR_OUT))
     f = open(os.path.join(full_wd,FILE_LOG), "a")
-    f.write("Log of generating CSAR archive based on DMA metadata:")
+    f.write("Log of generating CSAR archive based on DMA metadata:\n")
     f.close()
     f = open(os.path.join(full_wd,FILE_OUT), "a")
-    f.write("Here comes the final CSAR archive content.")
+    f.write("Here comes the final CSAR archive content:\n")
     f.close()
     return gen_wd
 
@@ -58,5 +64,7 @@ def perform_generate(log, root_wd, id, input_data):
 
     check_input_validity(log,input_data)
     store_input_components_as_files(log,input_data,full_wd)
-    
-    return True, full_wd+'\n'
+    add_log(full_wd, "id: "+id)
+
+    #raise Exception("unexpected error during generation")
+    return True, "ADT generated successfully"
