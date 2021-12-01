@@ -8,7 +8,7 @@ DIR_OUT='csar'
 FILE_LOG='generate.log'
 FILE_OUT='dma_csar.zip'
 
-def init_gen_working_directory(log,root_wd):
+def init_working_directory(log, root_wd):
     while(1):
         gen_wd = datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")
         full_wd = os.path.join(root_wd,gen_wd)
@@ -23,7 +23,7 @@ def init_gen_working_directory(log,root_wd):
     f = open(os.path.join(full_wd,FILE_OUT), "a")
     f.write("Here comes the final CSAR archive content.")
     f.close()
-    return full_wd, gen_wd
+    return gen_wd
 
 def check_input_validity(log,input_data):
     log.debug('Checking input validity.')
@@ -49,19 +49,14 @@ def store_input_components_as_files(log,input_data, full_wd):
             index+=1
     return
 
-def perform_generate(log,input_data):
+def perform_generate(log, root_wd, id, input_data):
     log.debug('Generate method has been invoked.')
     root_wd = adtg_conf.CONFIG.get('service',dict()).get('working_directory',os.getcwd())
     log.debug('Generate: root wd: '+root_wd)
-    full_wd, gen_wd = init_gen_working_directory(log,root_wd)
+    full_wd = os.path.join(root_wd, id)
     log.debug('Generate: full wd: '+full_wd)
 
     check_input_validity(log,input_data)
     store_input_components_as_files(log,input_data,full_wd)
     
-    
-
-
-    
-    
-    return full_wd+'\n'
+    return True, full_wd+'\n'

@@ -4,6 +4,7 @@ service:
     rest_root_path: "/v1/adtg"
     flask_debug_mode: True
     working_directory: "/home/ubuntu/test"
+    public_endpoint: "http://127.0.0.1:4000"
 
     enable_oidc: false
     secrets_json_path: "/home/ubuntu/github-adtg/config/secret.json"

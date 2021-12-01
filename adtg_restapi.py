@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-import logging,logging.config, json
+import logging,logging.config, json, os
 from flask_oidc import OpenIDConnect
 from werkzeug.exceptions import BadRequest, InternalServerError
 import adtg_conf
@@ -60,6 +60,20 @@ def compile(type):
     except Exception as e:
         return jsonify({"error": str(e)})
 
+def make_response(success, message, id):
+    endpoint = adtg_conf.CONFIG.get('service',dict()).get('public_endpoint')
+    rest_root_path = adtg_conf.CONFIG.get('service',dict()).get('rest_root_path')
+    log_route = "/".join([i.strip("/").lstrip("/") for i in [endpoint, rest_root_path, 'download', str(id), 'log']])
+    if success:
+        adt_route = "/".join([i.strip("/").lstrip("/") for i in [endpoint, rest_root_path, 'download', str(id), 'adt']])
+    else:
+        adt_route = None
+    response = dict(success=success,
+                    message=message,
+                    log=log_route,
+                    adt=adt_route)
+    return json.loads(json.dumps(response, sort_keys=False, indent=4))
+
 @validate_json
 def generate():
     global log
@@ -70,11 +84,18 @@ def generate():
     log.debug('This is a JSON request: {0}'.format(input_data))
    
     try:
-        result = adtg_generate.perform_generate(log, input_data)
-        log.debug('Generate finished')
-        return json.loads(json.dumps(result, sort_keys=True, indent=4, separators=(',', ': ')))
+        root_wd = adtg_conf.CONFIG.get('service',dict()).get('working_directory',os.getcwd())
+        id = adtg_generate.init_working_directory(log, root_wd)
     except Exception as e:
+        log.debug('Generate failed with exception.')
         return jsonify({"error": str(e)})
+    try:
+        success, message = adtg_generate.perform_generate(log, root_wd, id, input_data)
+        log.debug('Generate finished successfully.')
+        return make_response(success, message, id)
+    except Exception as e:
+        log.debug('Generate failed with exception.')
+        return make_response(False, str(e), id)
 
 def init():
     global log, app, oidc, oidc_enabled, compile, generate
