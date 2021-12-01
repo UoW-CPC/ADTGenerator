@@ -8,6 +8,7 @@ from functools import wraps
 from typing import Any as EndpointResult
 
 from compiler import compiler
+import adtg_generate
 
 log = None
 app = None
@@ -43,7 +44,7 @@ def handle_unexpected_error(e: Exception) -> EndpointResult:
     }), InternalServerError.code
 
 @validate_json
-def perform_compile(type):
+def compile(type):
     global log
     log.debug('Compile '+type+' started')
     if oidc_enabled:
@@ -59,8 +60,24 @@ def perform_compile(type):
     except Exception as e:
         return jsonify({"error": str(e)})
 
+@validate_json
+def generate():
+    global log
+    log.debug('Generate started')
+    if oidc_enabled:
+        token = oidc.get_access_token()    
+    input_data = request.get_json()
+    log.debug('This is a JSON request: {0}'.format(input_data))
+   
+    try:
+        result = adtg_generate.perform_generate(log, input_data)
+        log.debug('Generate finished')
+        return json.loads(json.dumps(result, sort_keys=True, indent=4, separators=(',', ': ')))
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
 def init():
-    global log, app, oidc, oidc_enabled, perform_compile
+    global log, app, oidc, oidc_enabled, compile, generate
 
     logging.config.dictConfig(adtg_conf.CONFIG['logging'])
     log = logging.getLogger('adtg')
@@ -73,10 +90,15 @@ def init():
             APP_CONFIG = json.load(json_file)
         app.config.update(APP_CONFIG)
         oidc = OpenIDConnect(app)
-        perform_compile = (oidc.accept_token(require_token=oidc_require_token))(perform_compile)
+        compile = (oidc.accept_token(require_token=oidc_require_token))(compile)
+        generate = (oidc.accept_token(require_token=oidc_require_token))(generate)
         
     endpoint=adtg_conf.rest_root_path+'/compile/<type>'
-    #log.debug("Registering compilation of "+target+" at endpoint "+endpoint)
-    app.add_url_rule(endpoint, methods=['POST'], view_func=perform_compile)
+    log.debug("Registering compile method for endpoint "+endpoint)
+    app.add_url_rule(endpoint, methods=['POST'], view_func=compile)
+    
+    endpoint=adtg_conf.rest_root_path+'/generate'
+    log.debug("Registering generate method for endpoint "+endpoint)
+    app.add_url_rule(endpoint, methods=['POST'], view_func=generate)
 
     return

@@ -1,0 +1,37 @@
+{
+  "DMA":
+  {
+                "id": "my_DMAID"
+  },
+  "MA":
+  {
+                "id": "my_MAID"
+  },
+  "DATA":
+  [
+    {
+                "id": "my_DATAID_ABC"
+    },
+    {
+                "id": "my_DATAID_DEF"
+    }
+  ],
+  "MODEL":
+  {
+                "id": "my_MODELID"
+  },
+  "ALGORITHM":
+  {
+                "id": "my_ALGID"
+  },
+  "MICROSERVICES":
+  [
+    {
+                "id": "my_MSID_ABC"
+    },
+    {
+                "id": "my_MSID_DEF"
+    }
+  ]
+}
+
