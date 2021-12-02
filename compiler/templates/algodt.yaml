@@ -16,10 +16,10 @@ description: "{{ description }}"
 
 imports:
 - https://raw.githubusercontent.com/micado-scale/tosca/digitbrain/micado_types.yaml
-{%- for microservice in algorithm["abstractHostDefinition"] %}
+{%- for microservice in abstractHostDefinition %}
 - "ms-{{ microservice }}.yml"
 {%- endfor %}
-{%- for host in algorithm[ "abstractHostDefinition" ].values() | unique %}
+{%- for host in abstractHostDefinition.values() | unique %}
 - "dep-{{ host }}.yml"
 {%- endfor %}
 
@@ -29,18 +29,18 @@ repositories:
 
 topology_template:
   node_templates:
-  {%- for microservice in algorithm["listOfMicroservices"] %}
+  {%- for microservice in listOfMicroservices %}
     microservice.{{microservice}}:
       type: "dbs.microservice.{{ microservice }}"
       requirements:
-      {%- for _microservice in algorithm[ "abstractHostDefinition" ].items() %}
+      {%- for _microservice in abstractHostDefinition.items() %}
       {%- set _microservice, host = _microservice %}
       {%- if _microservice == microservice %}
       - deployment.{{host}}
       {%- endif %}
       {%- endfor %}
   {%- endfor %}
-  {%- for host in algorithm["abstractHostDefinition"].values() | unique %}
+  {%- for host in abstractHostDefinition.values() | unique %}
     deployment.{{ host }}:
       type: "dbs.deployment.{{ host }}"
   {%- endfor %}
