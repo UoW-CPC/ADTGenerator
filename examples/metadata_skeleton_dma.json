@@ -1,36 +1,44 @@
 {
   "DMA":
   {
-                "id": "my_DMAID"
+  	"id": "my_DMAID",
+	"deployments": {
+		"infrastructure.my_MSID_ABC": {
+			"type":"aws"
+		},
+		"infrastructure.my_MSID_DEF": {
+                        "type":"aws"
+                }
+	}
   },
   "MA":
   {
-                "id": "my_MAID"
+	"id": "my_MAID"
   },
   "DATA":
   [
     {
-                "id": "my_DATAID_ABC"
+	"id": "my_DATAID_ABC"
     },
     {
-                "id": "my_DATAID_DEF"
+ 	"id": "my_DATAID_DEF"
     }
   ],
   "MODEL":
   {
-                "id": "my_MODELID"
+	"id": "my_MODELID"
   },
   "ALGORITHM":
   {
-                "id": "my_ALGID"
+	"id": "my_ALGID"
   },
   "MICROSERVICES":
   [
     {
-                "id": "my_MSID_ABC"
+	"id": "my_MSID_ABC"
     },
     {
-                "id": "my_MSID_DEF"
+	"id": "my_MSID_DEF"
     }
   ]
 }
