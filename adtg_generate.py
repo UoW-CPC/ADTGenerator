@@ -8,6 +8,12 @@ DIR_OUT='csar'
 FILE_LOG='generate.log'
 FILE_OUT='dma_csar.zip'
 
+def save_to_file(dir, file, content):
+    f = open(os.path.join(dir,file), "a")
+    f.write(str(content)+'\n')
+    f.close()
+    return
+
 def add_log(full_wd, message):
     f = open(os.path.join(full_wd,FILE_LOG), "a")
     f.write(message+'\n')
@@ -55,6 +61,15 @@ def store_input_components_as_files(log,input_data, full_wd):
             index+=1
     return
 
+def perform_compile(log, type, input):
+    #template_file = adtg_conf.CONFIG.get('compiler',dict()).get('templates',dict()).get("mdt")
+    #result = compiler.compile(template_file, input_json, log)
+    result = input
+    return result
+
+def fname(type, id):
+    return "{0}.{1}.yaml".format(type, id)
+
 def perform_generate(log, root_wd, id, input_data):
     log.debug('Generate method has been invoked.')
     root_wd = adtg_conf.CONFIG.get('service',dict()).get('working_directory',os.getcwd())
@@ -65,6 +80,24 @@ def perform_generate(log, root_wd, id, input_data):
     check_input_validity(log,input_data)
     store_input_components_as_files(log,input_data,full_wd)
     add_log(full_wd, "id: "+id)
+
+    out_wd = os.path.join(full_wd, DIR_OUT)
+    dmaid = input_data['DMA']['id']
+    msg = 'ADT generation for DMA ('+str(dmaid)+') starts'
+    log.info(msg)
+    add_log(full_wd, msg)
+
+    for dmt_name, dmt_content in input_data['DMA']['deployments'].items():
+       result = perform_compile(log, 'ddt', dmt_content)
+       dmt_name.split('.')[1]
+       save_to_file(out_wd, fname('ddt',dmt_name.split('.')[1]), result)
+
+    result = perform_compile(log, 'algodt', input_data['ALGORITHM'])
+    save_to_file(out_wd, fname('algodt',input_data['ALGORITHM']['id']), result)
+
+    for ms in input_data['MICROSERVICES']:
+       result = perform_compile(log, 'mdt', ms)
+       save_to_file(out_wd, fname('mdt',ms['id']), result)
 
     #raise Exception("unexpected error during generation")
     return True, "ADT generated successfully"
