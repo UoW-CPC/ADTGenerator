@@ -62,9 +62,8 @@ def store_input_components_as_files(log,input_data, full_wd):
     return
 
 def perform_compile(log, type, input):
-    #template_file = adtg_conf.CONFIG.get('compiler',dict()).get('templates',dict()).get("mdt")
-    #result = compiler.compile(template_file, input_json, log)
-    result = input
+    template_file = adtg_conf.CONFIG.get('compiler',dict()).get('templates',dict()).get(type)
+    result = compiler.compile(template_file, input, log)
     return result
 
 def fname(type, id):
@@ -93,7 +92,7 @@ def perform_generate(log, root_wd, id, input_data):
        save_to_file(out_wd, fname('ddt',dmt_name.split('.')[1]), result)
 
     result = perform_compile(log, 'algodt', input_data['ALGORITHM'])
-    save_to_file(out_wd, fname('algodt',input_data['ALGORITHM']['id']), result)
+    save_to_file(out_wd, fname('algodt', input_data['ALGORITHM']['id']), result)
 
     for ms in input_data['MICROSERVICES']:
        result = perform_compile(log, 'mdt', ms)
