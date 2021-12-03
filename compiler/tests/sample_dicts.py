@@ -384,15 +384,12 @@ ddt = {
 'version': '1.0',
 'licensor': 'Licensor 1',
 'scope': 'This algorithm can be used to solve a specifc problem, and applies some fancy technologies.',
-'deployment':
-    {
-        'host_name': 'host1',
-        'deployment_id': 'depl1',
-        'instance_type_id': 'ins1',
-        'key_pair_id': 'key1',
-        'opened_port': 8080,
-        'endpoint': 'end1'
-    }
+'host_name': 'host1',
+'deployment_id': 'depl1',
+'instance_type_id': 'ins1',
+'key_pair_id': 'key1',
+'opened_port': 8080,
+'endpoint': 'end1'
 }
 
 
