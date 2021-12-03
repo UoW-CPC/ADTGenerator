@@ -16,13 +16,13 @@ def save_to_file(dir, file, content):
 
 def add_log(full_wd, message):
     f = open(os.path.join(full_wd,FILE_LOG), "a")
-    f.write(message+'\n')
+    f.write(message)
     f.close()
     return
 
 def init_working_directory(log, root_wd):
     while(1):
-        gen_wd = datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")
+        gen_wd = datetime.now().strftime("%Y-%m-%d_%H-%M-%S_%f")
         full_wd = os.path.join(root_wd,gen_wd)
         if not os.path.exists(full_wd):
             break
@@ -69,34 +69,50 @@ def perform_compile(log, type, input):
 def fname(type, id):
     return "{0}.{1}.yaml".format(type, id)
 
-def perform_generate(log, root_wd, id, input_data):
+def perform_generate(log, root_wd, gen_wd, input_data):
     log.debug('Generate method has been invoked.')
     root_wd = adtg_conf.CONFIG.get('service',dict()).get('working_directory',os.getcwd())
     log.debug('Generate: root wd: '+root_wd)
-    full_wd = os.path.join(root_wd, id)
+    full_wd = os.path.join(root_wd, gen_wd)
     log.debug('Generate: full wd: '+full_wd)
 
     check_input_validity(log,input_data)
     store_input_components_as_files(log,input_data,full_wd)
-    add_log(full_wd, "id: "+id)
+    add_log(full_wd, "ADT generation process ID: "+gen_wd+"\n")
 
     out_wd = os.path.join(full_wd, DIR_OUT)
     dmaid = input_data['DMA']['id']
-    msg = 'ADT generation for DMA ('+str(dmaid)+') starts'
+    msg = 'DMA tuple ID: '+str(dmaid)+'\n'
     log.info(msg)
     add_log(full_wd, msg)
 
     for dmt_name, dmt_content in input_data['DMA']['deployments'].items():
-       result = perform_compile(log, 'ddt', dmt_content)
-       dmt_name.split('.')[1]
-       save_to_file(out_wd, fname('ddt',dmt_name.split('.')[1]), result)
+        add_log(full_wd, "Converting deployment \""+dmt_name+"\"...")
+        result = perform_compile(log, 'ddt', dmt_content)
+        add_log(full_wd, " done.\n")
+        dmt_fname = fname('ddt',dmt_name.split('.')[1])
+        add_log(full_wd, "Saving deployment \""+dmt_name+"\" into file \""+dmt_fname+"\" ...")
+        save_to_file(out_wd, dmt_fname, result)
+        add_log(full_wd, " done.\n")
 
+    alg_name = input_data['ALGORITHM']['id']
+    add_log(full_wd, "Converting algorithm \""+alg_name+"\"...")
     result = perform_compile(log, 'algodt', input_data['ALGORITHM'])
-    save_to_file(out_wd, fname('algodt', input_data['ALGORITHM']['id']), result)
+    add_log(full_wd, " done.\n")
+    alg_fname = fname('algodt', alg_name)
+    add_log(full_wd, "Saving algorithm \""+alg_name+"\" into file \""+alg_fname+"\" ...")
+    save_to_file(out_wd, alg_fname, result)
+    add_log(full_wd, " done.\n")
 
     for ms in input_data['MICROSERVICES']:
-       result = perform_compile(log, 'mdt', ms)
-       save_to_file(out_wd, fname('mdt',ms['id']), result)
+        ms_name = ms['id']
+        add_log(full_wd, "Converting microservice \""+ms_name+"\"...")
+        result = perform_compile(log, 'mdt', ms)
+        add_log(full_wd, " done.\n")
+        ms_fname = fname('mdt',ms_name)
+        add_log(full_wd, "Saving deployment \""+ms_name+"\" into file \""+ms_fname+"\" ...")
+        save_to_file(out_wd, fname('mdt',ms['id']), result)
+        add_log(full_wd, " done.\n")
 
     #raise Exception("unexpected error during generation")
     return True, "ADT generated successfully"
