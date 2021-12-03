@@ -61,6 +61,5 @@ class TestCompiler(unittest.TestCase):
         # print(compile("MDT.yaml", mdt, log))
         assert compile("MDT.yaml", mdt_kube, log) == sample_dt
 
-
 if __name__ == '__main__':
     unittest.main()

@@ -366,18 +366,14 @@ algodt = {
 'author': 'DFKI',
 'date': '06/04/2021',
 'version': '1.0',
-'algorithm':
-    {
-        'listOfMicroservices':
-         ['microserviceA','microserviceB','microserviceC'],
-        'abstractHostDefinition':
-              {
-               'microserviceA': 'microserviceA',
-               'microserviceB': 'microserviceA',
-               'microserviceC': 'microserviceC'
-               }
-
-     }
+'listOfMicroservices':
+ ['microserviceA','microserviceB','microserviceC'],
+'abstractHostDefinition':
+      {
+       'microserviceA': 'microserviceA',
+       'microserviceB': 'microserviceA',
+       'microserviceC': 'microserviceC'
+       }
 }
 
 ddt = {
