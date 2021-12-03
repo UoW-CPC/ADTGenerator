@@ -92,9 +92,10 @@ def perform_generate(log, root_wd, gen_wd, input_data):
 
     for dmt_name, dmt_content in input_data['DMA']['deployments'].items():
         add_log(full_wd, "Converting deployment \""+dmt_name+"\"...")
+        dmt_content['id']=dmt_name
         result = perform_compile(log, 'ddt', dmt_content)
         add_log(full_wd, " done.\n")
-        dmt_fname = fname('ddt',dmt_name.split('.')[1])
+        dmt_fname = fname('deployment',dmt_name.split('.')[1])
         add_log(full_wd, "Saving deployment \""+dmt_name+"\" into file \""+dmt_fname+"\" ...")
         save_to_file(out_wd, dmt_fname, result)
         add_log(full_wd, " done.\n")
@@ -103,7 +104,7 @@ def perform_generate(log, root_wd, gen_wd, input_data):
     add_log(full_wd, "Converting algorithm \""+alg_name+"\"...")
     result = perform_compile(log, 'algodt', input_data['ALGORITHM'])
     add_log(full_wd, " done.\n")
-    alg_fname = fname('algodt', alg_name)
+    alg_fname = fname('algorithm', alg_name)
     add_log(full_wd, "Saving algorithm \""+alg_name+"\" into file \""+alg_fname+"\" ...")
     save_to_file(out_wd, alg_fname, result)
     add_log(full_wd, " done.\n")
@@ -113,9 +114,9 @@ def perform_generate(log, root_wd, gen_wd, input_data):
         add_log(full_wd, "Converting microservice \""+ms_name+"\"...")
         result = perform_compile(log, 'mdt', ms)
         add_log(full_wd, " done.\n")
-        ms_fname = fname('mdt',ms_name)
+        ms_fname = fname('microservice',ms_name)
         add_log(full_wd, "Saving deployment \""+ms_name+"\" into file \""+ms_fname+"\" ...")
-        save_to_file(out_wd, fname('mdt',ms['id']), result)
+        save_to_file(out_wd, ms_fname, result)
         add_log(full_wd, " done.\n")
 
     #raise Exception("unexpected error during generation")
