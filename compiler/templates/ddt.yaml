@@ -1,30 +1,28 @@
 tosca_definitions_version: tosca_simple_yaml_1_2
 
-metadata:
-  id: "{{ id }}"
-  name: "{{ name }}"
-  author: "{{ author }}"
-  created_at: "{{ created_at }}"
-  version: "{{ version }}"
-  licensor: "{{ licensor }}"
-
-description: "{{ scope }}"
-
 imports:
 - https://raw.githubusercontent.com/micado-scale/tosca/digitbrain/micado_types.yaml
 
 node_types:
-  "dbs.deployment.{{ host_name }}":
+  dbs.{{ id }}:
     derived_from: dbs.deployment
 
 topology_template:
 
   substitution_mappings:
-    node_type: "dbs.deployment.{{ host_name }}"
+    node_type: dbs.{{ id }}
 
   node_templates:
-    deployment_id: "{{ deployment_id }}"
-    instance_type_id: "{{ instance_type_id }}"
-    key_pair_id: "{{ key_pair_id }}"
-    opened_port: "{{ opened_port }}"
-    endpoint: "{{ endpoint }}"
+    {{ id }}:
+      type: tosca.nodes.MiCADO.CloudBroker.Compute
+      properties:
+        deployment_id: {{ deployment_id }}
+        instance_type_id: {{ instance_type_id }}
+        key_pair_id: {{ key_pair_id }}
+        opened_port: "{{ opened_port }}"
+
+    interfaces:
+       Occopus:
+         create:
+           inputs:
+             endpoint: {{ endpoint }}
