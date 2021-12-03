@@ -67,15 +67,8 @@
         "deep learning",
         "CNN"
       ],
-      "containerFormat": "Docker",
-      "image": "dbs-container-repo.emgora.eu/db-ristra-cli-cpu:1.0.0",
       "deploymentFormat": "docker run",
-      "deploymentData": "docker run image-name -p 8080:8080",
-      "command": "sudo ./start.sh",
-      "args": [
-        "-h",
-        "test_argument"
-      ]
+      "deploymentData": "docker run image-name -p 8080:8080"
     },
     {
       "id": "MSID_RCLONE",
@@ -89,15 +82,8 @@
         "deep learning",
         "CNN"
       ],
-      "containerFormat": "Docker",
-      "image": "dbs-container-repo.emgora.eu/rclone:1",
       "deploymentFormat": "docker run",
-      "deploymentData": "docker run image-name -p 8080:8080",
-      "command": "sudo ./start.sh",
-      "args": [
-        "-h",
-        "test_argument"
-      ]
+      "deploymentData": "docker run image-name -p 8080:8080"
     }
   ]
 }
