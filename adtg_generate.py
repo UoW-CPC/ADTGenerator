@@ -1,5 +1,5 @@
 import adtg_conf
-import os
+import os, json
 from datetime import datetime
 from compiler import compiler
 
@@ -48,7 +48,7 @@ def store_input_components_as_files(log,input_data, full_wd):
         log.debug(component+'====>'+str(input_data[component]))
         filefullpath=os.path.join(full_wd,DIR_IN,component+'_'+input_data[component]['id']+'.json')
         f=open(filefullpath, "w")
-        f.write(str(input_data[component])+'\n')
+        f.write(json.dumps(input_data[component], indent=4, sort_keys=True)+'\n')
         f.close()
     for component in ['MICROSERVICES','DATA']:
         index = 0
@@ -56,9 +56,13 @@ def store_input_components_as_files(log,input_data, full_wd):
             log.debug(component+'['+str(index)+']====>'+str(item))
             filefullpath=os.path.join(full_wd,DIR_IN,component+'_'+str(index)+'_'+item['id']+'.json')
             f=open(filefullpath, "w")
-            f.write(str(item)+'\n')
+            f.write(json.dumps(item, indent=4, sort_keys=True)+'\n')
             f.close()
             index+=1
+    filefullpath=os.path.join(full_wd,DIR_IN,'GENERATE.json')
+    f=open(filefullpath, "w")
+    f.write(json.dumps(input_data, indent=4, sort_keys=True)+'\n')
+    f.close()
     return
 
 def perform_compile(log, type, input):
