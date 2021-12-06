@@ -1,0 +1,157 @@
+#!/bin/bash
+set -e
+
+# See:
+#  https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.3/TOSCA-Simple-Profile-YAML-v1.3.html#_Toc302251718
+#  https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.2/TOSCA-Simple-Profile-YAML-v1.2.html#_Toc528072959
+#  https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.1/TOSCA-Simple-Profile-YAML-v1.1.html#_Toc489606742
+#  https://docs.oasis-open.org/tosca/TOSCA/v1.0/TOSCA-v1.0.html#_Toc356403711
+
+TOOL=$(basename "$0")
+
+TOSCA_META_FILE_VERSION=${TOSCA_META_FILE_VERSION:-1.1}
+CSAR_VERSION=${CSAR_VERSION:-1.1}
+CREATED_BY=${CREATED_BY:-$TOOL}
+ZIP_TOOL=${ZIP_TOOL:-zip}
+ZIPINFO_TOOL=${ZIPINFO_TOOL:-zipinfo}
+ZIP_LEVEL=${ZIP_LEVEL:-0}
+TEMP_ROOT=
+
+if [ "$#" -lt 1 ]; then
+cat << EOT
+Simple TOSCA CSAR creation tool
+
+Usage:
+
+    $TOOL [CSAR file path] [[root directory]]
+
+If "CSAR file path" doesn't have a ".csar" extension, it will be automatically
+appended.
+
+If "CSAR file path" already exists, the file will be deleted.
+
+If "root directory" is not specified, the root will be current directory.
+
+Will automatically create and add a "TOSCA-Metadata/TOSCA.meta" file to the
+archive.
+
+You can set the "ENTRY_DEFINITIONS" environment variable to specify the path
+to your service template YAML file (relative to the root). Otherwise, if
+there's a single YAML file in the root it will be used automatically. If
+there's more than one YAML file in the root then you *must* explicitly set
+"ENTRY_DEFINITIONS".
+
+Other supported environment variables:
+
+    TOSCA_META_FILE_VERSION (default: $TOSCA_META_FILE_VERSION)
+    CSAR_VERSION (default: $CSAR_VERSION)
+    CREATED_BY (default: $CREATED_BY)
+    OTHER_DEFINITIONS
+    ZIP_TOOL (default: $ZIP_TOOL)
+    ZIP_LEVEL (default: $ZIP_LEVEL)
+    ZIPINFO_TOOL (default: $ZIPINFO_TOOL)
+
+EOT
+	exit 1
+fi
+
+function the_end () {
+	local ERR=$?
+	if [ -d "$TEMP_ROOT" ]; then
+		rm --recursive "$TEMP_ROOT"
+	fi
+	if [ "$ERR" == 0 ]; then
+		echo "CSAR created: $CSAR"
+	else
+		echo "Failed to create CSAR: $CSAR" > /dev/stderr
+		rm --force "$CSAR"
+		exit $ERR
+	fi
+}
+
+trap the_end EXIT
+
+# CSAR file
+
+CSAR=$1
+
+if [ "${CSAR##*.}" != csar ]; then
+	CSAR=$CSAR.csar
+fi
+
+if [ -f "$CSAR" ]; then
+	echo "CSAR already exists, deleting: $CSAR"
+	rm --force "$CSAR"
+fi
+
+# Root directory
+
+ROOT=$(readlink -f "${2:-.}")
+
+if [ ! -d "$ROOT" ]; then
+	echo "Failed: root not a directory: $ROOT" > /dev/stderr
+	exit 1
+fi
+
+# Zip
+
+mkdir --parents "$(dirname "$CSAR")"
+CSAR=$(readlink -f "$CSAR")
+
+if ! command -v "$ZIP_TOOL" &> /dev/null; then
+	echo "Missing zip tool: $ZIP_TOOL" > /dev/stderr
+	exit 1
+fi
+
+pushd "$ROOT" > /dev/null
+"$ZIP_TOOL" "-$ZIP_LEVEL" --recurse-paths "$CSAR" . > /dev/null
+popd > /dev/null
+
+# Entry-Definitions
+
+if [ -z "$ENTRY_DEFINITIONS" ]; then
+	if ! command -v "$ZIPINFO_TOOL" &> /dev/null; then
+		echo "Missing zipinfo tool: $ZIPINFO_TOOL" > /dev/stderr
+		exit 1
+	fi
+
+	# Try to automatically set Entry-Definitions
+	IFS=$'\n'
+	for F in $("$ZIPINFO_TOOL" -1 "$CSAR"); do
+		if [ "$(dirname "$F")" == . ]; then
+			EXT=${F##*.}
+			if [ "$EXT" == yaml ] || [ "$EXT" == yml ]; then
+				if [ -n "$ENTRY_DEFINITIONS" ]; then
+					echo 'Multiple YAML files in root, you must set ENTRY_DEFINITIONS environment variable to choose one' > /dev/stderr
+					exit 1
+				fi
+				ENTRY_DEFINITIONS=$F
+			fi
+		fi
+	done
+
+	if [ -z "$ENTRY_DEFINITIONS" ]; then
+		echo 'No YAML files in root, you must set ENTRY_DEFINITIONS environment variable to choose one' > /dev/stderr
+		exit 1
+	fi
+fi
+
+echo "Entry-Definitions: $ENTRY_DEFINITIONS"
+
+# Metadata
+
+TEMP_ROOT=$(mktemp --directory)
+
+cd "$TEMP_ROOT"
+mkdir TOSCA-Metadata
+
+cat << EOT >> TOSCA-Metadata/TOSCA.meta
+TOSCA-Meta-File-Version: $TOSCA_META_FILE_VERSION
+CSAR-Version: $CSAR_VERSION
+Created-By: $CREATED_BY
+Entry-Definitions: $ENTRY_DEFINITIONS
+Other-Definitions: $OTHER_DEFINITIONS
+EOT
+
+"$ZIP_TOOL" "-$ZIP_LEVEL" --recurse-paths "$CSAR" . > /dev/null
+

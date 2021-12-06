@@ -84,7 +84,7 @@ def generate():
     log.debug('Input JSON: {0}'.format(input_data))
    
     try:
-        root_wd = adtg_conf.CONFIG.get('service',dict()).get('working_directory',os.getcwd())
+        root_wd = adtg_conf.CONFIG.get('generator',dict()).get('working_directory')
         id = adtg_generate.init_working_directory(log, root_wd)
     except Exception as e:
         log.debug('Generate failed with exception.')
@@ -100,7 +100,7 @@ def generate():
 def download(dir,file):
     global log
     log.debug("download() invoked: "+dir+"/"+file)
-    root_wd = adtg_conf.CONFIG.get('service',dict()).get('working_directory',os.getcwd())
+    root_wd = adtg_conf.CONFIG.get('generator',dict()).get('working_directory')
     return send_from_directory(directory=root_wd, path=os.path.join(dir,file))
 
 def init():

@@ -3,7 +3,6 @@ service:
     port: 4000
     rest_root_path: "/v1/adtg"
     flask_debug_mode: True
-    working_directory: "/home/ubuntu/github-adtg/examples"
     public_endpoint: "http://127.0.0.1:4000"
 
     enable_oidc: false
@@ -22,7 +21,9 @@ compiler:
             import: 'from compiler.utils import translator'
             functions:
                 - translate
-            
+generator:
+    puccini_csar_tool_path: "/home/ubuntu/github-adtg/bin/puccini-csar"
+    working_directory: "/home/ubuntu/github-adtg/examples"
 
 logging:
     version: 1

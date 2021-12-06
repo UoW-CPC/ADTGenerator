@@ -1,12 +1,14 @@
-import adtg_conf
-import os, json
+import os, traceback, json
 from datetime import datetime
+import subprocess 
+
+import adtg_conf
 from compiler import compiler
 
 DIR_IN='inputs'
 DIR_OUT='csar'
 FILE_LOG='generate.log'
-FILE_OUT='dma_csar.zip'
+FILE_OUT='dma_adt.csar'
 
 def save_to_file(dir, file, content):
     f = open(os.path.join(dir,file), "a")
@@ -31,9 +33,6 @@ def init_working_directory(log, root_wd):
     os.makedirs(os.path.join(full_wd,DIR_OUT))
     f = open(os.path.join(full_wd,FILE_LOG), "a")
     f.write("Log of generating CSAR archive based on DMA metadata:\n")
-    f.close()
-    f = open(os.path.join(full_wd,FILE_OUT), "a")
-    f.write("Here comes the final CSAR archive content:\n")
     f.close()
     return gen_wd
 
@@ -73,51 +72,85 @@ def perform_compile(log, type, input):
 def fname(type, id):
     return "{0}.{1}.yaml".format(type, id)
 
+def create_csar(log, full_wd, algo_fname):
+    puccini_csar_tool = adtg_conf.CONFIG.get('generator',dict()).get('puccini_csar_tool_path')
+    if not puccini_csar_tool:
+        msg = "Missing parameter \"puccini_csar_tool\" from configuration: no path to csarchiver binary defined!" 
+        raise Exception(msg)
+    command = "ENTRY_DEFINITIONS={0} {1} {2} {3}".format(algo_fname, puccini_csar_tool, os.path.join(full_wd,FILE_OUT), os.path.join(full_wd,DIR_OUT))
+    msg = "Executing csar tool: \"{}\"".format(command)
+    log.debug(msg)
+    add_log(full_wd, msg+'\n')
+
+    cmd = [puccini_csar_tool,  os.path.join(full_wd,FILE_OUT), os.path.join(full_wd,DIR_OUT)]
+    puccini_env = os.environ.copy()
+    puccini_env["ENTRY_DEFINITIONS"] = algo_fname
+    p = subprocess.Popen(cmd, env=puccini_env, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    for line in p.stdout:
+        log.debug(line.rstrip())
+        add_log(full_wd, line)
+
+    return
+
 def perform_generate(log, root_wd, gen_wd, input_data):
     log.debug('Generate method has been invoked.')
-    root_wd = adtg_conf.CONFIG.get('service',dict()).get('working_directory',os.getcwd())
+    root_wd = adtg_conf.CONFIG.get('generator',dict()).get('working_directory')
     log.debug('Generate: root wd: '+root_wd)
     full_wd = os.path.join(root_wd, gen_wd)
     log.debug('Generate: full wd: '+full_wd)
 
-    check_input_validity(log,input_data)
-    store_input_components_as_files(log,input_data,full_wd)
-    add_log(full_wd, "ADT generation process ID: "+gen_wd+"\n")
+    try:
+        check_input_validity(log,input_data)
+        store_input_components_as_files(log,input_data,full_wd)
+        add_log(full_wd, "ADT generation process ID: "+gen_wd+"\n")
 
-    out_wd = os.path.join(full_wd, DIR_OUT)
-    dmaid = input_data['DMA']['id']
-    msg = 'DMA tuple ID: '+str(dmaid)+'\n'
-    log.info(msg)
-    add_log(full_wd, msg)
+        out_wd = os.path.join(full_wd, DIR_OUT)
+        dmaid = input_data['DMA']['id']
+        msg = 'DMA tuple ID: '+str(dmaid)+'\n'
+        log.info(msg)
+        add_log(full_wd, msg)
 
-    for dmt_name, dmt_content in input_data['DMA']['deployments'].items():
-        add_log(full_wd, "Converting deployment \""+dmt_name+"\"...")
-        dmt_content['id']=dmt_name
-        result = perform_compile(log, 'ddt', dmt_content)
+        for dmt_name, dmt_content in input_data['DMA']['deployments'].items():
+            add_log(full_wd, "Converting deployment \""+dmt_name+"\"...")
+            dmt_content['id']=dmt_name
+            result = perform_compile(log, 'ddt', dmt_content)
+            add_log(full_wd, " done.\n")
+            dmt_fname = fname('deployment',dmt_name.split('.')[1])
+            add_log(full_wd, "Saving deployment \""+dmt_name+"\" into file \""+dmt_fname+"\" ...")
+            save_to_file(out_wd, dmt_fname, result)
+            add_log(full_wd, " done.\n")
+
+        alg_name = input_data['ALGORITHM']['id']
+        add_log(full_wd, "Converting algorithm \""+alg_name+"\"...")
+        result = perform_compile(log, 'algodt', input_data['ALGORITHM'])
         add_log(full_wd, " done.\n")
-        dmt_fname = fname('deployment',dmt_name.split('.')[1])
-        add_log(full_wd, "Saving deployment \""+dmt_name+"\" into file \""+dmt_fname+"\" ...")
-        save_to_file(out_wd, dmt_fname, result)
+        alg_fname = fname('algorithm', alg_name)
+        add_log(full_wd, "Saving algorithm \""+alg_name+"\" into file \""+alg_fname+"\" ...")
+        save_to_file(out_wd, alg_fname, result)
         add_log(full_wd, " done.\n")
 
-    alg_name = input_data['ALGORITHM']['id']
-    add_log(full_wd, "Converting algorithm \""+alg_name+"\"...")
-    result = perform_compile(log, 'algodt', input_data['ALGORITHM'])
-    add_log(full_wd, " done.\n")
-    alg_fname = fname('algorithm', alg_name)
-    add_log(full_wd, "Saving algorithm \""+alg_name+"\" into file \""+alg_fname+"\" ...")
-    save_to_file(out_wd, alg_fname, result)
-    add_log(full_wd, " done.\n")
+        for ms in input_data['MICROSERVICES']:
+            ms_name = ms['id']
+            add_log(full_wd, "Converting microservice \""+ms_name+"\"...")
+            result = perform_compile(log, 'mdt', ms)
+            add_log(full_wd, " done.\n")
+            ms_fname = fname('microservice',ms_name)
+            add_log(full_wd, "Saving deployment \""+ms_name+"\" into file \""+ms_fname+"\" ...")
+            save_to_file(out_wd, ms_fname, result)
+            add_log(full_wd, " done.\n")
 
-    for ms in input_data['MICROSERVICES']:
-        ms_name = ms['id']
-        add_log(full_wd, "Converting microservice \""+ms_name+"\"...")
-        result = perform_compile(log, 'mdt', ms)
-        add_log(full_wd, " done.\n")
-        ms_fname = fname('microservice',ms_name)
-        add_log(full_wd, "Saving deployment \""+ms_name+"\" into file \""+ms_fname+"\" ...")
-        save_to_file(out_wd, ms_fname, result)
-        add_log(full_wd, " done.\n")
+        msg = "Creating csar zip starts..."
+        log.info(msg)
+        add_log(full_wd, msg+'\n')
+        log.debug("Working directory: "+full_wd+"\nAlgorithm file: "+alg_fname)
+        create_csar(log, full_wd, alg_fname)
+        msg = "Creating csar zip finished."
+        log.info(msg)
+        add_log(full_wd, msg+'\n')
+
+    except Exception as e:
+        add_log(full_wd,traceback.format_exc())
+        raise
 
     #raise Exception("unexpected error during generation")
     return True, "ADT generated successfully"
