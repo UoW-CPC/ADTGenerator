@@ -67,7 +67,7 @@
         "deep learning",
         "CNN"
       ],
-      "deploymentFormat": "docker run",
+      "deploymentFormat": "docker",
       "deploymentData": {
         "image": "dbs-container-repo.emgora.eu/db-ristra-cli-cpu:1.0.0",
         "command": "python3 start.py ${Model_URI}",
@@ -101,35 +101,40 @@
         "deep learning",
         "CNN"
       ],
-      "deploymentFormat": "docker run",
+      "deploymentFormat": "docker",
       "deploymentData": {
-	"image": "dbs-container-repo.emgora.eu/rclone:1",
-        "entrypoint": "/bin/sh -c",
-        "command": [
-           "rclone copy -vv s3_server:{Model_URI} /data && rclone rcd --rc-web-gui-no-open-browser"
-        ],
-        "security_opt": [
-          "seccomp:unconfined"
-        ],
-        "volumes": [
-        {
-          "type": "bind",
-          "source": "./data",
-          "target": "/data",
-          "bind": {
-            "propagation": "rshared"
-          }
-        },
-        "/dev/fuse:/dev/fuse",
-        "./config:/config/rclone/"
-        ],
-        "privileged": true,
-        "healthcheck": {
-          "test": "ls /data || exit 1",
-          "interval": "5s",
-          "timeout": "15s",
-          "retries": 10,
-          "start_period": "1s"
+	"version": "'3'",
+	"services": {
+		"rclone": {
+			"image": "dbs-container-repo.emgora.eu/rclone:1",
+        		"entrypoint": "/bin/sh -c",
+        		"command": [
+           			"rclone copy -vv s3_server:{Model_URI} /data && rclone rcd --rc-web-gui-no-open-browser"
+        		],
+        		"security_opt": [
+          			"seccomp:unconfined"
+        		],
+        		"volumes": [
+        		{
+          			"type": "bind",
+          			"source": "./data",
+          			"target": "/data",
+          			"bind": {
+            				"propagation": "rshared"
+          			}
+        		},
+        		"/dev/fuse:/dev/fuse",
+        		"./config:/config/rclone/"
+        		],
+        		"privileged": true,
+        		"healthcheck": {
+          			"test": "ls /data || exit 1",
+          			"interval": "5s",
+          			"timeout": "15s",
+          			"retries": 10,
+          			"start_period": "1s"
+			}
+		}
         }
       }
     }
