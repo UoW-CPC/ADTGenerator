@@ -149,7 +149,7 @@ def perform_generate(log, root_wd, gen_wd, input_data):
         add_log(full_wd, msg+'\n')
 
     except Exception as e:
-        add_log(full_wd,traceback.format_exc())
+        add_log(full_wd,'\n'+traceback.format_exc())
         raise
 
     #raise Exception("unexpected error during generation")
