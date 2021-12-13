@@ -69,24 +69,29 @@
       ],
       "deploymentFormat": "docker",
       "deploymentData": {
-        "image": "dbs-container-repo.emgora.eu/db-ristra-cli-cpu:1.0.0",
-        "command": "python3 start.py ${Model_URI}",
-        "depends_on": {
-          "rclone": {
-            "condition": "service_healthy"
-          }
-        },
-        "volumes": [
-          {
-            "type": "bind",
-            "source": "./data",
-            "target": "/data",
-            "bind": {
-              "propagation": "rshared"
-            }
-          }
-        ],
-        "privileged": true
+	      "version": "'3'",
+	      "services": {
+	      	"ristra": {
+    			"image": "dbs-container-repo.emgora.eu/db-ristra-cli-cpu:1.0.0",
+    			"command": "python3 start.py ${Model_URI}",
+    			"depends_on": {
+      				"rclone": {
+        				"condition": "service_healthy"
+				}
+			},
+    			"volumes": [
+      			{
+				"type": "bind",
+        			"source": "./data",
+        			"target": "/data",
+        			"bind": {
+          				"propagation": "rshared"
+				}
+			}
+			],
+			"privileged": "true"
+		}
+	      }
       }
     },
     {
