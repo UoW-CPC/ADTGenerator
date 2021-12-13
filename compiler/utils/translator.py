@@ -19,7 +19,7 @@ def translate(deployment_format: str = None, topologody_metadata: dict = None, l
             adt = _translate('docker', topologody_metadata)
             return _build_adt(adt)
         else:
-            raise 'input error'
+            raise Exception("Wrong deploymentFormat! Please, specify \"docker\" or \"kubernetes\"!")
 
 
 def _build_adt(adt_in: dict) -> str:
@@ -68,7 +68,7 @@ def _translate(deployment_format: str, topologody_metadata: dict, log: logging =
             for service, values in topologody_metadata["services"].items():
                 adt['node_templates'][service] = {'type': 'tosca.nodes.MiCADO.Container.Application.Docker.Deployment',
                                                   'properties': values}
-            for volume, values in topologody_metadata["volumes"].items():
+            for volume, values in topologody_metadata.get("volumes",dict()).items():
                 adt['node_templates'][volume] = {'type': 'tosca.nodes.MiCADO.Container.Volume', 'properties': values}
         except KeyError as e:
             raise e
