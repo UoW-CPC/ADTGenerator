@@ -26,7 +26,9 @@ repositories:
 node_types:
   dbs.microservice.{{ id }}:
     derived_from: dbs.microservice
+    {%- if parameters|length > 1 %}
     properties:
+    {%- endif %}
       {%- for param in parameters %}
       {{ param['name'] }}:
         type: "{{ param['type'] }}"
@@ -40,7 +42,9 @@ node_types:
       {%- endfor %}
 
 topology_template:
+  {%- if parameters|length > 1 %}
   inputs:
+  {%- endif %}
     {%- for param in parameters %}
     {{ param[ 'name' ]}}:
       type: "{{ param['type'] }}"
@@ -56,5 +60,5 @@ topology_template:
   substitution_mappings:
     node_type: "dbs.microservice.{{ id }}"
 
-{{ translate(deploymentData) }}
+{{ translate(deploymentFormat,deploymentData) }}
 

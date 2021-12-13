@@ -11,7 +11,7 @@
 """ Test translator"""
 
 import logging
-from configs import load_translator_manifest
+from configs import load_topology_from_file
 from translator import translate
 
 log = logging.getLogger('testing-translator')
@@ -20,7 +20,6 @@ log.setLevel(logging.DEBUG)
 log.debug('testing translator')
 
 # load_translator_config sample config
-manifest = load_translator_manifest('../tests/translator/sample_manifest.yaml')
-
-adt = translate(manifest)
+topology = load_topology_from_file('../tests/translator/sample_manifest.yaml')
+adt = translate('manifest',topology)
 print(adt)

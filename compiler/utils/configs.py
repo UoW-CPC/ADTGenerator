@@ -29,7 +29,7 @@ def load_compiler_config(path: str) -> dict:
     return config_yaml['compiler']
 
 
-def load_translator_manifest(path: str) -> dict:
+def load_topology_from_file(path: str) -> dict:
     """Loads YAML files from path and creates a dictionary with all YAML objects.
     Requires ruamel.yaml
 
