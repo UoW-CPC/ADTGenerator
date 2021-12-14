@@ -4,23 +4,20 @@ from io import StringIO
 
 
 def translate(deployment_format: str = None, topologody_metadata: dict = None, log: logging = None) -> str:
-    if deployment_format == 'kubernetes-manifest' or deployment_format == 'docker-compose':
-        log.info(f'Translating a {deployment_format}')
     if deployment_format == 'kubernetes-manifest':
-        adt = _translate('kubernetes', topologody_metadata, log)
+        adt = _translate('kubernetes-manifest', topologody_metadata, log)
         return _build_adt(adt, log)
     elif deployment_format == 'docker-compose':
-        adt = _translate('docker', topologody_metadata, log)
+        adt = _translate('docker-compose', topologody_metadata, log)
         return _build_adt(adt, log)
     else:
         log.warning(f'Topology format is undefined, trying to specify')
         topologody_type = _check_type(topologody_metadata, log)
-        log.info(f'Translating a {topologody_type}')
         if topologody_type == 'kubernetes-manifest':
-            adt = _translate('kubernetes', topologody_metadata, log)
+            adt = _translate('kubernetes-manifest', topologody_metadata, log)
             return _build_adt(adt, log)
         elif topologody_type == 'docker-compose':
-            adt = _translate('docker', topologody_metadata, log)
+            adt = _translate('docker-compose', topologody_metadata, log)
             return _build_adt(adt, log)
         else:
             log.debug("Wrong deploymentFormat! Please, specify \"docker-compose\" or \"kubernetes-manifest\"!")
@@ -58,7 +55,7 @@ def _translate(deployment_format: str, topologody_metadata: dict, log: logging =
     adt = {"node_templates": {}}
     if deployment_format == 'kubernetes-manifest':
         try:
-            log.debug(f'Translating a kubernetes manifest')
+            log.info(f'Translating a kubernetes-manifest')
             name = topologody_metadata["metadata"]["name"].lower()
             kind = topologody_metadata["kind"].lower()
             name_kind = f'{name}-{kind}'
@@ -71,17 +68,17 @@ def _translate(deployment_format: str, topologody_metadata: dict, log: logging =
                                                                        {"create":
                                                                             {"inputs": topologody_metadata}}}, }
         except KeyError as e:
-            log.debug("Wrong kubernetes manifest format!")
+            log.debug("Wrong kubernetes-manifest format!")
             raise e
     if deployment_format == 'docker-compose':
         try:
-            log.debug(f'Translating a docker compose')
+            log.info(f'Translating a docker-compose')
             for service, values in topologody_metadata["services"].items():
                 adt['node_templates'][service] = {'type': 'tosca.nodes.MiCADO.Container.Application.Docker.Deployment',
                                                   'properties': values}
             for volume, values in topologody_metadata.get("volumes",dict()).items():
                 adt['node_templates'][volume] = {'type': 'tosca.nodes.MiCADO.Container.Volume', 'properties': values}
         except KeyError as e:
-            log.debug("Wrong docker compose format!")
+            log.debug("Wrong docker-compose format!")
             raise e
     return adt

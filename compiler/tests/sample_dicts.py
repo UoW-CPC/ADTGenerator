@@ -647,3 +647,148 @@ mdt_dock = {
     ],
 'metric': []
 }
+
+
+
+mdt_ristra = {
+'id': 'microservice_12312124',
+'name': 'Object Detection for faulty parts',
+'author': 'DFKI',
+'date': '06/04/2021',
+'version': '1.0',
+'description': 'This microservices solves a certain problem using very specific methods. It supports some special input types, and allows results to be presented in chosen format.',
+'classificationSchema': 'other',
+'type':
+    ['neural network','deep learning'],
+'software':
+    ['Apache Kafka','TensorFlow'],
+'softwareVersion':
+    ['Kafka 2.7.0','TensorFlow 2.4.1'],
+'containerFormat': 'Docker',
+'image': 'dbs-container-repo.emgora.eu/db-ristra-cli-cpu:1.0.0',
+'deploymentFormat': 'docker-compose',
+'deploymentData':
+    {
+    "version": "'3'",
+    "services":
+        {
+        "ristra":
+            {
+            "image": "dbs-container-repo.emgora.eu/db-ristra-cli-cpu:1.0.0",
+            "command": "python3 start.py ${Model_URI}",
+            "depends_on":
+                {
+                "rclone":
+                    {
+                    "condition": "service_healthy"
+                    }
+                },
+            "volumes":
+                [
+                    {
+                    "type": "bind",
+                    "source": "./data",
+                    "target": "/data",
+                    "bind":
+                        {
+                        "propagation": "rshared"
+                        }
+                    }
+                ],
+            "privileged": "true"
+            }
+        }
+    },
+'dependencyRequirements': 'MicroserviceAsset_ID_123',
+'storageRequirements': 'needs to share volume with MicroserviceAsset_ID_123',
+'limitations': 'can only work with jpg files',
+'recommendedNumberOfGPUCores': 2,
+'minimumNumberOfGPUCores': 1,
+'recommendedGPURAM': 6,
+'minimumGPURAM': 1,
+'gpuType': 'NVidia (compute capability >= 7.0)',
+'hpcRequired': '"True"',
+'hpcType': 'hpcType',
+'edgeType': 'NVIDIA Jetson AGX',
+'recommendedRAM': 16,
+'minimumRAM': 2,
+'recommendedCPUs': 4,
+'minimumCPUs': 2,
+'requiredDiskSpace': 42,
+'osArch': 'x86_64',
+'osType': 'linux',
+'osDistribution': 'ubuntu',
+'osVersion': '20.04',
+'inputData':
+    [
+        {
+            'INPUT_ID': 'SAMPLE_ID',
+            'DATA_KIND':
+                 ['FILE','STREAM'],
+             'DATA_DIRECTION':
+                 ['SINK','BIDIRECTIONAL'],
+             'DATA_FORMAT':
+                 ['application/zip','image/jpg'],
+             'DATA_SOURCE_TYPE':
+                 ['MYSQL', 'KAFKA'],
+             'DATA_PROTOCOL':
+                 ['HTTP','HTTPS'],
+             'DATA_AUTH_TYPE':
+                 ['tls_mutual','userpass'],
+             'DATA_MYSQL_DIALECT':
+                 ['mariadbdialect','sampledialect'],
+             'DATA_MQTT_PROTOCOL_VERSION':
+                 ['2.3.1','2.3.2'],
+             'DATA_KAFKA_BROKER_VERSION':
+                 ['2.7.1','2.5'],
+             'DATA_S3_REGION':
+                 ['eu-central-1','eu-central-2'],
+             'DATA_SCHEMA':
+                 ['jpg','png' ]
+        }
+    ],
+'outputData':
+    [
+        {
+            'OUTPUT_ID': 'SAMPLEO_ID',
+             'DATA_KIND':
+                ['FILE','STREAM'],
+            'DATA_DIRECTION':
+                ['SINK','BIDIRECTIONAL'],
+            'DATA_FORMAT':
+                ['application/zip','image/jpg'],
+            'DATA_SOURCE_TYPE':
+                 ['MYSQL','KAFKA'],
+            'DATA_PROTOCOL':
+                ['HTTP','HTTPS'],
+            'DATA_AUTH_TYPE':
+                 ['tls_mutual','userpass'],
+            'DATA_MYSQL_DIALECT':
+                ['mariadbdialect','sampledialect'],
+            'DATA_MQTT_PROTOCOL_VERSION':
+                ['2.3.1','2.3.2'],
+            'DATA_KAFKA_BROKER_VERSION':
+                ['2.7.1','2.5'],
+            'DATA_S3_REGION':
+                ['eu-central-1','eu-central-2'],
+            'DATA_SCHEMA':
+                ['jpg','png']
+        }
+    ],
+'modelTypes':
+     ['SavedModel1 (Tensorflo1)','SavedModel2 (Tensorflo2)'],
+'modelRecommendedAuthTools':
+    ['SavedModel1 (Tensorflo3)','SavedModel2 (Tensorflo4)'],
+'parameters':
+    [
+        {
+            'name':'n1', 'type':'int','mandatory': True,
+            'defaultValue':'45','description':'sample n1'
+         },
+        {
+            'name':'n2', 'type':'bool','mandatory': False,
+            'defaultValue':'45','description':'sample n2'
+        }
+    ],
+'metric': []
+}
