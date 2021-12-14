@@ -20,7 +20,7 @@ def translate(deployment_format: str = None, topologody_metadata: dict = None, l
             adt = _translate('docker-compose', topologody_metadata, log)
             return _build_adt(adt, log)
         else:
-            log.debug("Wrong deploymentFormat! Please, specify \"docker-compose\" or \"kubernetes-manifest\"!")
+            log.error("Wrong deploymentFormat! Please, specify \"docker-compose\" or \"kubernetes-manifest\"!")
             raise Exception("Wrong deploymentFormat! Please, specify \"docker-compose\" or \"kubernetes-manifest\"!")
 
 
@@ -68,7 +68,7 @@ def _translate(deployment_format: str, topologody_metadata: dict, log: logging =
                                                                        {"create":
                                                                             {"inputs": topologody_metadata}}}, }
         except KeyError as e:
-            log.debug("Wrong kubernetes-manifest format!")
+            log.error("Wrong kubernetes-manifest format!")
             raise e
     if deployment_format == 'docker-compose':
         try:
@@ -79,6 +79,6 @@ def _translate(deployment_format: str, topologody_metadata: dict, log: logging =
             for volume, values in topologody_metadata.get("volumes",dict()).items():
                 adt['node_templates'][volume] = {'type': 'tosca.nodes.MiCADO.Container.Volume', 'properties': values}
         except KeyError as e:
-            log.debug("Wrong docker-compose format!")
+            log.error("Wrong docker-compose format!")
             raise e
     return adt
