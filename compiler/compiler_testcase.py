@@ -28,7 +28,7 @@ config = load_compiler_config('./tests/configs/compiler.yml')
 # noinspection PyUnresolvedReferences
 compiler.init(config['template_directory'], config['modules'], log)
 
-metadata = sample_dicts.mdt_dock
+metadata = sample_dicts.mdt_kube
 
 # noinspection PyUnresolvedReferences
 test_run = compiler.compile("mdt.yaml", metadata, log)

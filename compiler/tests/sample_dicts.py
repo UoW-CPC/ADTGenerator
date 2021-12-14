@@ -409,7 +409,7 @@ mdt_kube = {
     ['Kafka 2.7.0','TensorFlow 2.4.1'],
 'containerFormat': 'Docker',
 'image': 'dockerhub://dfki/object_detection/stuff',
-'deploymentFormat': 'kubernetes',
+'deploymentFormat': 'kubernetes-manifest',
 'deploymentData':
     {
         'apiVersion': 'v1', 'kind': 'Pod',
@@ -532,7 +532,7 @@ mdt_dock = {
     ['Kafka 2.7.0','TensorFlow 2.4.1'],
 'containerFormat': 'Docker',
 'image': 'dbs-container-repo.emgora.eu/db-ristra-cli-cpu:1.0.0',
-'deploymentFormat': 'docker',
+'deploymentFormat': 'docker-compose',
 'deploymentData':
     {
         'version': '3.9',
