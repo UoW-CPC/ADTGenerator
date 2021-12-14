@@ -88,6 +88,12 @@ def compile(type: str, metadata: dict, log: logging) -> str:
             log.warning(f'No functions loaded to jinja2 for module: {module_name}')
             log.warning(e)
     try:
+        # Evaluate a function and add it to the jinja2 globals
+        dt.globals['log'] = log
+        log.debug(f'Logger loaded: [{log}]')
+    except Exception as e:
+        log.error(f'Logger cannot be loaded: [{log}], {e}')
+    try:
         dt = dt.render(metadata)
         log.info('Compilation completed successfully')
         return dt

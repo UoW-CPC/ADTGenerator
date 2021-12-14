@@ -18,7 +18,7 @@ from utils.configs import load_compiler_config
 from tests import sample_dicts
 
 log = logging.getLogger('testing-compiler')
-log.setLevel(logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 
 log.debug('testing compiler')
 

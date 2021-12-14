@@ -60,5 +60,5 @@ topology_template:
   substitution_mappings:
     node_type: "dbs.microservice.{{ id }}"
 
-{{ translate(deploymentFormat,deploymentData) }}
+{{ translate(deploymentFormat,deploymentData, log) }}
 
