@@ -11,7 +11,7 @@ def translate(deployment_format: str = None, topologody_metadata: dict = None, l
         adt = _translate('docker-compose', topologody_metadata, log)
         return _build_adt(adt, log)
     else:
-        log.warning(f'Topology format is undefined, trying to specify')
+        log.warning(f'Topology format is undefined')
         topologody_type = _check_type(topologody_metadata, log)
         if topologody_type == 'kubernetes-manifest':
             adt = _translate('kubernetes-manifest', topologody_metadata, log)
