@@ -12,11 +12,14 @@
     ],
     "deployments": {
       "deployment.MSID_RISTRA": {
-        "deployment_id": "2075423c-6de4-49bd-a965-b6a65eee47f7",
-        "instance_type_id": "ca727925-a5ca-4697-b2c3-8788d82457d5",
-        "key_pair_id": "22b48bc8-10e3-4ab9-8e81-008b5affd400",
-        "opened_port": "22",
-        "endpoint": "https://cloudsme-cbp.scaletools.com.ua/"
+	"type": "cloudbroker",
+	"cloudbroker": {
+	  "deployment_id": "2075423c-6de4-49bd-a965-b6a65eee47f7",
+	  "instance_type_id": "ca727925-a5ca-4697-b2c3-8788d82457d5",
+	  "key_pair_id": "22b48bc8-10e3-4ab9-8e81-008b5affd400",
+	  "opened_port": "22",
+	  "endpoint": "https://cloudsme-cbp.scaletools.com.ua/"
+	}
       }
     }
   },
