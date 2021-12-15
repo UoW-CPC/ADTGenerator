@@ -14,15 +14,21 @@ topology_template:
 
   node_templates:
     {{ id }}:
+    {% if type == 'cloudbroker' %}
       type: tosca.nodes.MiCADO.CloudBroker.Compute
       properties:
-        deployment_id: {{ deployment_id }}
-        instance_type_id: {{ instance_type_id }}
-        key_pair_id: {{ key_pair_id }}
-        opened_port: "{{ opened_port }}"
+        deployment_id: {{ cloudbroker['deployment_id'] }}
+        instance_type_id: {{ cloudbroker['instance_type_id'] }}
+        key_pair_id: {{ cloudbroker['key_pair_id'] }}
+        opened_port: "{{ cloudbroker['opened_port'] }}"
 
     interfaces:
        Occopus:
          create:
            inputs:
-             endpoint: {{ endpoint }}
+             endpoint: {{ cloudbroker['endpoint'] }}
+    {% elif type == 'edge' %}
+      {{ raise("No implementation for edge deployment") }}
+    {% else %}
+      {{ raise("Wrong type of deployment") }}
+    {% endif %}

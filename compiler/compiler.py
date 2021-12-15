@@ -50,10 +50,14 @@ def compile(type: str, metadata: dict, log: logging) -> str:
 
     :return: DT as a string object
     """
+    def raise_helper(msg):
+        raise Exception(msg)
+
     log.info(f'Attempting to render a(n) {type}')
     from jinja2 import Environment, FileSystemLoader, exceptions
     # Load all templates from path
     env = Environment(loader=FileSystemLoader(_templates_path))
+    env.globals['raise'] = raise_helper
     # Try to load input template, if not exists raise
     log.debug(f'Loading template: {type}')
     try:
