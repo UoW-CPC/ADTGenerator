@@ -30,12 +30,35 @@
   },
   "ALGORITHM":
   {
-	"id": "my_ALGID"
+	"id": "my_ALGID",
+	"abstractHostDefinition": {
+      		"microservice.MSID_RISTRA": "deployment.MSID_RISTRA",
+      		"microservice.MSID_RCLONE": "deployment.MSID_RISTRA"
+    	}
   },
   "MICROSERVICES":
   [
     {
-	"id": "my_MSID_ABC"
+	"id": "my_MSID_ABC",
+	"deploymentData": {
+		"apiVersion": "v1",
+    		"kind": "Pod",
+    		"metadata": {
+      			"name": "busybox-sleep"
+    		},
+    		"spec": {
+      			"containers": [
+        		{
+          			"name": "busybox",
+          			"image": "busybox",
+          			"args": [
+            				"sleep",
+            				"1000000"
+          			]
+        		}
+      			]
+    		}
+	}
     },
     {
 	"id": "my_MSID_DEF"

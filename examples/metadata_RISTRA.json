@@ -14,12 +14,11 @@
       "deployment.MSID_RISTRA": {
 	"type": "cloudbroker",
 	"cloudbroker": {
-	  "deployment_id": "2075423c-6de4-49bd-a965-b6a65eee47f7",
-	  "instance_type_id": "ca727925-a5ca-4697-b2c3-8788d82457d5",
-	  "key_pair_id": "22b48bc8-10e3-4ab9-8e81-008b5affd400",
-	  "opened_port": "22",
-	  "endpoint": "https://cloudsme-cbp.scaletools.com.ua/"
-	}
+        "deployment_id": "16b1e2d4-3a2c-406e-8c45-5637099021f0",
+        "instance_type_id": "ca727925-a5ca-4697-b2c3-8788d82457d5",
+        "key_pair_id": "22873697-c9ec-4685-bddc-760436662bce",
+        "opened_port": "2379,4500,30010,8285,30012,443,10250,30888,30000,6443,22,500,8472,30012,4500,500",
+        "endpoint": "https://cloudsme-cbp.scaletools.com.ua/"
       }
     }
   },
@@ -70,13 +69,17 @@
         "deep learning",
         "CNN"
       ],
-      "deploymentFormat": "docker",
+      "deploymentFormat": "docker-compose",
       "deploymentData": {
 	      "version": "'3'",
 	      "services": {
 	      	"ristra": {
     			"image": "dbs-container-repo.emgora.eu/db-ristra-cli-cpu:1.0.0",
-    			"command": "python3 start.py ${Model_URI}",
+    			"command": [
+				"/bin/sh",
+				"-c" ],
+			"args": [
+				"python3 start.py /data/engine_mount.zip" ],
     			"depends_on": {
       				"rclone": {
         				"condition": "service_healthy"
