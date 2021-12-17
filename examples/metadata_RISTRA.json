@@ -52,9 +52,15 @@
       "microservice.MSID_RISTRA",
       "microservice.MSID_RCLONE"
     ],
-    "abstractHostDefinition": {
+    "deploymentMapping": {
       "microservice.MSID_RISTRA": "deployment.MSID_RISTRA",
       "microservice.MSID_RCLONE": "deployment.MSID_RISTRA"
+    },
+    "volumeMapping": {
+      "microservice.MSID_RISTRA": [
+	      "microservice.MSID_RCLONE"
+      ],
+      "microservice.MSID_RCLONE": []
     }
   },
   "MICROSERVICES": [
