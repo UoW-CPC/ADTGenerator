@@ -1,16 +1,16 @@
 tosca_definitions_version: tosca_simple_yaml_1_2
 
 imports:
-- https://raw.githubusercontent.com/micado-scale/tosca/digitbrain/micado_types.yaml
+- https://raw.githubusercontent.com/micado-scale/tosca/master/micado_types.yaml
 
 node_types:
-  dbs.{{ id }}:
-    derived_from: dbs.deployment
+  micado.deployment.{{ id }}:
+    derived_from: micado.deployment
 
 topology_template:
 
   substitution_mappings:
-    node_type: dbs.{{ id }}
+    node_type: micado.{{ id }}
 
   node_templates:
     {{ id }}:
@@ -22,11 +22,11 @@ topology_template:
         key_pair_id: {{ cloudbroker['key_pair_id'] }}
         opened_port: "{{ cloudbroker['opened_port'] }}"
 
-    interfaces:
-       Occopus:
-         create:
-           inputs:
-             endpoint: {{ cloudbroker['endpoint'] }}
+      interfaces:
+         Occopus:
+           create:
+             inputs:
+               endpoint: {{ cloudbroker['endpoint'] }}
     {% elif type == 'edge' %}
       {{ raise("No implementation for edge deployment") }}
     {% else %}

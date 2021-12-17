@@ -15,32 +15,48 @@ metadata:
 description: "{{ description }}"
 
 imports:
-- https://raw.githubusercontent.com/micado-scale/tosca/digitbrain/micado_types.yaml
-{%- for microservice in abstractHostDefinition %}
+- https://raw.githubusercontent.com/micado-scale/tosca/master/micado_types.yaml
+{%- for microservice in deploymentMapping %}
 - {{ microservice }}.yaml
 {%- endfor %}
-{%- for host in abstractHostDefinition.values() | unique %}
+{%- for host in deploymentMapping.values() | unique %}
 - {{ host }}.yaml
 {%- endfor %}
-
-repositories:
-  docker_hub: https://hub.docker.com/
-  dbs_registry: https://dbs-container-repo.emgora.eu/v2/
 
 topology_template:
   node_templates:
   {%- for microservice in listOfMicroservices %}
     {{microservice}}:
-      type: dbs.{{ microservice }}
+      type: micado.{{ microservice }}
       requirements:
-      {%- for _microservice in abstractHostDefinition.items() %}
+      {%- for _microservice in deploymentMapping.items() %}
       {%- set _microservice, host = _microservice %}
       {%- if _microservice == microservice %}
-      - {{host}}
+      - host: {{host}}
       {%- endif %}
       {%- endfor %}
+      {%- if volumeMapping != NULL %}
+      {%- for _microservice in volumeMapping.items() %}
+      {%- set _microservice, volumelist = _microservice %}
+      {%- if _microservice == microservice %}
+      {%- for volume in volumelist %}
+      - volume: {{volume}}
+      {%- endfor %}
+      {%- endif %}
+      {%- endfor %}
+      {%- endif %}
   {%- endfor %}
-  {%- for host in abstractHostDefinition.values() | unique %}
+
+  {%- for host in deploymentMapping.values() | unique %}
     {{ host }}:
-      type: dbs.{{ host }}
+      type: micado.{{ host }}
   {%- endfor %}
+
+  policies:
+  - monitoring:
+      type: tosca.policies.Monitoring.MiCADO
+      properties:
+        enable_container_metrics: false
+        enable_node_metrics: false
+
+

@@ -17,15 +17,11 @@ metadata:
 description: "{{ description }}"
 
 imports:
-- https://raw.githubusercontent.com/micado-scale/tosca/digitbrain/micado_types.yaml
-
-repositories:
-  docker_hub: https://hub.docker.com/
-  dbs_registry: https://dbs-container-repo.emgora.eu/v2/
+- https://raw.githubusercontent.com/micado-scale/tosca/master/micado_types.yaml
 
 node_types:
-  dbs.microservice.{{ id }}:
-    derived_from: dbs.microservice
+  micado.microservice.{{ id }}:
+    derived_from: micado.microservice
     {%- if parameters|length > 1 %}
     properties:
     {%- endif %}
@@ -58,7 +54,7 @@ topology_template:
     {%- endfor %}
 
   substitution_mappings:
-    node_type: "dbs.microservice.{{ id }}"
+    node_type: micado.microservice.{{id}}
 
 {{ translate(deploymentFormat,deploymentData, log) }}
 
