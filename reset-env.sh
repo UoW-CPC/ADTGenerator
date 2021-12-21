@@ -11,5 +11,5 @@ source "$PDIR"/bin/activate
 pip install -r requirements.txt 
 
 set +ex
-echo "Please, run: source '$PDIR/bin/activate'"
+echo "Now, you can execute 'run.sh' whenever you need the ADTG service"
 
