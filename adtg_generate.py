@@ -1,6 +1,7 @@
 import os, traceback, json
 from datetime import datetime
 import subprocess 
+from micadoparser import set_template, MultiError
 
 import adtg_conf
 from compiler import compiler
@@ -92,6 +93,19 @@ def create_csar(log, full_wd, algo_fname):
 
     return
 
+def validate_csar(log, full_wd):
+    try:
+        set_template(os.path.join(full_wd, FILE_OUT))
+        return
+    except MultiError as e:
+        msg = "ERROR: exception occured during validation, details:"
+        log.error(msg)
+        log.error(str(e))
+        add_log(full_wd, msg+'\n')
+        add_log(full_wd, str(e))
+    raise Exception("ERROR: Validation of the generated csar FAILED! See logs for details.")
+    return
+
 def perform_generate(log, root_wd, gen_wd, input_data):
     log.debug('Generate method has been invoked.')
     root_wd = adtg_conf.CONFIG.get('generator',dict()).get('working_directory')
@@ -145,6 +159,15 @@ def perform_generate(log, root_wd, gen_wd, input_data):
         log.debug("Working directory: "+full_wd+"\nAlgorithm file: "+alg_fname)
         create_csar(log, full_wd, alg_fname)
         msg = "Creating csar zip finished."
+        log.info(msg)
+        add_log(full_wd, msg+'\n')
+
+        msg = "Validating csar zip (with micadoparser) starts..."
+        log.info(msg)
+        add_log(full_wd, msg+'\n')
+        log.debug("CSAR file:"+os.path.join(full_wd,FILE_OUT))
+        validate_csar(log, full_wd)
+        msg = "Validating csar zip finished."
         log.info(msg)
         add_log(full_wd, msg+'\n')
 
