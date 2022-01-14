@@ -11,5 +11,6 @@ source "$PDIR"/bin/activate
 pip install -r requirements.txt 
 
 set +ex
-echo "Now, you can execute 'run.sh' whenever you need the ADTG service"
+echo "Do not forget to activate your virtual environment: source $PDIR/bin/activate"
+echo "If environment is activated, 'run.sh' to launch the ADT Generator service"
 
