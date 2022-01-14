@@ -14,6 +14,9 @@ metadata:
 
 description: "{{ description }}"
 
+repositories:
+  docker_hub: https://hub.docker.com/
+
 imports:
 - https://raw.githubusercontent.com/micado-scale/tosca/develop/micado_types.yaml
 
