@@ -78,20 +78,11 @@
       ],
       "deploymentFormat": "docker-compose",
       "deploymentData": {
-	      "version": "'3'",
+	      "version": "3.7",
 	      "services": {
 	      	"ristra": {
     			"image": "dbs-container-repo.emgora.eu/db-ristra-cli-cpu:1.0.0",
-    			"command": [
-				"/bin/sh",
-				"-c" ],
-			"args": [
-				"python3 start.py /data/engine_mount.zip" ],
-    			"depends_on": {
-      				"rclone": {
-        				"condition": "service_healthy"
-				}
-			},
+    			"command": "/bin/sh -c python3 start.py /data/engine_mount.zip",
     			"volumes": [
       			{
 				"type": "bind",
@@ -102,7 +93,7 @@
 				}
 			}
 			],
-			"privileged": "true"
+			"privileged": true
 		}
 	      }
       }
@@ -119,9 +110,9 @@
         "deep learning",
         "CNN"
       ],
-      "deploymentFormat": "docker",
+      "deploymentFormat": "docker-compose",
       "deploymentData": {
-	"version": "'3'",
+	"version": "3.7",
 	"services": {
 		"rclone": {
 			"image": "dbs-container-repo.emgora.eu/rclone:1",
