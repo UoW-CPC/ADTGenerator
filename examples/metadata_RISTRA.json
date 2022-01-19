@@ -18,7 +18,7 @@
           "instance_type_id": "ca727925-a5ca-4697-b2c3-8788d82457d5",
           "key_pair_id": "22873697-c9ec-4685-bddc-760436662bce",
           "opened_port": "2379,4500,30010,8285,30012,443,10250,30888,30000,6443,22,500,8472,30012,4500,500",
-          "endpoint": "https://cloudsme-cbp.scaletools.com.ua/"
+          "endpoint": "https://cloudsme-cbp.scaletools.com.ua"
 	}
       }
     }
@@ -82,11 +82,12 @@
 	      "services": {
 	      	"ristra": {
     			"image": "dbs-container-repo.emgora.eu/db-ristra-cli-cpu:1.0.0",
-    			"command": "/bin/sh -c python3 start.py /data/engine_mount.zip",
+			"entrypoint": "/bin/sh -c",
+    			"command": "python3 start.py /data/engine_mount.zip",
     			"volumes": [
       			{
 				"type": "bind",
-        			"source": "./data",
+        			"source": "/data",
         			"target": "/data",
         			"bind": {
           				"propagation": "rshared"
@@ -116,33 +117,21 @@
 	"services": {
 		"rclone": {
 			"image": "dbs-container-repo.emgora.eu/rclone:1",
-        		"entrypoint": "/bin/sh -c",
-        		"command": [
-           			"rclone copy -vv s3_server:{Model_URI} /data && rclone rcd --rc-web-gui-no-open-browser"
-        		],
-        		"security_opt": [
-          			"seccomp:unconfined"
-        		],
+			"entrypoint": "/bin/sh -c",
+        		"command": "rclone copy -vv --daemno --dir-cache-time 5s s3_server:dbrain-s3-test  /data && rclone rcd --rc-web-gui-no-open-browser",
         		"volumes": [
         		{
           			"type": "bind",
-          			"source": "./data",
+          			"source": "/data",
           			"target": "/data",
           			"bind": {
             				"propagation": "rshared"
           			}
         		},
         		"/dev/fuse:/dev/fuse",
-        		"./config:/config/rclone/"
+        		"/config:/config/rclone"
         		],
-        		"privileged": true,
-        		"healthcheck": {
-          			"test": "ls /data || exit 1",
-          			"interval": "5s",
-          			"timeout": "15s",
-          			"retries": 10,
-          			"start_period": "1s"
-			}
+        		"privileged": true
 		}
         }
       }
