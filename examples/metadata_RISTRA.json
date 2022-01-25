@@ -97,6 +97,11 @@
 			"privileged": true
 		}
 	      }
+      },
+      "configurationData": {
+        "filePath": "/config/rclone/rclone.conf",
+        "fileContent": "[s3_server]\ntype = s3\nprovider = AWS\nenv_auth = false\naccess_key_id = ABC123 \nsecret_access_key = BBC123\nregion = eu-central-1\nendpoint =\n",
+        "mountPropagation": true
       }
     },
     {
@@ -118,7 +123,7 @@
 		"rclone": {
 			"image": "dbs-container-repo.emgora.eu/rclone:1",
 			"entrypoint": "/bin/sh -c",
-        		"command": "rclone copy -vv --daemno --dir-cache-time 5s s3_server:dbrain-s3-test  /data && rclone rcd --rc-web-gui-no-open-browser",
+        		"command": "rclone copy -vv --daemno --dir-cache-time 5s s3_server:{{ MODEL_URI }}  /data && rclone rcd --rc-web-gui-no-open-browser",
         		"volumes": [
         		{
           			"type": "bind",
