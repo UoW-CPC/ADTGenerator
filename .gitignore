@@ -139,4 +139,5 @@ cython_debug/
 
 #Secret files
 secret.json
+s3secret.json
 
