@@ -24,6 +24,11 @@ compiler:
 generator:
     puccini_csar_tool_path: "/home/ubuntu/github-adtg/bin/puccini-csar"
     working_directory: "/home/ubuntu/github-adtg/examples"
+    s3_upload_config:
+            enabled: False
+            s3bucketname: "myadtgeneratortest"
+            s3urlprefix: "https://myadtgeneratortest.s3.amazonaws.com"
+            s3_keys_json_path: "/home/ubuntu/github-adtg/config/s3secret.json"
 
 logging:
     version: 1

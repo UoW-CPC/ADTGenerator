@@ -61,11 +61,17 @@ def compile(type):
         return jsonify({"error": str(e)})
 
 def make_response(success, message, id):
-    endpoint = adtg_conf.CONFIG.get('service',dict()).get('public_endpoint')
-    rest_root_path = adtg_conf.CONFIG.get('service',dict()).get('rest_root_path')
-    log_route = "/".join([i.strip("/").lstrip("/") for i in [endpoint, rest_root_path, 'download', str(id), adtg_generate.FILE_LOG]])
+    if adtg_conf.CONFIG.get('generator',dict()).get('s3_upload_config',dict()).get('enabled',False):
+        s3config = adtg_conf.CONFIG['generator']['s3_upload_config']
+        endpoint = s3config['s3urlprefix']
+        rest_path = s3config['s3bucketname']
+    else:
+        endpoint = adtg_conf.CONFIG.get('service',dict()).get('public_endpoint')
+        rest_path = "/".join([i.strip("/").lstrip("/") for i in [adtg_conf.CONFIG.get('service',dict()).get('rest_root_path'),"download"]])
+
+    log_route = "/".join([i.strip("/").lstrip("/") for i in [endpoint, rest_path, str(id), adtg_generate.FILE_LOG]])
     if success:
-        adt_route = "/".join([i.strip("/").lstrip("/") for i in [endpoint, rest_root_path, 'download', str(id), adtg_generate.FILE_OUT]])
+        adt_route = "/".join([i.strip("/").lstrip("/") for i in [endpoint, rest_path, str(id), adtg_generate.FILE_OUT]])
     else:
         adt_route = None
     response = dict(success=success,

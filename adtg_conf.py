@@ -1,4 +1,4 @@
-import yaml, logging,logging.config, argparse
+import yaml, json, logging,logging.config, argparse
 log = None
 CONFIG = None
 service_host = None
@@ -54,4 +54,17 @@ def init():
      secrets_json_path = CONFIG.get('service',dict()).get('secrets_json_path', None)
      secrets_json_path = args.secrets_json_path if args.secrets_json_path else secrets_json_path
 
+     if CONFIG.get('generator',dict()).get('s3_upload_config',dict()).get("enabled",False):
+        s3_upload_config = CONFIG.get('generator').get('s3_upload_config')
+        for key in ['s3bucketname','s3urlprefix','s3_keys_json_path']:
+            if s3_upload_config.get(key,None) is None:
+                raise Exception("Missing key in ADT Generator configuration: "+key)
+        with open(s3_upload_config['s3_keys_json_path']) as json_file:
+            data = json.load(json_file)
+            if data.get('s3_aws_access_key',None) is None:
+                raise Exception("Missing key in s3_keys_json_path of ADT Generator configuration: s3_aws_access_key")
+            if data.get('s3_aws_secret_key',None) is None:
+                raise Exception("Missing key in s3_keys_json_path of ADT Generator configuration: s3_aws_secret_key")
+            CONFIG['generator']['s3_upload_config']['s3_aws_access_key']=data['s3_aws_access_key']
+            CONFIG['generator']['s3_upload_config']['s3_aws_secret_key']=data['s3_aws_secret_key']
 
