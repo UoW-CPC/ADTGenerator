@@ -71,9 +71,9 @@ def perform_substitution(template_dict, data_dict):
     t = jinja2.Template(json.dumps(template_dict))
     return json.loads(t.render(data_dict))
 
-def perform_compile(log, type, input):
+def perform_compile(type, input):
     template_file = adtg_conf.CONFIG.get('compiler',dict()).get('templates',dict()).get(type)
-    result = compiler.compile(template_file, input, log)
+    result = compiler.compile(template_file, input)
     return result
 
 def fname(type, id):
@@ -143,7 +143,7 @@ def perform_generate(log, root_wd, gen_wd, input_data):
         for dmt_name, dmt_content in input_data['DMA']['deployments'].items():
             add_log(full_wd, "Converting deployment \""+dmt_name+"\"...")
             dmt_content['id']=dmt_name
-            result = perform_compile(log, 'ddt', dmt_content)
+            result = perform_compile('ddt', dmt_content)
             add_log(full_wd, " done.\n")
             dmt_fname = fname('deployment',dmt_name)
             add_log(full_wd, "Saving deployment \""+dmt_name+"\" into file \""+dmt_fname+"\" ...")
@@ -152,7 +152,7 @@ def perform_generate(log, root_wd, gen_wd, input_data):
 
         alg_name = input_data['ALGORITHM']['id']
         add_log(full_wd, "Converting algorithm \""+alg_name+"\"...")
-        result = perform_compile(log, 'algodt', input_data['ALGORITHM'])
+        result = perform_compile('algodt', input_data['ALGORITHM'])
         add_log(full_wd, " done.\n")
         alg_fname = fname('algorithm', alg_name)
         add_log(full_wd, "Saving algorithm \""+alg_name+"\" into file \""+alg_fname+"\" ...")
@@ -175,7 +175,7 @@ def perform_generate(log, root_wd, gen_wd, input_data):
                 ms = perform_substitution(ms, model_content)
                 add_log(full_wd, " done.\n")
             add_log(full_wd, "Converting microservice \""+ms_name+"\"...")
-            result = perform_compile(log, 'mdt', ms)
+            result = perform_compile('mdt', ms)
             add_log(full_wd, " done.\n")
             ms_fname = fname('microservice',ms_name)
             add_log(full_wd, "Saving microservice \""+ms_name+"\" into file \""+ms_fname+"\" ...")
@@ -195,7 +195,7 @@ def perform_generate(log, root_wd, gen_wd, input_data):
         log.info(msg)
         add_log(full_wd, msg+'\n')
         log.debug("CSAR file:"+os.path.join(full_wd,FILE_OUT))
-        validate_csar(log, full_wd)
+        #validate_csar(log, full_wd)
         msg = "Validating csar zip finished."
         log.info(msg)
         add_log(full_wd, msg+'\n')

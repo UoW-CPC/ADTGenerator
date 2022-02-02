@@ -17,7 +17,7 @@ import logging
 
 _templates_path: str  # PRIVATE - Path to templates
 _modules: dict  # PRIVATE - dictionary of modules to import in Jinja2
-
+_log: logging #PRIVATE - log object
 
 # Function to initiate the compiler
 def init(templates_path: str = None, modules: dict = None, log: logging = None) -> None:
@@ -29,19 +29,20 @@ def init(templates_path: str = None, modules: dict = None, log: logging = None) 
 
     :return: None"""
     import sys
-    global _templates_path, _modules
+    global _templates_path, _modules, _log
     if not templates_path:
         templates_path = sys.path[0] + '/templates'
     _templates_path = templates_path
     if not modules:
         modules = dict()
     _modules = modules
+    _log = log
     log.debug('Compiler has been initialised.')
 
 
 # Function to get a DT of specific type based on the provided metadata
 # noinspection PyShadowingBuiltins
-def compile(type: str, metadata: dict, log: logging) -> str:
+def compile(type: str, metadata: dict) -> str:
     """ Render a Description Template (DT) by using Jinja2.
 
     :param type: name of the template [available templates 'algodt.yml', idt.yml', 'mdt.yml']
@@ -52,12 +53,14 @@ def compile(type: str, metadata: dict, log: logging) -> str:
     """
     def raise_helper(msg):
         raise Exception(msg)
-
+    global _log
+    log = _log
     log.info(f'Attempting to render a(n) {type}')
     from jinja2 import Environment, FileSystemLoader, exceptions
     # Load all templates from path
     env = Environment(loader=FileSystemLoader(_templates_path))
     env.globals['raise'] = raise_helper
+    env.globals['log'] = _log
     # Try to load input template, if not exists raise
     log.debug(f'Loading template: {type}')
     try:
@@ -71,6 +74,7 @@ def compile(type: str, metadata: dict, log: logging) -> str:
     for module_name, module_imports in _modules.items():
         try:
             # Execute import statement
+            log.debug(f'module to import: {module_name}')
             exec(module_imports['import'])
             log.debug(f'module imported: {module_name}')
         except Exception as e:
@@ -93,7 +97,7 @@ def compile(type: str, metadata: dict, log: logging) -> str:
             log.warning(e)
     try:
         # Evaluate a function and add it to the jinja2 globals
-        dt.globals['log'] = log
+        dt.globals['log'] = _log
         log.debug(f'Logger loaded: [{log}]')
     except Exception as e:
         log.error(f'Logger cannot be loaded: [{log}], {e}')
