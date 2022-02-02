@@ -140,7 +140,7 @@ def perform_generate(log, root_wd, gen_wd, input_data):
             dmt_content['id']=dmt_name
             result = perform_compile(log, 'ddt', dmt_content)
             add_log(full_wd, " done.\n")
-            dmt_fname = fname('deployment',dmt_name.split('.')[1])
+            dmt_fname = fname('deployment',dmt_name)
             add_log(full_wd, "Saving deployment \""+dmt_name+"\" into file \""+dmt_fname+"\" ...")
             save_to_file(out_wd, dmt_fname, result)
             add_log(full_wd, " done.\n")
@@ -177,7 +177,7 @@ def perform_generate(log, root_wd, gen_wd, input_data):
         log.info(msg)
         add_log(full_wd, msg+'\n')
         log.debug("CSAR file:"+os.path.join(full_wd,FILE_OUT))
-        #validate_csar(log, full_wd)
+        validate_csar(log, full_wd)
         msg = "Validating csar zip finished."
         log.info(msg)
         add_log(full_wd, msg+'\n')

@@ -20,30 +20,30 @@ repositories:
 imports:
 - https://raw.githubusercontent.com/micado-scale/tosca/develop/micado_types.yaml
 
-{%- for microservice in deploymentMapping %}
-- {{ microservice }}.yaml
+{%- for msid in deploymentMapping %}
+- microservice.{{ msid }}.yaml
 {%- endfor %}
-{%- for host in deploymentMapping.values() | unique %}
-- {{ host }}.yaml
+{%- for hostid in deploymentMapping.values() | unique %}
+- deployment.{{ hostid }}.yaml
 {%- endfor %}
 
 topology_template:
   node_templates:
-  {%- for microservice in listOfMicroservices %}
-    {{microservice}}:
-      type: micado.{{ microservice }}
+  {%- for msid in listOfMicroservices %}
+    microservice.{{msid}}:
+      type: micado.microservice.{{ msid }}
       requirements:
-      {%- for _microservice in deploymentMapping.items() %}
-      {%- set _microservice, host = _microservice %}
-      {%- if _microservice == microservice %}
-      - host: {{host}}
+      {%- for _msid in deploymentMapping.items() %}
+      {%- set _msid, hostid = _msid %}
+      {%- if _msid == msid %}
+      - host: deployment.{{ hostid }}
       {%- endif %}
       {%- endfor %}
   {%- endfor %}
 
-  {%- for host in deploymentMapping.values() | unique %}
-    {{ host }}:
-      type: micado.{{ host }}
+  {%- for hostid in deploymentMapping.values() | unique %}
+    deployment.{{ hostid }}:
+      type: micado.deployment.{{ hostid }}
   {%- endfor %}
 
   policies:

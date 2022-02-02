@@ -7,16 +7,16 @@ imports:
 - https://raw.githubusercontent.com/micado-scale/tosca/develop/micado_types.yaml
 
 node_types:
-  micado.{{ id }}:
+  micado.deployment.{{ id }}:
     derived_from: micado.deployment
 
 topology_template:
 
   substitution_mappings:
-    node_type: micado.{{ id }}
+    node_type: micado.deployment.{{ id }}
 
   node_templates:
-    {{ id }}:
+    deployment.{{ id }}:
     {% if type == 'cloudbroker' %}
       type: tosca.nodes.MiCADO.CloudBroker.Compute
       properties:
