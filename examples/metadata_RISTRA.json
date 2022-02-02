@@ -7,9 +7,10 @@
     "date": "1.12.2021",
     "version": "V1.0.0",
     "MAPair": "MAID_RISTRA",
-    "DAssets": [
-      "DATAID_RISTRA"
-    ],
+    "DataAssetsMapping": {
+	"MSID_RISTRA": "DATAID_RISTRA",
+	"MSID_RCLONE": "DATAID_RCLONE"
+    },
     "deployments": {
       "MSID_RISTRA": {
 	"type": "cloudbroker",
@@ -28,14 +29,17 @@
   },
   "DATA": [
     {
-      "id": "DATAID_RISTRA"
+      "id": "DATAID_RISTRA",
+      "DATA_FILENAME":"/data/engine_mount.zip"
     },
     {
-      "id": "DATAID_RCLONE"
+      "id": "DATAID_RCLONE",
+      "DATA_FILENAME":"RCLONE_DATA_FILENAME"
     }
   ],
   "MODEL": {
-    "id": "MODELID_RISTRA"
+    "id": "MODELID_RISTRA",
+    "MODEL_URI": "http://mys3server.amazon.com/mybucket/my.model"
   },
   "ALGORITHM": {
     "id": "ALGID_RISTRA",
@@ -83,7 +87,7 @@
 	      	"ristra": {
     			"image": "dbs-container-repo.emgora.eu/db-ristra-cli-cpu:1.0.0",
 			"entrypoint": "/bin/sh -c",
-    			"command": "python3 start.py /data/engine_mount.zip",
+    			"command": "python3 start.py {{ DATA_FILENAME }}",
     			"volumes": [
       			{
 				"type": "bind",
@@ -123,7 +127,7 @@
 		"rclone": {
 			"image": "dbs-container-repo.emgora.eu/rclone:1",
 			"entrypoint": "/bin/sh -c",
-        		"command": "rclone copy -vv --daemno --dir-cache-time 5s s3_server:{{ MODEL_URI }}  /data && rclone rcd --rc-web-gui-no-open-browser",
+        		"command": "rclone copy -vv --daemon --dir-cache-time 5s s3_server:{{ MODEL_URI }}  /data && rclone rcd --rc-web-gui-no-open-browser",
         		"volumes": [
         		{
           			"type": "bind",

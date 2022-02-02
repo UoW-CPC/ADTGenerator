@@ -3,6 +3,7 @@ from datetime import datetime
 import subprocess 
 from micadoparser import set_template, MultiError
 import boto3
+import jinja2
 
 import adtg_conf
 from compiler import compiler
@@ -65,6 +66,10 @@ def store_input_components_as_files(log,input_data, full_wd):
     f.write(json.dumps(input_data, indent=4, sort_keys=True)+'\n')
     f.close()
     return
+
+def perform_substitution(template_dict, data_dict):
+    t = jinja2.Template(json.dumps(template_dict))
+    return json.loads(t.render(data_dict))
 
 def perform_compile(log, type, input):
     template_file = adtg_conf.CONFIG.get('compiler',dict()).get('templates',dict()).get(type)
@@ -156,11 +161,24 @@ def perform_generate(log, root_wd, gen_wd, input_data):
 
         for ms in input_data['MICROSERVICES']:
             ms_name = ms['id']
+            if ms_name in input_data['DMA'].get('DataAssetsMapping',dict()):
+                data_id = input_data['DMA']['DataAssetsMapping'][ms_name]
+                data_content = next((item for item in input_data['DATA'] if item["id"] == data_id), None)
+                if data_content:
+                    add_log(full_wd, "Rendering microservice \""+ms_name+"\" with data \""+data_id+"\"...")
+                    ms = perform_substitution(ms, data_content) 
+                    add_log(full_wd, " done.\n")
+            model_content = input_data.get('MODEL',None)
+            if model_content:
+                model_id = model_content['id']
+                add_log(full_wd, "Rendering microservice \""+ms_name+"\" with model \""+model_id+"\"...")
+                ms = perform_substitution(ms, model_content)
+                add_log(full_wd, " done.\n")
             add_log(full_wd, "Converting microservice \""+ms_name+"\"...")
             result = perform_compile(log, 'mdt', ms)
             add_log(full_wd, " done.\n")
             ms_fname = fname('microservice',ms_name)
-            add_log(full_wd, "Saving deployment \""+ms_name+"\" into file \""+ms_fname+"\" ...")
+            add_log(full_wd, "Saving microservice \""+ms_name+"\" into file \""+ms_fname+"\" ...")
             save_to_file(out_wd, ms_fname, result)
             add_log(full_wd, " done.\n")
 

@@ -19,7 +19,7 @@ if __name__ == '__main__':
     compiler_log = logging.getLogger('adtg_compiler')
     compiler.init(adtg_conf.CONFIG.get('compiler',dict()).get('template_directory',None), 
                   adtg_conf.CONFIG.get('compiler',dict()).get('modules',None),
-                  log)
+                  compiler_log)
     
     adtg_restapi.init()
 
