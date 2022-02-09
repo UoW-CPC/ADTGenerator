@@ -1,36 +1,29 @@
-# REST-API-ADT-GENRATOR
-> This application is a FLASK-based REST API, as a part of ADT generator for the DigitiBrain project. 
+# ADT Generator
+> This application is a FLASK-based service with [REST API](https://docs.google.com/document/d/17BnZmhsPvmcwem9EyXSTUissXRAz9NW3ornpWKea3qc), called ADT Generator developed for the [DigitiBrain project](https://digitbrain.eu/). It performs the conversion of [DigitBrain metadata assets](https://digitbrain.github.io/deployment/) into a ready-to-run multi-file [ADT](https://micado-scale.readthedocs.io/en/latest/application_description.html) to be deployed and orchestrated on the cloud by [MiCADO](https://micado-scale.readthedocs.io).
 
-## Table of Contents
+# Deployment
 
-* [General info and structure](#general-information)
-* [Using the API](#using-api)
-* [Building the API](#build-api)
+Everybody, who is interested in collecting experiences with ADTG should perform the following steps:
 
-
-## General info and structure
-- The REST API uses the Python and Flask to interact with different components of ADT generator. Considering the architectural design, in the first phase the API gets configurations from the publisher interface as well as the required libraries for the compilation and compositions. In practice, the API exposes two different functionalities. The first one is the invokation of compile libraries based on three main libraries, Microservice Description Template (MDT), Algorithm Description Template (ADT), and Infrastructure Description Template (IDT). After invoking these libraries in the compile function, the results are passed to the compose function where all the results from the invoking process are packed in a CSAR file and passed to the publisher interface. 
-- All the operations in the API are logged and stored in a configuration dictionary. 
-
-## Using the API
-- It is noted that the API is configurable so that it is executable using default or customizable configuration. The execution of the API is possible through calling the API in the server side and sending post requests throug the client side. Accordingly, in the server side, execute the following command. Please note that the configuration could be set to any configuration such as port, config, path, etc. 
-
-#### Example
-`python3 flaskapp.py --config ./config/config.yaml --port 1234`
-
-
-Then in the client side, it is necessary to send a post request. In the following example we use a JSON file to post it through a CURL command. 
-
-#### Example
-`./compile-mdt.sh mdt.json`    
-
-## Building the API
-- It is a best practice to dockerise the API and run it accordingly. To do this, first of all it is required to build the application using the following command:
-
-                               sudo docker build --tag adtgenerator .
-
-- Once the image was build, the next step is running the API by executing the following command:
-                                       
-                 sudo docker run --name adtgenerator -p 5001:5001 adtgenerator
-
-
+Step1: download the source code
+```
+git clone https://github.com/UoW-CPC/ADTGenerator.git github-adtg
+```
+Step2: create a virtual environment (called "adtg") and install requirements into it
+```
+cd github-adtg
+./reset-env.sh
+```
+Step3: optionally, fine tune config.yaml under config subdirectory, only need to fine tune the directories, current settings are ok if source is cloned under /home/ubuntu/github-adtg)
+```
+vi github-adtg/config/config.yaml
+```
+Step4: launch the ADTGenerator service 
+```
+./run.sh
+```
+Step5: to invoke the ADT Generator with an example input json, run the following commands in another shell:
+```
+cd github-adtg/examples
+./generate-adt.sh metadata_RISTRA.json
+```
