@@ -68,7 +68,7 @@ def store_input_components_as_files(log,input_data, full_wd):
     return
 
 def perform_substitution(template_dict, data_dict):
-    t = jinja2.Template(json.dumps(template_dict))
+    t = jinja2.Environment(loader=jinja2.BaseLoader,undefined=jinja2.DebugUndefined).from_string(json.dumps(template_dict))
     return json.loads(t.render(data_dict))
 
 def perform_compile(type, input):
