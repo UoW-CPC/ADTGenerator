@@ -39,7 +39,7 @@
   ],
   "MODEL": {
     "id": "MODELID_RISTRA",
-    "MODEL_URI": "http://mys3server.amazon.com/mybucket/my.model"
+    "MODEL_URI": "dbrain-s3-test"
   },
   "ALGORITHM": {
     "id": "ALGID_RISTRA",
@@ -101,11 +101,6 @@
 			"privileged": true
 		}
 	      }
-      },
-      "configurationData": {
-        "filePath": "/config/rclone/rclone.conf",
-        "fileContent": "[s3_server]\ntype = s3\nprovider = AWS\nenv_auth = false\naccess_key_id = ABC123 \nsecret_access_key = BBC123\nregion = eu-central-1\nendpoint =\n",
-        "mountPropagation": true
       }
     },
     {
@@ -143,7 +138,12 @@
         		"privileged": true
 		}
         }
-      }
+      },
+      "configurationData": [{
+        "file_path": "/config/rclone/rclone.conf",
+        "file_content": "[s3_server]\ntype = s3\nprovider = AWS\nenv_auth = false\naccess_key_id = ABC123 \nsecret_access_key = BBC123\nregion = eu-central-1\nendpoint =\n",
+        "mountPropagation": true
+      }]
     }
   ]
 }
