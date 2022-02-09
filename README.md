@@ -16,7 +16,7 @@ cd github-adtg
 ```
 Step3: optionally, fine tune config.yaml under config subdirectory, only need to fine tune the directories, current settings are ok if source is cloned under /home/ubuntu/github-adtg)
 ```
-vi github-adtg/config/config.yaml
+vi config/config.yaml
 ```
 Step4: launch the ADTGenerator service 
 ```
