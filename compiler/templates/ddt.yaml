@@ -1,8 +1,5 @@
 tosca_definitions_version: tosca_simple_yaml_1_2
 
-repositories:
-  docker_hub: https://hub.docker.com/
-
 imports:
 - https://raw.githubusercontent.com/micado-scale/tosca/develop/micado_types.yaml
 
