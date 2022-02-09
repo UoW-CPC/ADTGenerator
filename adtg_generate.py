@@ -195,7 +195,7 @@ def perform_generate(log, root_wd, gen_wd, input_data):
         log.info(msg)
         add_log(full_wd, msg+'\n')
         log.debug("CSAR file:"+os.path.join(full_wd,FILE_OUT))
-        #validate_csar(log, full_wd)
+        validate_csar(log, full_wd)
         msg = "Validating csar zip finished."
         log.info(msg)
         add_log(full_wd, msg+'\n')
