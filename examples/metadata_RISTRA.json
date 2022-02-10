@@ -8,8 +8,9 @@
     "version": "V1.0.0",
     "MAPair": "MAID_RISTRA",
     "DataAssetsMapping": {
-	"MSID_RISTRA": "DATAID_RISTRA",
-	"MSID_RCLONE": "DATAID_RCLONE"
+	"MSID_RISTRA": { "ristra_input_dir": "DATAID_RISTRA_DIRECTORY",
+			 "ristra_input_file":"DATAID_RISTRA_FILENAME" },
+	"MSID_RCLONE": { "rclone_input_repo":"DATAID_RCLONE" }
     },
     "deployments": {
       "MSID_RISTRA": {
@@ -29,17 +30,21 @@
   },
   "DATA": [
     {
-      "id": "DATAID_RISTRA",
-      "DATA_FILENAME":"/data/engine_mount.zip"
+      "id": "DATAID_RISTRA_FILENAME",
+      "DATA_FILENAME":"engine_mount.zip"
+    },
+    {
+      "id": "DATAID_RISTRA_DIRECTORY",
+      "DATA_DIR":"/data/"
     },
     {
       "id": "DATAID_RCLONE",
-      "DATA_FILENAME":"RCLONE_DATA_FILENAME"
+      "DATA_URI":"s3_server:dbrain-s3-test"
     }
   ],
   "MODEL": {
     "id": "MODELID_RISTRA",
-    "MODEL_URI": "dbrain-s3-test"
+    "MODEL_URI": "unused"
   },
   "ALGORITHM": {
     "id": "ALGID_RISTRA",
@@ -87,7 +92,7 @@
 	      	"ristra": {
     			"image": "dbs-container-repo.emgora.eu/db-ristra-cli-cpu:1.0.0",
 			"entrypoint": "/bin/sh -c",
-    			"command": "python3 start.py {{ DATA_FILENAME }}",
+    			"command": "python3 start.py {{ ristra_input_dir.DATA_DIR }}{{ ristra_input_file.DATA_FILENAME }}",
     			"volumes": [
       			{
 				"type": "bind",
@@ -122,7 +127,7 @@
 		"rclone": {
 			"image": "dbs-container-repo.emgora.eu/rclone:1",
 			"entrypoint": "/bin/sh -c",
-        		"command": "rclone copy -vv --daemon --dir-cache-time 5s s3_server:{{ MODEL_URI }}  /data && rclone rcd --rc-web-gui-no-open-browser",
+        		"command": "rclone copy -vv --daemon --dir-cache-time 5s {{ rclone_input_repo.DATA_URI }}  /data && rclone rcd --rc-web-gui-no-open-browser",
         		"volumes": [
         		{
           			"type": "bind",

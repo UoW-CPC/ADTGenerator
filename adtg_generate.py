@@ -122,6 +122,21 @@ def upload_to_s3(log, s3config, source_dir, target_dir, zip_file, log_file):
     bucket.upload_file(os.path.join(source_dir,log_file),os.path.join(target_dir,log_file))
     return
 
+def collect_data_assets_for_mapping(input_data,msid):
+    mappings = input_data.get("DMA",dict()).get("DataAssetsMapping",dict()).get(msid,None)
+    if not msid:
+        return None, None
+    data_collected = {}
+    data_ids = []
+    for datakey in mappings:
+        dataid = mappings.get(datakey,None)
+        if dataid:
+            data_content = next((item for item in input_data.get('DATA',list()) if item["id"] == dataid), None)
+            if data_content:
+                data_collected[datakey]=data_content
+                data_ids.append(dataid)
+    return data_collected, data_ids
+
 def perform_generate(log, root_wd, gen_wd, input_data):
     log.debug('Generate method has been invoked.')
     root_wd = adtg_conf.CONFIG.get('generator',dict()).get('working_directory')
@@ -160,25 +175,25 @@ def perform_generate(log, root_wd, gen_wd, input_data):
         add_log(full_wd, " done.\n")
 
         for ms in input_data['MICROSERVICES']:
-            ms_name = ms['id']
-            if ms_name in input_data['DMA'].get('DataAssetsMapping',dict()):
-                data_id = input_data['DMA']['DataAssetsMapping'][ms_name]
-                data_content = next((item for item in input_data['DATA'] if item["id"] == data_id), None)
-                if data_content:
-                    add_log(full_wd, "Rendering microservice \""+ms_name+"\" with data \""+data_id+"\"...")
-                    ms = perform_substitution(ms, data_content) 
-                    add_log(full_wd, " done.\n")
+            ms_id = ms['id']
+            add_log(full_wd, "Collecting data for microservice \""+ms_id+"\"...")
+            data_content, data_ids = collect_data_assets_for_mapping(input_data, ms_id)
+            add_log(full_wd, " found: "+str(len(data_ids))+".\n")
+            if data_content:
+                add_log(full_wd, "Rendering microservice \""+ms_id+"\" with data \""+str(data_ids)+"\"...")
+                ms = perform_substitution(ms, data_content) 
+                add_log(full_wd, " done.\n")
             model_content = input_data.get('MODEL',None)
             if model_content:
                 model_id = model_content['id']
-                add_log(full_wd, "Rendering microservice \""+ms_name+"\" with model \""+model_id+"\"...")
+                add_log(full_wd, "Rendering microservice \""+ms_id+"\" with model \""+model_id+"\"...")
                 ms = perform_substitution(ms, model_content)
                 add_log(full_wd, " done.\n")
-            add_log(full_wd, "Converting microservice \""+ms_name+"\"...")
+            add_log(full_wd, "Converting microservice \""+ms_id+"\"...")
             result = perform_compile('mdt', ms)
             add_log(full_wd, " done.\n")
-            ms_fname = fname('microservice',ms_name)
-            add_log(full_wd, "Saving microservice \""+ms_name+"\" into file \""+ms_fname+"\" ...")
+            ms_fname = fname('microservice',ms_id)
+            add_log(full_wd, "Saving microservice \""+ms_id+"\" into file \""+ms_fname+"\" ...")
             save_to_file(out_wd, ms_fname, result)
             add_log(full_wd, " done.\n")
 
