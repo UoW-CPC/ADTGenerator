@@ -124,7 +124,7 @@ def upload_to_s3(log, s3config, source_dir, target_dir, zip_file, log_file):
 
 def collect_data_assets_for_mapping(input_data,msid):
     mappings = input_data.get("DMA",dict()).get("DataAssetsMapping",dict()).get(msid,None)
-    if not msid:
+    if not mappings:
         return None, None
     data_collected = {}
     data_ids = []
@@ -178,11 +178,13 @@ def perform_generate(log, root_wd, gen_wd, input_data):
             ms_id = ms['id']
             add_log(full_wd, "Collecting data for microservice \""+ms_id+"\"...")
             data_content, data_ids = collect_data_assets_for_mapping(input_data, ms_id)
-            add_log(full_wd, " found: "+str(len(data_ids))+".\n")
             if data_content:
+                add_log(full_wd, " found: "+str(len(data_ids))+".\n")
                 add_log(full_wd, "Rendering microservice \""+ms_id+"\" with data \""+str(data_ids)+"\"...")
                 ms = perform_substitution(ms, data_content) 
                 add_log(full_wd, " done.\n")
+            else:
+                add_log(full_wd, " found: none.\n")
             model_content = input_data.get('MODEL',None)
             if model_content:
                 model_id = model_content['id']
