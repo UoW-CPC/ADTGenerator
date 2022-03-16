@@ -87,8 +87,6 @@ def generate():
     if oidc_enabled:
         token = oidc.get_access_token()    
     input_data = request.get_json()
-    log.debug('Input JSON: {0}'.format(input_data))
-   
     try:
         root_wd = adtg_conf.CONFIG.get('generator',dict()).get('working_directory')
         id = adtg_generate.init_working_directory(log, root_wd)

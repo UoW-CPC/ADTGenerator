@@ -6,7 +6,7 @@ metadata:
   author: "{{ author }}"
   date: "{{ date }}"
   version: "{{ version }}"
-  classificationSchema: "{{ classificationSchema }}"
+  classificationSchema: "{{ classificationschema }}"
   {%- if type != NULL %}
   type:
   {%- endif %}
@@ -29,8 +29,8 @@ node_types:
       {{ param['name'] }}:
         type: "{{ param['type'] }}"
         description: "{{ param['description'] }}"
-        {%- if param[ 'defaultValue' ] != NULL %}
-        default: "{{ param['defaultValue'] }}"
+        {%- if param[ 'defaultvalue' ] != NULL %}
+        default: "{{ param['defaultvalue'] }}"
         {%- endif %}
         {%- if param[ 'mandatory' ] != NULL %}
         required: {{ param['mandatory'] }}
@@ -56,5 +56,5 @@ topology_template:
   substitution_mappings:
     node_type: micado.microservice.{{id}}
 
-{{ translate_dict(deploymentFormat,deploymentData,configurationData) }}
+{{ translate_dict(deploymentformat,deploymentdata,configurationdata) }}
 

@@ -39,32 +39,84 @@ def init_working_directory(log, root_wd):
     f.close()
     return gen_wd
 
-def check_input_validity(log,input_data):
-    log.debug('Checking input validity.')
-    #TO BE IMPLEMENTED LATER
-    return
+def store_input_json_as_file(log, input_data, full_wd):
+    add_log(full_wd, 'Storing incoming json...\n')
+    filefullpath=os.path.join(full_wd,DIR_IN,'input.json')
+    f=open(filefullpath, "w")
+    f.write(json.dumps(input_data, indent=4, sort_keys=True)+'\n')
+    f.close()
+    add_log(full_wd, 'Done.\n')
 
-def store_input_components_as_files(log,input_data, full_wd):
-    log.debug('Storing components as files.')
-    for component in ["DMA","MA","MODEL","ALGORITHM"]:
+def prepare_input_assets(log, input_data, full_wd):
+    add_log(full_wd, 'Preparing incoming json starts...\n')
+    #lowercase names of assets
+    lc_data = {key.lower():value for key, value in input_data.items()}
+    #lowercase parameter names in assets
+    for keyd in ['dma','ma','algorithm']:
+        if isinstance(lc_data[keyd],dict):
+            newcontent = {key.lower():value for key, value in lc_data[keyd].items()}
+            lc_data[keyd]=newcontent
+    #lowercase parameter names in list of assets
+    for keyl in ['microservices']:
+        if isinstance(lc_data[keyl],list):
+            newlist = []
+            for item in lc_data[keyl]:
+                if isinstance(item,dict):
+                    newitem = {key.lower():value for key, value in item.items()}
+                else:
+                    newitem = item
+                newlist.append(newitem)
+            lc_data[keyl] = newlist
+    #lowercase the 'id' key in model
+    if 'model' in lc_data and isinstance(lc_data['model'],dict):
+        new_model = dict()
+        for key, value in lc_data['model'].items():
+            if key.lower() == 'id':
+                new_model['id'] = value
+            else:
+                new_model[key] = value
+        lc_data['model'] = new_model
+    #lowercase the 'id' key in data assets
+    if 'data' in lc_data and isinstance(lc_data['data'],list):
+        new_list = list()
+        for item in lc_data['data']:
+            new_item = dict()
+            for key in item:
+                if key.lower() == 'id':
+                    new_item['id'] = value
+                else:
+                    new_item[key] = value
+            new_list.append(new_item)
+        lc_data['data']=new_list
+    #convert string to dictionary for microservice deploymentdata
+    for ms in lc_data['microservices']:
+        if isinstance(ms['deploymentdata'],str):
+            newdd = json.loads(ms['deploymentdata'])
+            ms['deploymentdata']=newdd
+    add_log(full_wd, 'Preparing incoming json finished.\n')
+    return lc_data
+
+def store_input_assets_as_files(log,input_data, full_wd):
+    log.debug('Storing assets as files starts....')
+    add_log(full_wd, 'Storing assets in files starts...\n')
+    for component in ["dma","ma","model","algorithm"]:
+        add_log(full_wd, "Storing "+component+"...\n")
         log.debug(component+'====>'+str(input_data[component]))
         filefullpath=os.path.join(full_wd,DIR_IN,component+'_'+input_data[component]['id']+'.json')
         f=open(filefullpath, "w")
         f.write(json.dumps(input_data[component], indent=4, sort_keys=True)+'\n')
         f.close()
-    for component in ['MICROSERVICES','DATA']:
+    for component in ['microservices','data']:
         index = 0
         for item in input_data[component]:
             log.debug(component+'['+str(index)+']====>'+str(item))
+            add_log(full_wd, "Storing "+component+"["+str(index)+"]...\n")
             filefullpath=os.path.join(full_wd,DIR_IN,component+'_'+str(index)+'_'+item['id']+'.json')
             f=open(filefullpath, "w")
             f.write(json.dumps(item, indent=4, sort_keys=True)+'\n')
             f.close()
             index+=1
-    filefullpath=os.path.join(full_wd,DIR_IN,'GENERATE.json')
-    f=open(filefullpath, "w")
-    f.write(json.dumps(input_data, indent=4, sort_keys=True)+'\n')
-    f.close()
+    add_log(full_wd, 'Storing components as files finished.\n')
     return
 
 def perform_substitution(template_dict, data_dict):
@@ -123,7 +175,7 @@ def upload_to_s3(log, s3config, source_dir, target_dir, zip_file, log_file):
     return
 
 def collect_data_assets_for_mapping(input_data,msid):
-    mappings = input_data.get("DMA",dict()).get("DataAssetsMapping",dict()).get(msid,None)
+    mappings = input_data.get("dma",dict()).get("dataassetsmapping",dict()).get(msid,None)
     if not mappings:
         return None, None
     data_collected = {}
@@ -131,7 +183,7 @@ def collect_data_assets_for_mapping(input_data,msid):
     for datakey in mappings:
         dataid = mappings.get(datakey,None)
         if dataid:
-            data_content = next((item for item in input_data.get('DATA',list()) if item["id"] == dataid), None)
+            data_content = next((item for item in input_data.get('data',list()) if item["id"] == dataid), None)
             if data_content:
                 data_collected[datakey]=data_content
                 data_ids.append(dataid)
@@ -145,17 +197,18 @@ def perform_generate(log, root_wd, gen_wd, input_data):
     log.debug('Generate: full wd: '+full_wd)
 
     try:
-        check_input_validity(log,input_data)
-        store_input_components_as_files(log,input_data,full_wd)
+        store_input_json_as_file(log, input_data, full_wd)
+        input_data = prepare_input_assets(log, input_data, full_wd)
+        store_input_assets_as_files(log,input_data,full_wd)
         add_log(full_wd, "ADT generation process ID: "+gen_wd+"\n")
 
         out_wd = os.path.join(full_wd, DIR_OUT)
-        dmaid = input_data['DMA']['id']
+        dmaid = input_data['dma']['id']
         msg = 'DMA tuple ID: '+str(dmaid)+'\n'
         log.info(msg)
         add_log(full_wd, msg)
 
-        for dmt_name, dmt_content in input_data['DMA']['deployments'].items():
+        for dmt_name, dmt_content in input_data['dma']['deployments'].items():
             add_log(full_wd, "Converting deployment \""+dmt_name+"\"...")
             dmt_content['id']=dmt_name
             result = perform_compile('ddt', dmt_content)
@@ -165,16 +218,16 @@ def perform_generate(log, root_wd, gen_wd, input_data):
             save_to_file(out_wd, dmt_fname, result)
             add_log(full_wd, " done.\n")
 
-        alg_name = input_data['ALGORITHM']['id']
+        alg_name = input_data['algorithm']['id']
         add_log(full_wd, "Converting algorithm \""+alg_name+"\"...")
-        result = perform_compile('algodt', input_data['ALGORITHM'])
+        result = perform_compile('algodt', input_data['algorithm'])
         add_log(full_wd, " done.\n")
         alg_fname = fname('algorithm', alg_name)
         add_log(full_wd, "Saving algorithm \""+alg_name+"\" into file \""+alg_fname+"\" ...")
         save_to_file(out_wd, alg_fname, result)
         add_log(full_wd, " done.\n")
 
-        for ms in input_data['MICROSERVICES']:
+        for ms in input_data['microservices']:
             ms_id = ms['id']
             add_log(full_wd, "Collecting data for microservice \""+ms_id+"\"...")
             data_content, data_ids = collect_data_assets_for_mapping(input_data, ms_id)
@@ -185,7 +238,7 @@ def perform_generate(log, root_wd, gen_wd, input_data):
                 add_log(full_wd, " done.\n")
             else:
                 add_log(full_wd, " found: none.\n")
-            model_content = input_data.get('MODEL',None)
+            model_content = input_data.get('model',None)
             if model_content:
                 model_id = model_content['id']
                 add_log(full_wd, "Rendering microservice \""+ms_id+"\" with model \""+model_id+"\"...")

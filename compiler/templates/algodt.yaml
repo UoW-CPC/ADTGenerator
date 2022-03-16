@@ -17,20 +17,20 @@ description: "{{ description }}"
 imports:
 - https://raw.githubusercontent.com/micado-scale/tosca/develop/micado_types.yaml
 
-{%- for msid in deploymentMapping %}
+{%- for msid in deploymentmapping %}
 - microservice.{{ msid }}.yaml
 {%- endfor %}
-{%- for hostid in deploymentMapping.values() | unique %}
+{%- for hostid in deploymentmapping.values() | unique %}
 - deployment.{{ hostid }}.yaml
 {%- endfor %}
 
 topology_template:
   node_templates:
-  {%- for msid in listOfMicroservices %}
+  {%- for msid in listofmicroservices %}
     microservice.{{msid}}:
       type: micado.microservice.{{ msid }}
       requirements:
-      {%- for _msid in deploymentMapping.items() %}
+      {%- for _msid in deploymentmapping.items() %}
       {%- set _msid, hostid = _msid %}
       {%- if _msid == msid %}
       - host: deployment.{{ hostid }}
@@ -38,7 +38,7 @@ topology_template:
       {%- endfor %}
   {%- endfor %}
 
-  {%- for hostid in deploymentMapping.values() | unique %}
+  {%- for hostid in deploymentmapping.values() | unique %}
     deployment.{{ hostid }}:
       type: micado.deployment.{{ hostid }}
   {%- endfor %}
