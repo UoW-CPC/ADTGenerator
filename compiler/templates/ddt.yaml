@@ -21,6 +21,12 @@ topology_template:
         instance_type_id: {{ cloudbroker['instance_type_id'] }}
         key_pair_id: {{ cloudbroker['key_pair_id'] }}
         opened_port: "{{ cloudbroker['opened_port'] }}"
+        {% if 'cloud_config' in cloudbroker %}
+        context:
+          append: true
+          cloud_config: |
+            {{ cloudbroker['cloud_config'] }}
+        {% endif %}
 
       interfaces:
          Occopus:
