@@ -25,7 +25,10 @@ topology_template:
         context:
           append: true
           cloud_config: |
-            {{ cloudbroker['cloud_config'] }}
+            #cloud-config
+            {% for key, value in cloudbroker['cloud_config'].items() %}
+            {{key}}:{{value}}
+            {% endfor %}
         {% endif %}
 
       interfaces:
