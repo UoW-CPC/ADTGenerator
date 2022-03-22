@@ -14,23 +14,22 @@ topology_template:
 
   node_templates:
     deployment.{{ id }}:
-    {% if type == 'cloudbroker' %}
+    {%- if type == 'cloudbroker' %}
       type: tosca.nodes.MiCADO.CloudBroker.Compute
       properties:
         deployment_id: {{ cloudbroker['deployment_id'] }}
         instance_type_id: {{ cloudbroker['instance_type_id'] }}
         key_pair_id: {{ cloudbroker['key_pair_id'] }}
         opened_port: "{{ cloudbroker['opened_port'] }}"
-        {% if 'cloud_config' in cloudbroker %}
+        {%- if 'cloud_config' in cloudbroker %}
         context:
           append: true
           cloud_config: |
             #cloud-config
-            {% for key, value in cloudbroker['cloud_config'].items() %}
+            {%- for key, value in cloudbroker['cloud_config'].items() %}
             {{key}}:{{value}}
-            {% endfor %}
-        {% endif %}
-
+            {%- endfor %}
+        {%- endif %}
       interfaces:
          Occopus:
            create:
