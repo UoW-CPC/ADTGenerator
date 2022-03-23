@@ -27,7 +27,14 @@ topology_template:
           cloud_config: |
             #cloud-config
             {%- for key, value in cloudbroker['cloud_config'].items() %}
+              {%- if value is iterable %}
+            {{key}}:
+                {%- for item in value %}
+            - {{item}}
+                {%- endfor %}
+              {%- else %}
             {{key}}:{{value}}
+              {%- endif %}
             {%- endfor %}
         {%- endif %}
       interfaces:
