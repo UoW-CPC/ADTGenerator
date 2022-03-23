@@ -81,7 +81,7 @@ def prepare_input_assets(log, input_data, full_wd):
         new_list = list()
         for item in lc_data['data']:
             new_item = dict()
-            for key in item:
+            for key, value in item.items():
                 if key.lower() == 'id':
                     new_item['id'] = value
                 else:
