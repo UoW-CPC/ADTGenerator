@@ -1,9 +1,9 @@
-import os, traceback, json
+import os, traceback, json, re
 from datetime import datetime
 import subprocess 
 from micadoparser import set_template, MultiError
 import boto3
-import jinja2
+import jinja2, jinja2schema
 
 import adtg_conf
 from compiler import compiler
@@ -120,8 +120,15 @@ def store_input_assets_as_files(log,input_data, full_wd):
     return
 
 def perform_substitution(template_dict, data_dict):
-    t = jinja2.Environment(loader=jinja2.BaseLoader,undefined=jinja2.DebugUndefined).from_string(json.dumps(template_dict))
-    return json.loads(t.render(data_dict))
+    patt = re.compile(r'(\{\{[^\{]*\}\})')
+    template = json.dumps(template_dict)
+    j2_expressions = patt.findall(template)
+    for j2_expression in set(j2_expressions):
+        try:
+            jinja2.Template(j2_expression, undefined=jinja2.StrictUndefined).render(data_dict)
+        except jinja2.UndefinedError:
+            template = template.replace(j2_expression, f"{{% raw %}}{j2_expression}{{% endraw %}}")
+    return json.loads(jinja2.Template(template).render(data_dict))
 
 def perform_compile(type, input):
     template_file = adtg_conf.CONFIG.get('compiler',dict()).get('templates',dict()).get(type)
@@ -238,12 +245,22 @@ def perform_generate(log, root_wd, gen_wd, input_data):
                 add_log(full_wd, " done.\n")
             else:
                 add_log(full_wd, " found: none.\n")
-            model_content = input_data.get('model',None)
+            model_content = dict()
+            model_content['MODEL'] = input_data.get('model',None)
             if model_content:
-                model_id = model_content['id']
+                model_id = model_content['MODEL']['id']
                 add_log(full_wd, "Rendering microservice \""+ms_id+"\" with model \""+model_id+"\"...")
                 ms = perform_substitution(ms, model_content)
                 add_log(full_wd, " done.\n")
+            add_log(full_wd, "Checking result of rendering DATA and MODEL assets for microservice \""+ms_id+"\"...")
+            undefvars = jinja2schema.infer(json.dumps(ms))
+            if undefvars.items():
+                add_log(full_wd, str(undefvars))
+                add_log(full_wd,"\nList of unresolved variables:\n")
+                add_log(full_wd,"\n".join("{}.{}".format(k,list(v.keys())[0]) for k,v in undefvars.items()))
+                msg = "ERROR: Found unresolved DATA/MODEL asset substitutions! See logs for details. Exiting..."
+                raise Exception(msg)
+            add_log(full_wd, " done.\n")
             add_log(full_wd, "Converting microservice \""+ms_id+"\"...")
             result = perform_compile('mdt', ms)
             add_log(full_wd, " done.\n")
