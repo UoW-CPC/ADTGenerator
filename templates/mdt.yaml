@@ -56,5 +56,5 @@ topology_template:
   substitution_mappings:
     node_type: micado.microservice.{{id}}
 
-{{ translate_dict(deploymentformat,deploymentdata,configurationdata) }}
+{{ adt_from_dockubeadt }}
 

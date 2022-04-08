@@ -4,26 +4,9 @@ import subprocess
 from micadoparser import set_template, MultiError
 import boto3
 import jinja2, jinja2schema
-
+from adtg_file import *
+from adtg_compile import compile
 import adtg_conf
-from compiler import compiler
-
-DIR_IN='inputs'
-DIR_OUT='csar'
-FILE_LOG='generate.log'
-FILE_OUT='dma_adt.csar'
-
-def save_to_file(dir, file, content):
-    f = open(os.path.join(dir,file), "a")
-    f.write(str(content)+'\n')
-    f.close()
-    return
-
-def add_log(full_wd, message):
-    f = open(os.path.join(full_wd,FILE_LOG), "a")
-    f.write(message)
-    f.close()
-    return
 
 def init_working_directory(log, root_wd):
     while(1):
@@ -101,7 +84,7 @@ def store_input_assets_as_files(log,input_data, full_wd):
     add_log(full_wd, 'Storing assets in files starts...\n')
     for component in ["dma","ma","model","algorithm"]:
         add_log(full_wd, "Storing "+component+"...\n")
-        log.debug(component+'====>'+str(input_data[component]))
+        #log.debug(component+'====>'+str(input_data[component]))
         filefullpath=os.path.join(full_wd,DIR_IN,component+'_'+input_data[component]['id']+'.json')
         f=open(filefullpath, "w")
         f.write(json.dumps(input_data[component], indent=4, sort_keys=True)+'\n')
@@ -109,7 +92,7 @@ def store_input_assets_as_files(log,input_data, full_wd):
     for component in ['microservices','data']:
         index = 0
         for item in input_data[component]:
-            log.debug(component+'['+str(index)+']====>'+str(item))
+            #log.debug(component+'['+str(index)+']====>'+str(item))
             add_log(full_wd, "Storing "+component+"["+str(index)+"]...\n")
             filefullpath=os.path.join(full_wd,DIR_IN,component+'_'+str(index)+'_'+item['id']+'.json')
             f=open(filefullpath, "w")
@@ -130,9 +113,10 @@ def perform_substitution(template_dict, data_dict):
             template = template.replace(j2_expression, f"{{% raw %}}{j2_expression}{{% endraw %}}")
     return json.loads(jinja2.Template(template).render(data_dict))
 
-def perform_compile(type, input):
+def perform_compile(log, full_wd, type, input):
     template_file = adtg_conf.CONFIG.get('compiler',dict()).get('templates',dict()).get(type)
-    result = compiler.compile(template_file, input)
+    template_dir = adtg_conf.CONFIG.get('compiler',dict()).get('template_directory')
+    result = compile(log, full_wd, type, input, os.path.join(template_dir,template_file))
     return result
 
 def fname(type, id):
@@ -144,9 +128,7 @@ def create_csar(log, full_wd, algo_fname):
         msg = "Missing parameter \"puccini_csar_tool\" from configuration: no path to csarchiver binary defined!" 
         raise Exception(msg)
     command = "ENTRY_DEFINITIONS={0} {1} {2} {3}".format(algo_fname, puccini_csar_tool, os.path.join(full_wd,FILE_OUT), os.path.join(full_wd,DIR_OUT))
-    msg = "Executing csar tool: \"{}\"".format(command)
-    log.debug(msg)
-    add_log(full_wd, msg+'\n')
+    msg = "    Executing csar tool: \"{}\"".format(command)
 
     cmd = [puccini_csar_tool,  os.path.join(full_wd,FILE_OUT), os.path.join(full_wd,DIR_OUT)]
     puccini_env = os.environ.copy()
@@ -154,7 +136,7 @@ def create_csar(log, full_wd, algo_fname):
     p = subprocess.Popen(cmd, env=puccini_env, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     for line in p.stdout:
         log.debug(line.rstrip())
-        add_log(full_wd, line)
+        add_log(full_wd, "    "+line)
 
     return
 
@@ -199,9 +181,8 @@ def collect_data_assets_for_mapping(input_data,msid):
 def perform_generate(log, root_wd, gen_wd, input_data):
     log.debug('Generate method has been invoked.')
     root_wd = adtg_conf.CONFIG.get('generator',dict()).get('working_directory')
-    log.debug('Generate: root wd: '+root_wd)
     full_wd = os.path.join(root_wd, gen_wd)
-    log.debug('Generate: full wd: '+full_wd)
+    log.info('ADT generation starts here: '+full_wd)
 
     try:
         store_input_json_as_file(log, input_data, full_wd)
@@ -216,43 +197,43 @@ def perform_generate(log, root_wd, gen_wd, input_data):
         add_log(full_wd, msg)
 
         for dmt_name, dmt_content in input_data['dma']['deployments'].items():
-            add_log(full_wd, "Converting deployment \""+dmt_name+"\"...")
+            add_log(full_wd, "Converting deployment \""+dmt_name+"\"... ")
             dmt_content['id']=dmt_name
-            result = perform_compile('ddt', dmt_content)
-            add_log(full_wd, " done.\n")
+            result = perform_compile(log, full_wd, 'ddt', dmt_content)
+            add_log(full_wd, "done.\n")
             dmt_fname = fname('deployment',dmt_name)
-            add_log(full_wd, "Saving deployment \""+dmt_name+"\" into file \""+dmt_fname+"\" ...")
+            add_log(full_wd, "Saving deployment \""+dmt_name+"\" into file \""+dmt_fname+"\"... ")
             save_to_file(out_wd, dmt_fname, result)
-            add_log(full_wd, " done.\n")
+            add_log(full_wd, "done.\n")
 
         alg_name = input_data['algorithm']['id']
-        add_log(full_wd, "Converting algorithm \""+alg_name+"\"...")
-        result = perform_compile('algodt', input_data['algorithm'])
-        add_log(full_wd, " done.\n")
+        add_log(full_wd, "Converting algorithm \""+alg_name+"\"... ")
+        result = perform_compile(log, full_wd, 'algodt', input_data['algorithm'])
+        add_log(full_wd, "done.\n")
         alg_fname = fname('algorithm', alg_name)
-        add_log(full_wd, "Saving algorithm \""+alg_name+"\" into file \""+alg_fname+"\" ...")
+        add_log(full_wd, "Saving algorithm \""+alg_name+"\" into file \""+alg_fname+"\"... ")
         save_to_file(out_wd, alg_fname, result)
-        add_log(full_wd, " done.\n")
+        add_log(full_wd, "done.\n")
 
         for ms in input_data['microservices']:
             ms_id = ms['id']
-            add_log(full_wd, "Collecting data for microservice \""+ms_id+"\"...")
+            add_log(full_wd, "Collecting data for microservice \""+ms_id+"\"... ")
             data_content, data_ids = collect_data_assets_for_mapping(input_data, ms_id)
             if data_content:
-                add_log(full_wd, " found: "+str(len(data_ids))+".\n")
-                add_log(full_wd, "Rendering microservice \""+ms_id+"\" with data \""+str(data_ids)+"\"...")
+                add_log(full_wd, "found: "+str(len(data_ids))+".\n")
+                add_log(full_wd, "Rendering microservice \""+ms_id+"\" with data \""+str(data_ids)+"\"... ")
                 ms = perform_substitution(ms, data_content) 
-                add_log(full_wd, " done.\n")
+                add_log(full_wd, "done.\n")
             else:
-                add_log(full_wd, " found: none.\n")
+                add_log(full_wd, "found: none.\n")
             model_content = dict()
             model_content['MODEL'] = input_data.get('model',None)
             if model_content:
                 model_id = model_content['MODEL']['id']
-                add_log(full_wd, "Rendering microservice \""+ms_id+"\" with model \""+model_id+"\"...")
+                add_log(full_wd, "Rendering microservice \""+ms_id+"\" with model \""+model_id+"\"... ")
                 ms = perform_substitution(ms, model_content)
-                add_log(full_wd, " done.\n")
-            add_log(full_wd, "Checking result of rendering DATA and MODEL assets for microservice \""+ms_id+"\"...")
+                add_log(full_wd, "done.\n")
+            add_log(full_wd, "Checking result of rendering DATA and MODEL assets for microservice \""+ms_id+"\"... ")
             undefvars = jinja2schema.infer(json.dumps(ms))
             if undefvars.items():
                 add_log(full_wd, str(undefvars))
@@ -260,30 +241,30 @@ def perform_generate(log, root_wd, gen_wd, input_data):
                 add_log(full_wd,"\n".join("{}.{}".format(k,list(v.keys())[0]) for k,v in undefvars.items()))
                 msg = "ERROR: Found unresolved DATA/MODEL asset substitutions! See logs for details. Exiting..."
                 raise Exception(msg)
-            add_log(full_wd, " done.\n")
-            add_log(full_wd, "Converting microservice \""+ms_id+"\"...")
-            result = perform_compile('mdt', ms)
-            add_log(full_wd, " done.\n")
+            add_log(full_wd, "done.\n")
+            add_log(full_wd, "Converting microservice \""+ms_id+"\"... ")
+            result = perform_compile(log, full_wd, 'mdt', ms)
+            add_log(full_wd, "done.\n")
             ms_fname = fname('microservice',ms_id)
-            add_log(full_wd, "Saving microservice \""+ms_id+"\" into file \""+ms_fname+"\" ...")
+            add_log(full_wd, "Saving microservice \""+ms_id+"\" into file \""+ms_fname+"\"... ")
             save_to_file(out_wd, ms_fname, result)
-            add_log(full_wd, " done.\n")
+            add_log(full_wd, "done.\n")
 
-        msg = "Creating csar zip starts..."
+        msg = "Creating csar zip starts... "
         log.info(msg)
         add_log(full_wd, msg+'\n')
         log.debug("Working directory: "+full_wd+"\nAlgorithm file: "+alg_fname)
         create_csar(log, full_wd, alg_fname)
-        msg = "Creating csar zip finished."
+        msg = "done."
         log.info(msg)
         add_log(full_wd, msg+'\n')
 
-        msg = "Validating csar zip (with micadoparser) starts..."
+        msg = "Validating csar zip (with micadoparser) starts... "
         log.info(msg)
         add_log(full_wd, msg+'\n')
         log.debug("CSAR file:"+os.path.join(full_wd,FILE_OUT))
         validate_csar(log, full_wd)
-        msg = "Validating csar zip finished."
+        msg = "done."
         log.info(msg)
         add_log(full_wd, msg+'\n')
 
@@ -296,6 +277,9 @@ def perform_generate(log, root_wd, gen_wd, input_data):
             log.info("log_file:"+str(FILE_LOG))
             upload_to_s3(log, s3_upload_config, full_wd, gen_wd, FILE_OUT, FILE_LOG)
 
+    except ValueError as e:
+        add_log(full_wd,str(e)+"\n")
+        raise
     except Exception as e:
         add_log(full_wd,'\n'+traceback.format_exc())
         raise
