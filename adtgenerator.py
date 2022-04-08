@@ -3,8 +3,6 @@ import logging,logging.config
 import adtg_conf
 import adtg_restapi
 
-from compiler import compiler
-
 log = None
 
 if __name__ == '__main__':
@@ -17,9 +15,6 @@ if __name__ == '__main__':
     log.debug("CONFIG = "+str(adtg_conf.CONFIG))
     
     compiler_log = logging.getLogger('adtg_compiler')
-    compiler.init(adtg_conf.CONFIG.get('compiler',dict()).get('template_directory',None), 
-                  adtg_conf.CONFIG.get('compiler',dict()).get('modules',None),
-                  compiler_log)
     
     adtg_restapi.init()
 

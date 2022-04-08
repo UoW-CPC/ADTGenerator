@@ -11,9 +11,9 @@ from io import StringIO
 
 def save_compile_stdout(full_wd, stdout, stderr):
     add_log(full_wd, "\n  DocKubeADT:\n")
-    lines=(stdout+"\n"+stderr).splitlines(True)
+    lines=(stdout+"\n"+stderr).strip().splitlines()
     for l in lines:
-        add_log(full_wd, "    "+l)
+        add_log(full_wd, "    "+l+"\n")
 
 def compile(log, full_wd, asset_type, asset_dict, template_file):
     if asset_type == "mdt":

@@ -134,6 +134,7 @@ def create_csar(log, full_wd, algo_fname):
     puccini_env = os.environ.copy()
     puccini_env["ENTRY_DEFINITIONS"] = algo_fname
     p = subprocess.Popen(cmd, env=puccini_env, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    add_log(full_wd, "  puccini-csar:\n")
     for line in p.stdout:
         log.debug(line.rstrip())
         add_log(full_wd, "    "+line)

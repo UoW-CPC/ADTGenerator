@@ -11,7 +11,7 @@ service:
     apply_user_token: false
     
 compiler:
-    template_directory: "/home/ubuntu/github-adtg/compiler/templates"
+    template_directory: "/home/ubuntu/github-adtg/templates"
     templates:
         ddt: "ddt.yaml"
         mdt: "mdt.yaml"

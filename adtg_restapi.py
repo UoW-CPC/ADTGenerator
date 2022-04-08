@@ -3,11 +3,9 @@ import logging,logging.config, json, os
 from flask_oidc import OpenIDConnect
 from werkzeug.exceptions import BadRequest, InternalServerError
 import adtg_conf
-from compiler import compiler
 from functools import wraps
 from typing import Any as EndpointResult
 
-from compiler import compiler
 import adtg_generate
 
 log = None
