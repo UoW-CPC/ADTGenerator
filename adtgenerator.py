@@ -14,8 +14,6 @@ if __name__ == '__main__':
     log = logging.getLogger('adtg')
     log.debug("CONFIG = "+str(adtg_conf.CONFIG))
     
-    compiler_log = logging.getLogger('adtg_compiler')
-    
     adtg_restapi.init()
 
     adtg_restapi.app.run(debug=adtg_conf.CONFIG.get('service', dict()).get('flask_debug_mode', True), 

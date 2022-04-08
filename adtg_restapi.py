@@ -7,6 +7,7 @@ from functools import wraps
 from typing import Any as EndpointResult
 
 import adtg_generate
+import adtg_compile
 
 log = None
 app = None
@@ -52,7 +53,8 @@ def compile(type):
    
     try:
         template_file = adtg_conf.CONFIG.get('compiler',dict()).get('templates',dict()).get(type)
-        result = compiler.compile(template_file, input_data, log)
+        template_dir = adtg_conf.CONFIG.get('compiler',dict()).get('template_directory')
+        result = adtg_compile.compile(log, "", type, input_data, os.path.join(template_dir,template_file))
         log.debug('Compile '+type+' finished')
         return json.loads(json.dumps(result, sort_keys=True, indent=4, separators=(',', ': ')))
     except Exception as e:

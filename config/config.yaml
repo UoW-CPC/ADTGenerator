@@ -16,11 +16,7 @@ compiler:
         ddt: "ddt.yaml"
         mdt: "mdt.yaml"
         algodt: "algodt.yaml"
-    modules:
-        translator:
-            import: 'from dockubeadt import translator'
-            functions:
-                - translate_dict
+
 generator:
     puccini_csar_tool_path: "/home/ubuntu/github-adtg/bin/puccini-csar"
     working_directory: "/home/ubuntu/github-adtg/examples"

@@ -18,25 +18,15 @@
 	"Kafka 2.7.0",
 	"TensorFlow 2.4.1"
 	],
-"containerFormat": "Docker",
-"image": "dockerhub://dfki/object_detection/stuff",
-"deploymentFormat": "docker run",
-"deploymentData": {
-        "apiVersion": "v1", "kind": "Pod",
-        "metadata": {
-		"name": "busybox-sleep"},
-        "spec": {
-		"containers": [
-                     	{
-			"name": "busybox", 
-			"image": "busybox", 
-			"args": [
-				"sleep", 
-				"1000000"
-				]
-		     	}
-                ]
-        }
+"deploymentformat": "docker-compose",
+"deploymentdata": {
+    "version": "3.9",
+    "services": {
+    "aservice": {
+            "image": "dbs-container-repo.emgora.eu/mydockerimage:latest",
+            "privileged": true
+            }
+    }
 },
 "dependencyRequirements": "MicroserviceAsset_ID_123",
 "storageRequirements": "needs to share volume with MicroserviceAsset_ID_123",
