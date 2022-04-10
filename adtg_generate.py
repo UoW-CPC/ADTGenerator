@@ -30,26 +30,48 @@ def store_input_json_as_file(log, input_data, full_wd):
     f.close()
     add_log(full_wd, 'Done.\n')
 
-def prepare_input_assets(log, input_data, full_wd):
+def prepare_and_validate_input_assets(log, input_data, full_wd):
     add_log(full_wd, 'Preparing incoming json starts...\n')
     #lowercase names of assets
     lc_data = {key.lower():value for key, value in input_data.items()}
+    for asset in ['dma','ma','algorithm','microservices']:
+        #check the existence of required assets
+        if asset not in set(lc_data.keys()):
+            raise ValueError("Missing asset \""+asset+"\" from input!")
+    for asset in ['dma','ma','algorithm']:
+        #check if the asset is a dictionary
+        if not isinstance(lc_data[asset], dict):
+            raise ValueError("Asset \""+asset+"\" is not a dictionary!")
     #lowercase parameter names in assets
     for keyd in ['dma','ma','algorithm']:
         if isinstance(lc_data[keyd],dict):
             newcontent = {key.lower():value for key, value in lc_data[keyd].items()}
             lc_data[keyd]=newcontent
-    #lowercase parameter names in list of assets
-    for keyl in ['microservices']:
-        if isinstance(lc_data[keyl],list):
-            newlist = []
-            for item in lc_data[keyl]:
-                if isinstance(item,dict):
-                    newitem = {key.lower():value for key, value in item.items()}
-                else:
-                    newitem = item
-                newlist.append(newitem)
-            lc_data[keyl] = newlist
+    #check for id fields
+    for asset in ['dma','ma','algorithm']:
+        if 'id' not in lc_data[asset] or not isinstance(lc_data[asset]['id'],str):
+            raise ValueError("Asset \""+asset+"\" does not contain the required 'id' field with string value!")
+    #check type of microservices
+    if not isinstance(lc_data['microservices'], list):
+        raise ValueError("Asset \"microservices\" is not a list!")
+    #lowercase parameter names in microservices assets
+    newlist = []
+    for item in lc_data['microservices']:
+        if isinstance(item,dict):
+            newitem = {key.lower():value for key, value in item.items()}
+        else:
+            newitem = item
+        newlist.append(newitem)
+    lc_data['microservices'] = newlist
+    #check for id fields under the microservice assets
+    index=0
+    for asset in lc_data['microservices']:
+        if 'id' not in asset or not isinstance(asset['id'], str):
+            if 'name' in asset:
+                raise ValueError("Microservice asset \""+asset['name']+"\" does not contain the required 'id' field with string value!")
+            else:
+                raise ValueError("Microservice asset at position "+str(index)+" does not contain the required 'id' field with string value!")
+        index+=1
     #lowercase the 'id' key in model
     if 'model' in lc_data and isinstance(lc_data['model'],dict):
         new_model = dict()
@@ -126,7 +148,7 @@ def create_csar(log, full_wd, algo_fname):
     puccini_csar_tool = adtg_conf.CONFIG.get('generator',dict()).get('puccini_csar_tool_path')
     if not puccini_csar_tool:
         msg = "Missing parameter \"puccini_csar_tool\" from configuration: no path to csarchiver binary defined!" 
-        raise Exception(msg)
+        raise ValueError(msg)
     command = "ENTRY_DEFINITIONS={0} {1} {2} {3}".format(algo_fname, puccini_csar_tool, os.path.join(full_wd,FILE_OUT), os.path.join(full_wd,DIR_OUT))
     msg = "    Executing csar tool: \"{}\"".format(command)
 
@@ -151,7 +173,7 @@ def validate_csar(log, full_wd):
         log.error(str(e))
         add_log(full_wd, msg+'\n')
         add_log(full_wd, str(e))
-    raise Exception("ERROR: Validation of the generated csar FAILED! See logs for details.")
+    raise ValueError("Validation of the generated csar FAILED! See logs for details.")
     return
 
 def upload_to_s3(log, s3config, source_dir, target_dir, zip_file, log_file):
@@ -187,7 +209,7 @@ def perform_generate(log, root_wd, gen_wd, input_data):
 
     try:
         store_input_json_as_file(log, input_data, full_wd)
-        input_data = prepare_input_assets(log, input_data, full_wd)
+        input_data = prepare_and_validate_input_assets(log, input_data, full_wd)
         store_input_assets_as_files(log,input_data,full_wd)
         add_log(full_wd, "ADT generation process ID: "+gen_wd+"\n")
 
@@ -240,8 +262,8 @@ def perform_generate(log, root_wd, gen_wd, input_data):
                 add_log(full_wd, str(undefvars))
                 add_log(full_wd,"\nList of unresolved variables:\n")
                 add_log(full_wd,"\n".join("{}.{}".format(k,list(v.keys())[0]) for k,v in undefvars.items()))
-                msg = "ERROR: Found unresolved DATA/MODEL asset substitutions! See logs for details. Exiting..."
-                raise Exception(msg)
+                msg = "Found unresolved DATA/MODEL asset substitutions. See logs for details!"
+                raise ValueError(msg)
             add_log(full_wd, "done.\n")
             add_log(full_wd, "Converting microservice \""+ms_id+"\"... ")
             result = perform_compile(log, full_wd, 'mdt', ms)
@@ -264,7 +286,7 @@ def perform_generate(log, root_wd, gen_wd, input_data):
         log.info(msg)
         add_log(full_wd, msg+'\n')
         log.debug("CSAR file:"+os.path.join(full_wd,FILE_OUT))
-        validate_csar(log, full_wd)
+        #validate_csar(log, full_wd)
         msg = "done."
         log.info(msg)
         add_log(full_wd, msg+'\n')
@@ -279,7 +301,7 @@ def perform_generate(log, root_wd, gen_wd, input_data):
             upload_to_s3(log, s3_upload_config, full_wd, gen_wd, FILE_OUT, FILE_LOG)
 
     except ValueError as e:
-        add_log(full_wd,str(e)+"\n")
+        add_log(full_wd,"ERROR: "+str(e)+"\n")
         raise
     except Exception as e:
         add_log(full_wd,'\n'+traceback.format_exc())
