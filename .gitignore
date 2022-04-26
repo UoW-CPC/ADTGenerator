@@ -141,3 +141,4 @@ cython_debug/
 secret.json
 s3secret.json
 
+imports/

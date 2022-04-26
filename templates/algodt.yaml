@@ -15,7 +15,7 @@ metadata:
 description: "{{ description }}"
 
 imports:
-- https://raw.githubusercontent.com/micado-scale/tosca/develop/micado_types.yaml
+- micado_types.yaml
 
 {%- for msid in deploymentmapping %}
 - microservice.{{ msid }}.yaml

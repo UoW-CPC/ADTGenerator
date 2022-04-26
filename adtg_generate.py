@@ -1,4 +1,4 @@
-import os, traceback, json, re
+import shutil, os, traceback, json, re
 from datetime import datetime
 import subprocess 
 from micadoparser import set_template, MultiError
@@ -102,7 +102,6 @@ def prepare_and_validate_input_assets(log, input_data, full_wd):
     return lc_data
 
 def store_input_assets_as_files(log,input_data, full_wd):
-    log.debug('Storing assets as files starts....')
     add_log(full_wd, 'Storing assets in files starts...\n')
     for component in ["dma","ma","model","algorithm"]:
         add_log(full_wd, "Storing "+component+"...\n")
@@ -141,6 +140,19 @@ def perform_compile(log, full_wd, type, input):
     result = compile(log, full_wd, type, input, os.path.join(template_dir,template_file))
     return result
 
+def copy_imports(log, full_wd):
+    importdir = adtg_conf.CONFIG.get('generator',dict()).get('imports_directory')
+    if not importdir:
+      add_log(full_wd, "  No \"imports_directory\" defined in config. Skipping copy import files...\n")
+      return
+    targetdir = os.path.join(full_wd,DIR_OUT)
+    files = os.listdir(importdir)
+    for fname in files:
+        shutil.copy2(os.path.join(importdir,fname), targetdir)
+        add_log(full_wd, "  "+fname+"\n")
+    return
+
+
 def fname(type, id):
     return "{0}.{1}.yaml".format(type, id)
 
@@ -158,7 +170,6 @@ def create_csar(log, full_wd, algo_fname):
     p = subprocess.Popen(cmd, env=puccini_env, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     add_log(full_wd, "  puccini-csar:\n")
     for line in p.stdout:
-        log.debug(line.rstrip())
         add_log(full_wd, "    "+line)
 
     return
@@ -202,21 +213,16 @@ def collect_data_assets_for_mapping(input_data,msid):
     return data_collected, data_ids
 
 def perform_generate(log, root_wd, gen_wd, input_data):
-    log.debug('Generate method has been invoked.')
-    root_wd = adtg_conf.CONFIG.get('generator',dict()).get('working_directory')
-    full_wd = os.path.join(root_wd, gen_wd)
-    log.info('ADT generation starts here: '+full_wd)
-
     try:
+        full_wd = os.path.join(root_wd, gen_wd)
+        add_log(full_wd, "ADT generation process ID: "+gen_wd+"\n")
         store_input_json_as_file(log, input_data, full_wd)
         input_data = prepare_and_validate_input_assets(log, input_data, full_wd)
         store_input_assets_as_files(log,input_data,full_wd)
-        add_log(full_wd, "ADT generation process ID: "+gen_wd+"\n")
 
         out_wd = os.path.join(full_wd, DIR_OUT)
         dmaid = input_data['dma']['id']
         msg = 'DMA tuple ID: '+str(dmaid)+'\n'
-        log.info(msg)
         add_log(full_wd, msg)
 
         for dmt_name, dmt_content in input_data['dma']['deployments'].items():
@@ -273,22 +279,22 @@ def perform_generate(log, root_wd, gen_wd, input_data):
             save_to_file(out_wd, ms_fname, result)
             add_log(full_wd, "done.\n")
 
-        msg = "Creating csar zip starts... "
-        log.info(msg)
+        msg = "Copy micado type import files starts... "
         add_log(full_wd, msg+'\n')
-        log.debug("Working directory: "+full_wd+"\nAlgorithm file: "+alg_fname)
+        copy_imports(log, full_wd)
+        msg = "done."
+        add_log(full_wd, msg+'\n')
+
+        msg = "Creating csar zip starts... "
+        add_log(full_wd, msg+'\n')
         create_csar(log, full_wd, alg_fname)
         msg = "done."
-        log.info(msg)
         add_log(full_wd, msg+'\n')
 
         msg = "Validating csar zip (with micadoparser) starts... "
-        log.info(msg)
         add_log(full_wd, msg+'\n')
-        log.debug("CSAR file:"+os.path.join(full_wd,FILE_OUT))
-        #validate_csar(log, full_wd)
+        validate_csar(log, full_wd)
         msg = "done."
-        log.info(msg)
         add_log(full_wd, msg+'\n')
 
         if adtg_conf.CONFIG.get('generator',dict()).get('s3_upload_config',dict()).get("enabled",False):

@@ -18,8 +18,9 @@ compiler:
         algodt: "algodt.yaml"
 
 generator:
-    puccini_csar_tool_path: "/home/ubuntu/github-adtg/bin/puccini-csar"
     working_directory: "/home/ubuntu/github-adtg/examples"
+    imports_directory: "/home/ubuntu/github-adtg/imports"
+    puccini_csar_tool_path: "/home/ubuntu/github-adtg/bin/puccini-csar"
     s3_upload_config:
             enabled: False
             s3bucketname: "myadtgeneratortest"

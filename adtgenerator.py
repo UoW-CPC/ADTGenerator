@@ -13,7 +13,13 @@ if __name__ == '__main__':
     logging.config.dictConfig(adtg_conf.CONFIG['logging'])
     log = logging.getLogger('adtg')
     log.debug("CONFIG = "+str(adtg_conf.CONFIG))
+
+    if not adtg_conf.CONFIG.get('generator',dict()).get('working_directory',None):
+        raise Exception("No working_directory defined in config file")
     
+    if not adtg_conf.CONFIG.get('generator',dict()).get('imports_directory',None):
+        raise Exception("No imports_directory defined in config file")
+
     adtg_restapi.init()
 
     adtg_restapi.app.run(debug=adtg_conf.CONFIG.get('service', dict()).get('flask_debug_mode', True), 
