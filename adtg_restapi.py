@@ -83,22 +83,25 @@ def make_response(success, message, id):
 @validate_json
 def generate():
     global log
-    log.debug('generate() invoked')
+    log.info('ADT generation invoked.')
     if oidc_enabled:
         token = oidc.get_access_token()    
     input_data = request.get_json()
     try:
-        root_wd = adtg_conf.CONFIG.get('generator',dict()).get('working_directory')
+        root_wd = adtg_conf.CONFIG.get('generator',dict())['working_directory']
         id = adtg_generate.init_working_directory(log, root_wd)
+        log.info('  ID: '+id)
     except Exception as e:
-        log.debug('Generate failed with exception.')
+        log.info('ADT generation finished with ERROR.')
+        log.exception(e)
         return jsonify({"error": str(e)})
     try:
         success, message = adtg_generate.perform_generate(log, root_wd, id, input_data)
-        log.debug('Generate finished successfully.')
+        log.info('ADT generation finished with SUCCESS.')
         return make_response(success, message, id)
     except Exception as e:
-        log.debug('Generate failed with exception.')
+        log.info('ADT generation finished with ERROR.')
+        log.exception(e)
         return make_response(False, str(e), id)
 
 def download(dir,file):
