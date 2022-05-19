@@ -8,7 +8,9 @@ rm -rf "$PDIR"
 
 virtualenv -p python3 "$PDIR"
 source "$PDIR"/bin/activate
-pip install -r requirements.txt 
+
+REQFILEDIR=`dirname $0`
+pip install -r $REQFILEDIR/requirements.txt 
 
 curl -L https://github.com/kubernetes/kompose/releases/download/v1.26.1/kompose-linux-amd64 -o $PDIR/bin/kompose
 chmod +x $PDIR/bin/kompose
