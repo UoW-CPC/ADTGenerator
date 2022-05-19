@@ -5,6 +5,10 @@
 
 Everybody, who is interested in collecting experiences with ADTG should perform the following steps:
 
+Step0: install dependencies
+```
+sudo apt-get install git pip virtualenv zip
+```
 Step1: download the source code
 ```
 git clone https://github.com/UoW-CPC/ADTGenerator.git github-adtg
