@@ -110,6 +110,9 @@ def download(dir,file):
     root_wd = adtg_conf.CONFIG.get('generator',dict()).get('working_directory')
     return send_from_directory(directory=root_wd, path=os.path.join(dir,file))
 
+def health():
+    return '', 200
+
 def init():
     global log, app, oidc, oidc_enabled, compile, generate, download
 
@@ -139,4 +142,8 @@ def init():
     log.debug("Registering download() method for endpoint "+endpoint)
     app.add_url_rule(endpoint, methods=['GET'], view_func=download)
  
+    endpoint='/'
+    log.debug("Registering health() method for endpoint "+endpoint)
+    app.add_url_rule(endpoint, methods=['GET'], view_func=health)
+
     return
