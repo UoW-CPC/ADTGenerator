@@ -1,0 +1,54 @@
+service:
+    host: "127.0.0.1"
+    port: 4000
+    rest_root_path: "/v1/emgadt"
+    flask_debug_mode: False
+    public_endpoint: "https://dbs-api.emgora.eu/"
+
+    enable_oidc: false
+    secrets_json_path: "/home/ubuntu/github-adtg/config/secret.json"
+    check_user_token: false
+    apply_user_token: false
+    
+compiler:
+    template_directory: "/home/ubuntu/github-adtg/templates"
+    templates:
+        ddt: "ddt.yaml"
+        mdt: "mdt.yaml"
+        algodt: "algodt.yaml"
+
+generator:
+    working_directory: "/home/ubuntu/github-adtg/examples"
+    imports_directory: "/home/ubuntu/github-adtg/emgadt/imports"
+    puccini_csar_tool_path: "/home/ubuntu/github-adtg/bin/puccini-csar"
+    s3_upload_config:
+            enabled: True
+            s3bucketname: "dbs-platform"
+            s3urlprefix: "https://dbs-platform.s3.amazonaws.com"
+            s3_keys_json_path: "/home/ubuntu/s3secret.json"
+
+logging:
+    version: 1
+    root:
+        level: DEBUG
+        handlers: [file]
+    formatters:
+        simpleFormatter:
+            format: "%(module)s %(asctime)s %(levelname)s %(message)s"
+            #format: "%(asctime)s %(levelname)s %(message)s"
+    handlers:
+        console:
+            class: logging.StreamHandler
+            formatter: simpleFormatter
+            level: DEBUG
+            stream: ext://sys.stdout
+        file:
+            class : logging.FileHandler
+            formatter: simpleFormatter
+            mode: w
+            level: DEBUG
+            filename: /home/ubuntu/github-adtg/emgadt/adtg.log
+    loggers:
+        adtg:
+            propagate: false
+            handlers: [file]

@@ -1,0 +1,13 @@
+[Unit]
+Description=ADT Generator service
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/github-adtg/emgadt
+ExecStart=/bin/bash -c 'cd /home/ubuntu/github-adtg/emgadt && source env/adtg/bin/activate && python3 ../adtgenerator.py --config config.yaml'
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
+
