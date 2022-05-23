@@ -142,7 +142,7 @@ def init():
     log.debug("Registering download() method for endpoint "+endpoint)
     app.add_url_rule(endpoint, methods=['GET'], view_func=download)
  
-    endpoint='/'
+    endpoint=adtg_conf.rest_root_path+'/health'
     log.debug("Registering health() method for endpoint "+endpoint)
     app.add_url_rule(endpoint, methods=['GET'], view_func=health)
 
