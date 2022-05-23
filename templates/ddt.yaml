@@ -25,7 +25,6 @@ topology_template:
         context:
           append: true
           cloud_config: |
-            #cloud-config
             {%- for key, value in cloudbroker['cloud_config'].items() %}
               {%- if value is iterable %}
             {{key}}:
