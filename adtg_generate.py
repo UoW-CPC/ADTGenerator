@@ -7,6 +7,7 @@ import jinja2, jinja2schema
 from adtg_file import *
 from adtg_compile import compile
 import adtg_conf
+from urllib.parse import urlparse
 
 def init_working_directory(log, root_wd):
     while(1):
@@ -197,6 +198,19 @@ def upload_to_s3(log, s3config, source_dir, target_dir, zip_file, log_file):
     bucket.upload_file(os.path.join(source_dir,log_file),os.path.join(target_dir,log_file))
     return
 
+def extract_fields_from_uri(url):
+    fields = dict()
+    o = urlparse(url)
+    fields['SCHEME']=o.scheme
+    fields['USERNAME']=o.username if o.username else ""
+    fields['PASSWORD']=o.password if o.password else ""
+    fields['HOST']=o.hostname if o.hostname else ""
+    fields['PORT']=str(o.port) if o.port else ""
+    fields['PATH']=o.path
+    fields['QUERY']=o.query
+    fields['FRAGMENT']=o.fragment
+    return fields
+
 def collect_data_assets_for_mapping(input_data,msid):
     mappings = input_data.get("dma",dict()).get("dataassetsmapping",dict()).get(msid,None)
     if not mappings:
@@ -209,6 +223,10 @@ def collect_data_assets_for_mapping(input_data,msid):
             data_content = next((item for item in input_data.get('data',list()) if item["id"] == dataid), None)
             if data_content:
                 data_collected[datakey]=data_content
+                #adding extra key-value pairs for fields of uri
+                urifields=extract_fields_from_uri(
+                        data_content.get("URI",data_content.get("DATA_URI","")))
+                data_collected[datakey].update(urifields)
                 data_ids.append(dataid)
     return data_collected, data_ids
 
@@ -259,6 +277,10 @@ def perform_generate(log, root_wd, gen_wd, input_data):
             model_content['MODEL'] = input_data.get('model',None)
             if model_content:
                 model_id = model_content['MODEL']['id']
+                #adding extra key-value pairs for fields of uri
+                urifields=extract_fields_from_uri(
+                        model_content['MODEL'].get("URI",model_content['MODEL'].get("REPOSITORY_URI","")))
+                model_content['MODEL'].update(urifields)
                 add_log(full_wd, "Rendering microservice \""+ms_id+"\" with model \""+model_id+"\"... ")
                 ms = perform_substitution(ms, model_content)
                 add_log(full_wd, "done.\n")
