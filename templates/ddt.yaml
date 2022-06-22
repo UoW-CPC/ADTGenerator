@@ -20,7 +20,10 @@ topology_template:
         deployment_id: {{ cloudbroker['deployment_id'] }}
         instance_type_id: {{ cloudbroker['instance_type_id'] }}
         key_pair_id: {{ cloudbroker['key_pair_id'] }}
-        opened_port: "{{ cloudbroker['opened_port'] }}"
+        opened_port: "{{ cloudbroker['opened_port'] }}"        
+        {%- if 'domain_names' in cloudbroker %}
+        dynamic_domain_name_ids: {{ cloudbroker['domain_names'] }}
+        {%- endif %}
         {%- if 'cloud_config' in cloudbroker %}
         context:
           append: true
