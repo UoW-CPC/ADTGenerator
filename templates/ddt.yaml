@@ -23,6 +23,8 @@ topology_template:
         opened_port: "{{ cloudbroker['opened_port'] }}"        
         {%- if 'domain_names' in cloudbroker %}
         dynamic_domain_name_ids: {{ cloudbroker['domain_names'] }}
+        {%- elif 'domain_name' in cloudbroker %}
+        dynamic_domain_name: {{ cloudbroker['domain_name'] }}
         {%- endif %}
         {%- if 'cloud_config' in cloudbroker %}
         context:
