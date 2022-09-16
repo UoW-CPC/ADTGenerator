@@ -29,8 +29,8 @@ node_types:
       {{ param['name'] }}:
         type: "{{ param['type'] }}"
         description: "{{ param['description'] }}"
-        {%- if param[ 'defaultvalue' ] != NULL %}
-        default: "{{ param['defaultvalue'] }}"
+        {%- if param[ 'defaultValue' ] != NULL %}
+        default: "{{ param['defaultValue'] }}"
         {%- endif %}
         {%- if param[ 'mandatory' ] != NULL %}
         required: {{ param['mandatory'] }}
