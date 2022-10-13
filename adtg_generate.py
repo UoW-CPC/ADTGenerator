@@ -288,7 +288,8 @@ def perform_generate(log, root_wd, gen_wd, input_data):
             undefvars = jinja2schema.infer(json.dumps(ms))
             if undefvars.items():
                 add_log(full_wd,"\nList of unresolved variables:\n")
-                add_log(full_wd,"\n".join("{}.{}".format(k,list(v.keys())[0]) for k,v in undefvars.items()))
+                add_log(full_wd,"\n".join(" {}".format(k) for k,v in undefvars.items()))
+                #add_log(full_wd,"\n".join("{}.{}".format(k,list(v.keys())[0]) for k,v in undefvars.items()))
                 add_log(full_wd,"\n")
                 msg = "Found unresolved DATA/MODEL asset substitutions. See logs for details!"
                 raise ValueError(msg)
