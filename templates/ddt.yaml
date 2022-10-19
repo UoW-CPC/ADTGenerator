@@ -47,7 +47,22 @@ topology_template:
              inputs:
                endpoint: {{ cloudbroker['endpoint'] }}
     {% elif type == 'edge' %}
-      {{ raise("No implementation for edge deployment") }}
+      type: tosca.nodes.MiCADO.Edge
+      properties:
+        {%- if 'public_ip' in edge %}
+        public_ip: {{ edge['public_ip'] }}
+        {%- else %}
+          {{ raise("Missing parameter from edge definition: public_ip") }}
+        {%- endif %}
+        {%- if 'ssh_username' in edge %}
+        ssh_username: {{ edge['ssh_username'] }}
+        {%- endif %}
+        {%- if 'ssh_private_key' in edge %}
+        ssh_private_key: {{ edge['ssh_private_key'] }}
+        {%- endif %}
+        {%- if 'ssh_tunnel' in edge %}
+        ssh_tunnel: {{ edge['ssh_tunnel'] }}
+        {%- endif %}
     {% else %}
       {{ raise("Wrong type of deployment") }}
     {% endif %}

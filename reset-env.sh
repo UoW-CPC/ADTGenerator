@@ -19,7 +19,7 @@ chmod +x $PDIR/bin/kompose
 IMPORTDIR=./imports
 rm -r $IMPORTDIR
 mkdir -p $IMPORTDIR
-curl -L https://github.com/micado-scale/tosca/releases/download/0.10.1/micado_types.tar -o $IMPORTDIR/micado_types.tar
+curl -L https://github.com/micado-scale/tosca/releases/download/v0.11.0/micado_types.tar -o $IMPORTDIR/micado_types.tar
 tar xvf $IMPORTDIR/micado_types.tar --directory $IMPORTDIR
 rm $IMPORTDIR/micado_types.tar
 
