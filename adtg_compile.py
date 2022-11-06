@@ -30,7 +30,8 @@ def rendering_open_parameters(data):
         if d.startswith("open_parameter(") and d.endswith(")"):
             parameter = d[15:len(d)-1].strip().strip('\"').strip('\'')
             d={'get_input':parameter}
-        return d
+            return d
+        return data
 
 def compile(log, full_wd, asset_type, asset_dict, template_file):
     if asset_type == "mdt":
