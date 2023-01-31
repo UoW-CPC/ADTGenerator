@@ -25,6 +25,12 @@ imports:
 {%- endfor %}
 
 topology_template:
+
+  inputs:
+    ce_conditions:
+      type: map
+      required: true
+
   node_templates:
   {%- for msid in listofmicroservices %}
     microservice.{{msid}}:
@@ -37,6 +43,32 @@ topology_template:
       {%- endif %}
       {%- endfor %}
   {%- endfor %}
+  
+  microservice.condition_evaluator:
+    type: tosca.nodes.MiCADO.Container.Application.Docker.Deployment
+    properties:
+      image: ignaciolopezr/digitbrain-condition-evaluator
+      ports:
+      - port: 5000
+      env:
+      - name: CONDITIONS
+        value: { get_input: ce_conditions }
+      - name: DMAINSTANCEID
+        value: {{ id }}
+      - name: MHHOST
+        value: "https://dbs-api.emgora.eu/"
+    interfaces:
+      Kubernetes:
+        create:
+          inputs:
+            spec:
+              template:
+                spec:
+                  tolerations:
+                  - key: node-role.kubernetes.io/master
+                    effect: NoSchedule
+                  nodeSelector:
+                    node-role.kubernetes.io/master: ''
 
   {%- for hostid in deploymentmapping.values() | unique %}
     deployment.{{ hostid }}:
