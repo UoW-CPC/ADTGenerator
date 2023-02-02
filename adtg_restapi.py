@@ -84,8 +84,6 @@ def make_response(success, message, id):
 def generate():
     global log
     log.info('ADT generation invoked.')
-    if oidc_enabled:
-        token = oidc.get_access_token()    
     input_data = request.get_json()
     try:
         root_wd = adtg_conf.CONFIG.get('generator',dict())['working_directory']
