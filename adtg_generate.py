@@ -255,6 +255,9 @@ def perform_generate(log, root_wd, gen_wd, input_data):
 
         alg_name = input_data['algorithm']['id']
         add_log(full_wd, "Converting algorithm \""+alg_name+"\"... ")
+        insertCE = adtg_conf.CONFIG.get('generator',dict()).get('enableConditionEvaluator',False) and input_data['dma'].get("insertConditionEvaluator",True)
+        add_log(full_wd, "\n  Auto-insert DigitBrain Condition Evaluator microservice is "+("ON.\n" if insertCE else "OFF.\n"))
+        input_data['algorithm']['insertConditionEvaluator'] = insertCE
         result = perform_compile(log, full_wd, 'algodt', input_data['algorithm'])
         add_log(full_wd, "done.\n")
         alg_fname = fname('algorithm', alg_name)
