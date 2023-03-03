@@ -226,7 +226,10 @@ def collect_data_assets_for_mapping(input_data,msid):
                 #adding extra key-value pairs for fields of uri
                 urifields=extract_fields_from_uri(
                         data_content.get("URI",data_content.get("DATA_URI","")))
-                data_collected[datakey].update(urifields)
+                #add key-values which are not yet defined i.e. skip overwriting
+                for k,v in urifields.items():
+                    if k not in data_collected[datakey].keys():
+                        data_collected[datakey][k]=v
                 data_ids.append(dataid)
     return data_collected, data_ids
 
@@ -272,7 +275,7 @@ def perform_generate(log, root_wd, gen_wd, input_data):
             if data_content:
                 add_log(full_wd, "found: "+str(len(data_ids))+".\n")
                 add_log(full_wd, "Rendering microservice \""+ms_id+"\" with data \""+str(data_ids)+"\"... ")
-                ms = perform_substitution(ms, data_content) 
+                ms = perform_substitution(ms, data_content)
                 add_log(full_wd, "done.\n")
             else:
                 add_log(full_wd, "found: none.\n")
@@ -283,7 +286,10 @@ def perform_generate(log, root_wd, gen_wd, input_data):
                 #adding extra key-value pairs for fields of uri
                 urifields=extract_fields_from_uri(
                         model_content['MODEL'].get("URI",model_content['MODEL'].get("REPOSITORY_URI","")))
-                model_content['MODEL'].update(urifields)
+                #add key-values which are not yet defined i.e. skip overwriting
+                for k,v in urifields.items():
+                    if k not in model_content['MODEL'].keys():
+                        model_content['MODEL'][k]=v
                 add_log(full_wd, "Rendering microservice \""+ms_id+"\" with model \""+model_id+"\"... ")
                 ms = perform_substitution(ms, model_content)
                 add_log(full_wd, "done.\n")
