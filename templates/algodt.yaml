@@ -58,8 +58,8 @@ topology_template:
           value: { get_input: RULES_OF_CONDITION_EVALUATOR }
         - name: DMAINSTANCEID
           value: {{ id }}
-        - name: MHHOST
-          value: "https://dbs-api.emgora.eu/"
+        - name: MH_ENDPOINT
+          value: "{{ endpointMessageHandler }}"
       interfaces:
         Kubernetes:
           create:

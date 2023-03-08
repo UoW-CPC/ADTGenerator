@@ -8,6 +8,7 @@ from adtg_file import *
 from adtg_compile import compile
 import adtg_conf
 from urllib.parse import urlparse
+import requests
 
 def init_working_directory(log, root_wd):
     while(1):
@@ -233,6 +234,34 @@ def collect_data_assets_for_mapping(input_data,msid):
                 data_ids.append(dataid)
     return data_collected, data_ids
 
+def prepare_autogenerate_CE(full_wd, insertCE):
+    if not insertCE:
+        add_log(full_wd, "\n  Auto-insert DigitBrain Condition Evaluator microservice is DISABLED in DMA. Skipping...\n")
+        return False, ""
+    insertCE = adtg_conf.CONFIG.get('generator',dict()).get('condition_evaluator',dict()).get('enable',False)
+    if not insertCE:
+        add_log(full_wd, "\n  Auto-insert DigitBrain Condition Evaluator microservice is DISABLED in DigitBrain ADT Generator configuration. Skipping...\n")
+        return False, ""
+    add_log(full_wd, "\n  Auto-insert DigitBrain Condition Evaluator microservice is ENABLED.\n")
+    mh_endpoint = adtg_conf.CONFIG.get('generator',dict()).get('condition_evaluator',dict()).get('insert_MH_endpoint',"")
+    if mh_endpoint == "":
+        add_log(full_wd, "  Message Handler endpoint for CE is not defined in ADTG config. Trying to query...\n")
+        query_endpoint = adtg_conf.CONFIG.get('generator',dict()).get('condition_evaluator',dict()).get('query_MH_endpoint_from',"")
+        if query_endpoint:
+            try: 
+                f = requests.get(query_endpoint)
+                mh_endpoint = json.loads(f.text)['EMGMH']
+            except Exception as e:
+                add_log(full_wd, "  Querying Message Handler endpoint failed: \n"+str(e)+"\n")
+                add_log(full_wd, "  Unable to auto-generate Condition Evaluator. Skipping...\n")
+                return False, ""
+        else:
+            add_log(full_wd, "  Query URL for Message Handler endpoint is not defined in ADTG config.\n")
+            add_log(full_wd, "  Unable to auto-generate Condition Evaluator. Skipping...\n")
+            return False, ""
+    add_log(full_wd, "  Endpoint of Message Handler for Condition Evaluator: "+mh_endpoint+"\n")
+    return True, mh_endpoint
+
 def perform_generate(log, root_wd, gen_wd, input_data):
     try:
         full_wd = os.path.join(root_wd, gen_wd)
@@ -258,9 +287,13 @@ def perform_generate(log, root_wd, gen_wd, input_data):
 
         alg_name = input_data['algorithm']['id']
         add_log(full_wd, "Converting algorithm \""+alg_name+"\"... ")
-        insertCE = adtg_conf.CONFIG.get('generator',dict()).get('enableConditionEvaluator',False) and input_data['dma'].get("insertConditionEvaluator",True)
-        add_log(full_wd, "\n  Auto-insert DigitBrain Condition Evaluator microservice is "+("ON.\n" if insertCE else "OFF.\n"))
+
+        #Auto-generate Condition Evaluator microservice
+        insertCE, mh_endpoint = prepare_autogenerate_CE(full_wd,
+                input_data['dma'].get("insertConditionEvaluator",True))
         input_data['algorithm']['insertConditionEvaluator'] = insertCE
+        input_data['algorithm']['endpointMessageHandler'] = mh_endpoint
+
         result = perform_compile(log, full_wd, 'algodt', input_data['algorithm'])
         add_log(full_wd, "done.\n")
         alg_fname = fname('algorithm', alg_name)
