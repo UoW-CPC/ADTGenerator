@@ -217,14 +217,14 @@ def upload_to_s3(log, s3config, source_dir, target_dir, zip_file, log_file):
 def extract_fields_from_uri(url):
     fields = dict()
     o = urlparse(url)
-    fields['SCHEME']=o.scheme
-    fields['USERNAME']=o.username if o.username else ""
-    fields['PASSWORD']=o.password if o.password else ""
-    fields['HOST']=o.hostname if o.hostname else ""
-    fields['PORT']=str(o.port) if o.port else ""
-    fields['PATH']=o.path
-    fields['QUERY']=o.query
-    fields['FRAGMENT']=o.fragment
+    fields['scheme']=o.scheme
+    fields['username']=o.username if o.username else ""
+    fields['password']=o.password if o.password else ""
+    fields['host']=o.hostname if o.hostname else ""
+    fields['port']=str(o.port) if o.port else ""
+    fields['path']=o.path
+    fields['query']=o.query
+    fields['fragment']=o.fragment
     return fields
 
 def collect_data_assets_for_mapping(input_data,msid):
@@ -241,7 +241,7 @@ def collect_data_assets_for_mapping(input_data,msid):
                 data_collected[datakey]=data_content
                 #adding extra key-value pairs for fields of uri
                 urifields=extract_fields_from_uri(
-                        data_content.get("URI",data_content.get("DATA_URI","")))
+                        data_content.get("uri",data_content.get("data_uri",data_content.get("repository_uri","")))
                 #add key-values which are not yet defined i.e. skip overwriting
                 for k,v in urifields.items():
                     if k not in data_collected[datakey].keys():
@@ -333,7 +333,7 @@ def perform_generate(log, root_wd, gen_wd, input_data):
                 model_id = model_content['MODEL']['id']
                 #adding extra key-value pairs for fields of uri
                 urifields=extract_fields_from_uri(
-                        model_content['MODEL'].get("URI",model_content['MODEL'].get("REPOSITORY_URI","")))
+                        model_content['MODEL'].get("uri",model_content['MODEL'].get("repository_uri","")))
                 #add key-values which are not yet defined i.e. skip overwriting
                 for k,v in urifields.items():
                     if k not in model_content['MODEL'].keys():
