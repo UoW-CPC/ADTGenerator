@@ -249,7 +249,7 @@ def collect_data_assets_for_mapping(input_data,msid):
                 data_collected[datakey]=data_content
                 #adding extra key-value pairs for fields of uri
                 urifields=extract_fields_from_uri(
-                        data_content.get("uri",data_content.get("data_uri",data_content.get("repository_uri","")))
+                        data_content.get("uri",data_content.get("data_uri",data_content.get("repository_uri",""))))
                 #add key-values which are not yet defined i.e. skip overwriting
                 for k,v in urifields.items():
                     if k not in data_collected[datakey].keys():
