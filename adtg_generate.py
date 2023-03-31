@@ -404,11 +404,11 @@ def perform_generate(log, root_wd, gen_wd, input_data):
 
         if adtg_conf.CONFIG.get('generator',dict()).get('s3_upload_config',dict()).get("enabled",False):
             s3_upload_config = adtg_conf.CONFIG.get('generator').get('s3_upload_config')
-            log.info("s3config:"+str(s3_upload_config))
-            log.info("source_dir:"+str(full_wd))
-            log.info("target_dir:"+str(gen_wd))
-            log.info("zip_file:"+str(FILE_OUT))
-            log.info("log_file:"+str(FILE_LOG))
+            log.debug("s3config:"+str(s3_upload_config))
+            log.debug("source_dir:"+str(full_wd))
+            log.debug("target_dir:"+str(gen_wd))
+            log.debug("zip_file:"+str(FILE_OUT))
+            log.debug("log_file:"+str(FILE_LOG))
             upload_to_s3(log, s3_upload_config, full_wd, gen_wd, FILE_OUT, FILE_LOG)
 
     except ValueError as e:
