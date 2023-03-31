@@ -6,7 +6,7 @@ metadata:
   author: "{{ author }}"
   date: "{{ date }}"
   version: "{{ version }}"
-  classificationSchema: "{{ classificationschema }}"
+  classificationSchema: "{{ classification_schema }}"
   {%- if type != NULL %}
   type:
   {%- endif %}
