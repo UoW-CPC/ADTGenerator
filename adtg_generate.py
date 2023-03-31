@@ -97,6 +97,8 @@ def prepare_and_validate_input_assets(log, input_data, full_wd):
         lc_data['data']=new_list
     #convert string to dictionary for microservice deployment_data
     for ms in lc_data['microservices']:
+        if "deployment_data" not in ms:
+            raise ValueError("Microservice \""+ms['name']+"\" does not contain required field 'deployment_data'!")
         if isinstance(ms['deployment_data'],str):
             newdd = json.loads(ms['deployment_data'])
             ms['deployment_data']=newdd
@@ -213,7 +215,7 @@ def extract_fields_from_uri(url):
     return fields
 
 def collect_data_assets_for_mapping(input_data,msid):
-    mappings = input_data.get("dma",dict()).get("dataassetsmapping",dict()).get(msid,None)
+    mappings = input_data.get("dma",dict()).get("data_assets_mapping",dict()).get(msid,None)
     if not mappings:
         return None, None
     data_collected = {}
