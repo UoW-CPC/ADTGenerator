@@ -94,6 +94,14 @@ def prepare_and_validate_input_assets(log, input_data, full_wd):
                 else:
                     new_item[key] = value
             new_list.append(new_item)
+            #check for obligatory parameters in data
+            for param in ["name","kind","direction","type","uri","auth_type"]:
+                if param not in new_item:
+                    if "name" in new_item:
+                        msg = "Data \""+new_item['name']+"\" ("+new_item['id']+") does not contain required field '"+param+"'!"
+                    else:
+                        msg = "Data \"<noname>\" ("+new_item['id']+") does not contain required field '"+param+"'!"
+                    raise ValueError(msg)
         lc_data['data']=new_list
     #check for obligatory parameters in dma
     for param in ["name","scope","version","ip_instance","provider","ma_pair","deployments"]:
@@ -103,6 +111,14 @@ def prepare_and_validate_input_assets(log, input_data, full_wd):
     for param in ["licensor","derivation","name","scope","ip_family","m_asset","a_asset"]:
         if param not in lc_data["ma"]:
             raise ValueError("MA does not contain required field '"+param+"'!")
+    #check for obligatory parameters in model
+    for param in ["name", "repository_uri", "path", "filename"]:
+        if param not in lc_data["model"]:
+            if "name" in lc_data["model"]:
+                msg = "Model \""+lc_data['model']['name']+"\" ("+lc_data['model']['id']+") does not contain required field '"+param+"'!"
+            else:
+                msg = "Model \"<noname>\" ("+lc_data['model']['id']+") does not contain required field '"+param+"'!"
+            raise ValueError(msg)
     #check for obligatory parameters in algorithm
     for param in ["name","description","classification_schema","type","list_of_microservices","deployment_mapping"]:
         if param not in lc_data["algorithm"]:
@@ -118,8 +134,6 @@ def prepare_and_validate_input_assets(log, input_data, full_wd):
 
     #convert string to dictionary for microservice deployment_data
     for ms in lc_data['microservices']:
-        if "deployment_data" not in ms:
-            raise ValueError("Microservice \""+ms['name']+"\" does not contain required field 'deployment_data'!")
         if isinstance(ms['deployment_data'],str):
             newdd = json.loads(ms['deployment_data'])
             ms['deployment_data']=newdd
