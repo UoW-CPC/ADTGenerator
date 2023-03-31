@@ -25,15 +25,15 @@ def init_working_directory(log, root_wd):
     return gen_wd
 
 def store_input_json_as_file(log, input_data, full_wd):
-    add_log(full_wd, 'Storing incoming json...\n')
+    add_log(full_wd, 'Storing incoming json starts...\n')
     filefullpath=os.path.join(full_wd,DIR_IN,'input.json')
     f=open(filefullpath, "w")
     f.write(json.dumps(input_data, indent=4, sort_keys=True)+'\n')
     f.close()
-    add_log(full_wd, 'Done.\n')
+    add_log(full_wd, 'Storing incoming json finised.\n')
 
 def prepare_and_validate_input_assets(log, input_data, full_wd):
-    add_log(full_wd, 'Preparing incoming json starts...\n')
+    add_log(full_wd, 'Validating incoming json starts...\n')
     #lowercase names of assets
     lc_data = {key.lower():value for key, value in input_data.items()}
     for asset in ['dma','ma','algorithm','microservices']:
@@ -123,7 +123,7 @@ def prepare_and_validate_input_assets(log, input_data, full_wd):
         if isinstance(ms['deployment_data'],str):
             newdd = json.loads(ms['deployment_data'])
             ms['deployment_data']=newdd
-    add_log(full_wd, 'Preparing incoming json finished.\n')
+    add_log(full_wd, 'Validating incoming json finished.\n')
     return lc_data
 
 def store_input_assets_as_files(log,input_data, full_wd):
@@ -145,7 +145,7 @@ def store_input_assets_as_files(log,input_data, full_wd):
             f.write(json.dumps(item, indent=4, sort_keys=True)+'\n')
             f.close()
             index+=1
-    add_log(full_wd, 'Storing components as files finished.\n')
+    add_log(full_wd, 'Storing assets as files finished.\n')
     return
 
 def perform_substitution(template_dict, data_dict):
@@ -294,12 +294,12 @@ def perform_generate(log, root_wd, gen_wd, input_data):
         store_input_assets_as_files(log,input_data,full_wd)
 
         out_wd = os.path.join(full_wd, DIR_OUT)
-        dmaid = input_data['dma']['id']
-        msg = 'DMA tuple ID: '+str(dmaid)+'\n'
-        add_log(full_wd, msg)
+        dma_id = input_data['dma']['id']
+        dma_name = input_data['dma']['name']
+        add_log(full_wd, "\nGenerating ADT for DMA \""+dma_name+"\" ("+dma_id+") starts...\n")
 
         for dmt_name, dmt_content in input_data['dma']['deployments'].items():
-            add_log(full_wd, "Converting deployment \""+dmt_name+"\"... ")
+            add_log(full_wd, "\nConverting deployment \""+dmt_name+"\"... ")
             dmt_content['id']=dmt_name
             result = perform_compile(log, full_wd, 'ddt', dmt_content)
             add_log(full_wd, "done.\n")
@@ -308,8 +308,9 @@ def perform_generate(log, root_wd, gen_wd, input_data):
             save_to_file(out_wd, dmt_fname, result)
             add_log(full_wd, "done.\n")
 
-        alg_name = input_data['algorithm']['id']
-        add_log(full_wd, "Converting algorithm \""+alg_name+"\"... ")
+        alg_id = input_data['algorithm']['id']
+        alg_name = input_data['algorithm']['name']
+        add_log(full_wd, "\nConverting algorithm \""+alg_name+"\" ("+alg_id+")... ")
 
         #Auto-generate Condition Evaluator microservice
         insertCE, mh_endpoint = prepare_autogenerate_CE(full_wd,
@@ -326,19 +327,22 @@ def perform_generate(log, root_wd, gen_wd, input_data):
 
         for ms in input_data['microservices']:
             ms_id = ms['id']
-            add_log(full_wd, "Collecting data for microservice \""+ms_id+"\"... ")
+            ms_name = ms['name']
+            add_log(full_wd, "\nConverting microservice \""+ms_name+"\" ("+ms_id+") starts...")
+            add_log(full_wd, "\nCollecting data for microservice \""+ms_name+"\"...\n")
             data_content, data_ids = collect_data_assets_for_mapping(input_data, ms_id)
             if data_content:
-                add_log(full_wd, "found: "+str(len(data_ids))+".\n")
-                add_log(full_wd, "Rendering microservice \""+ms_id+"\" with data \""+str(data_ids)+"\"... ")
+                add_log(full_wd, "  found: "+str(len(data_ids))+".\n")
+                add_log(full_wd, "Rendering microservice \""+ms_name+"\" with data \""+str(data_ids)+"\"... ")
                 ms = perform_substitution(ms, data_content)
                 add_log(full_wd, "done.\n")
             else:
-                add_log(full_wd, "found: none.\n")
+                add_log(full_wd, "  No data found.\n")
             model_content = dict()
             model_content['MODEL'] = input_data.get('model',None)
             if model_content:
                 model_id = model_content['MODEL']['id']
+                model_name = model_content['MODEL']['name']
                 #adding extra key-value pairs for fields of uri
                 urifields=extract_fields_from_uri(
                         model_content['MODEL'].get("uri",model_content['MODEL'].get("repository_uri","")))
@@ -346,44 +350,41 @@ def perform_generate(log, root_wd, gen_wd, input_data):
                 for k,v in urifields.items():
                     if k not in model_content['MODEL'].keys():
                         model_content['MODEL'][k]=v
-                add_log(full_wd, "Rendering microservice \""+ms_id+"\" with model \""+model_id+"\"... ")
+                add_log(full_wd, "Rendering microservice \""+ms_name+"\" with model \""+model_name+"\" ("+model_id+")... ")
                 ms = perform_substitution(ms, model_content)
                 add_log(full_wd, "done.\n")
-            add_log(full_wd, "Checking result of rendering DATA and MODEL assets for microservice \""+ms_id+"\"... ")
+            add_log(full_wd, "Checking result of rendering DATA and MODEL assets for microservice \""+ms_name+"\"... ")
             undefvars = jinja2schema.infer(json.dumps(ms))
             if undefvars.items():
                 add_log(full_wd,"\nList of unresolved variables:\n")
                 for k,v in undefvars.items():
                     for kk in list(v.keys()):
                         add_log(full_wd, "  {}.{}\n".format(k,kk))
-                msg = "Found unresolved DATA/MODEL asset substitutions. See logs for details!"
+                msg = "Found unresolved DATA/MODEL asset substitutions for microservice \""+ms_name+"\". See logs for details!"
                 raise ValueError(msg)
             add_log(full_wd, "done.\n")
-            add_log(full_wd, "Converting microservice \""+ms_id+"\"... ")
+            add_log(full_wd, "Translating microservice \""+ms_name+"\"... ")
             result = perform_compile(log, full_wd, 'mdt', ms)
             add_log(full_wd, "done.\n")
             ms_fname = fname('microservice',ms_id)
-            add_log(full_wd, "Saving microservice \""+ms_id+"\" into file \""+ms_fname+"\"... ")
+            add_log(full_wd, "Saving microservice \""+ms_name+"\" into file \""+ms_fname+"\"... ")
             save_to_file(out_wd, ms_fname, result)
             add_log(full_wd, "done.\n")
+            add_log(full_wd, "Converting microservice \""+ms_name+"\" ("+ms_id+") finished.\n")
 
-        msg = "Copy micado type import files starts... "
-        add_log(full_wd, msg+'\n')
+        add_log(full_wd, "\nCopying micado type import files starts...\n")
         copy_imports(log, full_wd)
-        msg = "done."
-        add_log(full_wd, msg+'\n')
+        add_log(full_wd, "done.\n")
 
-        msg = "Creating csar zip starts... "
-        add_log(full_wd, msg+'\n')
+        add_log(full_wd, "\nCreating csar zip starts...\n")
         create_csar(log, full_wd, alg_fname)
-        msg = "done."
-        add_log(full_wd, msg+'\n')
+        add_log(full_wd, "done.\n")
 
-        msg = "Validating csar zip (with micadoparser) starts... "
-        add_log(full_wd, msg+'\n')
+        add_log(full_wd, "\nValidating csar zip (with micadoparser) starts...\n")
         validate_csar(log, full_wd)
-        msg = "done."
-        add_log(full_wd, msg+'\n')
+        add_log(full_wd, "done.\n")
+
+        add_log(full_wd, "\nGenerating ADT for DMA \""+dma_name+"\" ("+dma_id+") finished.\n")
 
         if adtg_conf.CONFIG.get('generator',dict()).get('s3_upload_config',dict()).get("enabled",False):
             s3_upload_config = adtg_conf.CONFIG.get('generator').get('s3_upload_config')
