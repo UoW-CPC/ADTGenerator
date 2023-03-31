@@ -346,8 +346,10 @@ def perform_generate(log, root_wd, gen_wd, input_data):
             add_log(full_wd, "\nCollecting data for microservice \""+ms_name+"\"...\n")
             data_content, data_ids = collect_data_assets_for_mapping(input_data, ms_id)
             if data_content:
-                add_log(full_wd, "  found: "+str(len(data_ids))+".\n")
-                add_log(full_wd, "Rendering microservice \""+ms_name+"\" with data \""+str(data_ids)+"\"... ")
+                add_log(full_wd, "  Found "+str(len(data_ids))+" linked data:\n")
+                for dln,dlc in data_content.items():
+                    add_log(full_wd, "    \""+dln+"\" will be resolved by \""+dlc['name']+"\" ("+dlc['id']+")\n")
+                add_log(full_wd, "Rendering microservice \""+ms_name+"\" with aformentioned data... ")
                 ms = perform_substitution(ms, data_content)
                 add_log(full_wd, "done.\n")
             else:
