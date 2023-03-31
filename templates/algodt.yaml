@@ -28,7 +28,7 @@ topology_template:
 
   {%- if insertConditionEvaluator == true %}
   inputs:
-    ce_conditions:
+    RULES_OF_CONDITION_EVALUATOR:
       type: map
       required: true
 
