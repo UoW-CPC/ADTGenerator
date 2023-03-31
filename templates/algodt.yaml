@@ -34,7 +34,7 @@ topology_template:
 
   {%- endif %}
   node_templates:
-  {%- for msid in listofmicroservices %}
+  {%- for msid in list_of_microservices %}
     microservice.{{msid}}:
       type: micado.microservice.{{ msid }}
       requirements:

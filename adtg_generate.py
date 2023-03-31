@@ -95,6 +95,10 @@ def prepare_and_validate_input_assets(log, input_data, full_wd):
                     new_item[key] = value
             new_list.append(new_item)
         lc_data['data']=new_list
+    #check for obligatory parameters in algorithm
+    for param in ["list_of_microservices","deployment_mapping"]:
+        if param not in lc_data["algorithm"]:
+            raise ValueError("Algorithm does not contain required field '"+param+"'!")
     #convert string to dictionary for microservice deployment_data
     for ms in lc_data['microservices']:
         if "deployment_data" not in ms:
