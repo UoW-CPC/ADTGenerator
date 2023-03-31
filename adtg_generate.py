@@ -95,11 +95,11 @@ def prepare_and_validate_input_assets(log, input_data, full_wd):
                     new_item[key] = value
             new_list.append(new_item)
         lc_data['data']=new_list
-    #convert string to dictionary for microservice deploymentdata
+    #convert string to dictionary for microservice deployment_data
     for ms in lc_data['microservices']:
-        if isinstance(ms['deploymentdata'],str):
-            newdd = json.loads(ms['deploymentdata'])
-            ms['deploymentdata']=newdd
+        if isinstance(ms['deployment_data'],str):
+            newdd = json.loads(ms['deployment_data'])
+            ms['deployment_data']=newdd
     add_log(full_wd, 'Preparing incoming json finished.\n')
     return lc_data
 

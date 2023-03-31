@@ -17,10 +17,10 @@ description: "{{ description }}"
 imports:
 - micado_types.yaml
 
-{%- for msid in deploymentmapping %}
+{%- for msid in deployment_mapping %}
 - microservice.{{ msid }}.yaml
 {%- endfor %}
-{%- for hostid in deploymentmapping.values() | unique %}
+{%- for hostid in deployment_mapping.values() | unique %}
 - deployment.{{ hostid }}.yaml
 {%- endfor %}
 
@@ -38,7 +38,7 @@ topology_template:
     microservice.{{msid}}:
       type: micado.microservice.{{ msid }}
       requirements:
-      {%- for _msid in deploymentmapping.items() %}
+      {%- for _msid in deployment_mapping.items() %}
       {%- set _msid, hostid = _msid %}
       {%- if _msid == msid %}
       - host: deployment.{{ hostid }}
@@ -75,7 +75,7 @@ topology_template:
                       node-role.kubernetes.io/master: ''
    
     {%- endif %} 
-  {%- for hostid in deploymentmapping.values() | unique %}
+  {%- for hostid in deployment_mapping.values() | unique %}
     deployment.{{ hostid }}:
       type: micado.deployment.{{ hostid }}
   {%- endfor %}

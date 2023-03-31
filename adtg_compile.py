@@ -38,9 +38,9 @@ def compile(log, full_wd, asset_type, asset_dict, template_file):
         with contextlib.redirect_stdout(StringIO()) as o, contextlib.redirect_stderr(StringIO()) as e:
             try:
                 dockubeadt_result = translate_dict(
-                    asset_dict.get('deploymentformat'),
-                    asset_dict.get('deploymentdata'),
-                    asset_dict.get('configurationdata',dict()))
+                    asset_dict.get('deployment_format'),
+                    asset_dict.get('deployment_data'),
+                    asset_dict.get('configuration_data',dict()))
                 save_compile_stdout(log, full_wd, o.getvalue(), e.getvalue())
             except Exception:
                 save_compile_stdout(log, full_wd, o.getvalue(), e.getvalue())
