@@ -104,11 +104,11 @@ def prepare_and_validate_input_assets(log, input_data, full_wd):
                     raise ValueError(msg)
         lc_data['data']=new_list
     #check for obligatory parameters in dma
-    for param in ["name","scope","version","ip_instance","provider","ma_pair","deployments"]:
+    for param in ["name","version","ip_instance","provider","ma_pair","deployments"]:
         if param not in lc_data["dma"]:
             raise ValueError("DMA does not contain required field '"+param+"'!")
     #check for obligatory parameters in ma
-    for param in ["licensor","derivation","name","scope","ip_family","m_asset","a_asset"]:
+    for param in ["name","ip_family","m_asset","a_asset"]:
         if param not in lc_data["ma"]:
             raise ValueError("MA does not contain required field '"+param+"'!")
     #check for obligatory parameters in model
