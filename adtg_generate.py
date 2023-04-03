@@ -232,8 +232,10 @@ def upload_to_s3(log, s3config, source_dir, target_dir, zip_file, log_file):
             aws_secret_access_key=s3config['s3_aws_secret_key'])
     s3 = session.resource('s3')
     bucket = s3.Bucket(s3config['s3bucketname'])
-    bucket.upload_file(os.path.join(source_dir,zip_file),os.path.join(target_dir,zip_file))
-    bucket.upload_file(os.path.join(source_dir,log_file),os.path.join(target_dir,log_file))
+    if zip_file:
+        bucket.upload_file(os.path.join(source_dir,zip_file),os.path.join(target_dir,zip_file))
+    if log_file:
+        bucket.upload_file(os.path.join(source_dir,log_file),os.path.join(target_dir,log_file))
     return
 
 def extract_fields_from_uri(url):
@@ -404,11 +406,6 @@ def perform_generate(log, root_wd, gen_wd, input_data):
 
         if adtg_conf.CONFIG.get('generator',dict()).get('s3_upload_config',dict()).get("enabled",False):
             s3_upload_config = adtg_conf.CONFIG.get('generator').get('s3_upload_config')
-            log.debug("s3config:"+str(s3_upload_config))
-            log.debug("source_dir:"+str(full_wd))
-            log.debug("target_dir:"+str(gen_wd))
-            log.debug("zip_file:"+str(FILE_OUT))
-            log.debug("log_file:"+str(FILE_LOG))
             upload_to_s3(log, s3_upload_config, full_wd, gen_wd, FILE_OUT, FILE_LOG)
 
     except ValueError as e:
