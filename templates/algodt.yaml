@@ -31,6 +31,9 @@ topology_template:
     RULES_OF_CONDITION_EVALUATOR:
       type: map
       required: true
+    EMG_SUBMISSION_ID:
+      type: string
+      required: true
 
   {%- endif %}
   node_templates:
@@ -58,7 +61,7 @@ topology_template:
         - name: CONDITIONS
           value: { get_input: RULES_OF_CONDITION_EVALUATOR }
         - name: DMAINSTANCEID
-          value: {{ id }}
+          value: { get_input: EMG_SUBMISSION_ID }
         - name: MH_ENDPOINT
           value: "{{ endpointMessageHandler }}"
       interfaces:
