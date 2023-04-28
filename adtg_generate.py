@@ -336,7 +336,7 @@ def perform_generate(log, root_wd, gen_wd, input_data):
 
         result = perform_compile(log, full_wd, 'algodt', input_data['algorithm'])
         add_log(full_wd, "done.\n")
-        alg_fname = fname('algorithm', alg_name)
+        alg_fname = fname('algorithm', alg_id)
         add_log(full_wd, "Saving algorithm \""+alg_name+"\" into file \""+alg_fname+"\"... ")
         save_to_file(out_wd, alg_fname, result)
         add_log(full_wd, "done.\n")
