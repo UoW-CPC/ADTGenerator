@@ -56,7 +56,7 @@ topology_template:
         image: ignaciolopezr/digitbrain-condition-evaluator
         ports:
         - port: 80
-          targetPort: "5000"
+          targetPort: 5000
         env:
         - name: CONDITIONS
           value: { get_input: RULES_OF_CONDITION_EVALUATOR }
