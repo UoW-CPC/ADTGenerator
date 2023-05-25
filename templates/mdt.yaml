@@ -22,7 +22,7 @@ imports:
 node_types:
   micado.microservice.{{ id }}:
     derived_from: micado.microservice
-    {%- if parameters|length > 1 %}
+    {%- if parameters %}
     properties:
     {%- endif %}
       {%- for param in parameters %}
@@ -38,7 +38,7 @@ node_types:
       {%- endfor %}
 
 topology_template:
-  {%- if parameters|length > 1 %}
+  {%- if parameters %}
   inputs:
   {%- endif %}
     {%- for param in parameters %}
