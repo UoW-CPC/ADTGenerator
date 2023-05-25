@@ -102,7 +102,8 @@ def generate():
         log.exception(e)
         if adtg_conf.CONFIG.get('generator',dict()).get('s3_upload_config',dict()).get("enabled",False):
             s3_upload_config = adtg_conf.CONFIG.get('generator').get('s3_upload_config')
-            adtg_generate.upload_to_s3(log, s3_upload_config, full_wd, gen_wd, "", FILE_LOG)
+            full_wd = os.path.join(root_wd, id)
+            adtg_generate.upload_to_s3(log, s3_upload_config, full_wd, id, "", FILE_LOG)
         return make_response(False, str(e), id), 400
 
 def download(dir,file):
