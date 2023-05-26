@@ -22,7 +22,7 @@ topology_template:
         key_pair_id: {{ cloudbroker['key_pair_id'] }}
         opened_port: "{{ cloudbroker['opened_port'] }}"        
         {%- if 'domain_names' in cloudbroker %}
-        dynamic_domain_name_ids: {{ cloudbroker['domain_names'] }}
+        dynamic_domain_name_id: {{ cloudbroker['domain_names'] }}
         {%- elif 'domain_name' in cloudbroker %}
         dynamic_domain_name: {{ cloudbroker['domain_name'] }}
         {%- endif %}
