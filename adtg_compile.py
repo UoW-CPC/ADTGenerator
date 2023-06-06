@@ -35,12 +35,16 @@ def rendering_open_parameters(data):
 
 def compile(log, full_wd, asset_type, asset_dict, template_file):
     if asset_type == "mdt":
+
         with contextlib.redirect_stdout(StringIO()) as o, contextlib.redirect_stderr(StringIO()) as e:
             try:
-                dockubeadt_result = translate_dict(
-                    asset_dict.get('deployment_format'),
-                    asset_dict.get('deployment_data'),
-                    asset_dict.get('configuration_data',dict()))
+                df = asset_dict.get('deployment_format') 
+                if df == "docker-compose" and type(asset_dict.get('deployment_data')) == list:
+                    dd = asset_dict.get('deployment_data')[0]
+                else:
+                    dd = asset_dict.get('deployment_data')
+                cd = asset_dict.get('configuration_data',dict())
+                dockubeadt_result = translate_dict( df, dd, cd)
                 save_compile_stdout(log, full_wd, o.getvalue(), e.getvalue())
             except Exception:
                 save_compile_stdout(log, full_wd, o.getvalue(), e.getvalue())
