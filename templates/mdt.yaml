@@ -29,10 +29,10 @@ node_types:
       {{ param['name'] }}:
         type: "{{ param['type'] }}"
         description: "{{ param['description'] }}"
-        {%- if param[ 'defaultValue' ] != NULL %}
+        {%- if param[ 'defaultValue' ] != None %}
         default: {{ param['defaultValue'] }}
         {%- endif %}
-        {%- if param[ 'mandatory' ] != NULL %}
+        {%- if param[ 'mandatory' ] != None %}
         required: {{ param['mandatory'] }}
         {%- endif %}
       {%- endfor %}
@@ -45,10 +45,10 @@ topology_template:
     {{ param[ 'name' ]}}:
       type: "{{ param['type'] }}"
       description: "{{ param['description'] }}"
-      {%- if param[ 'defaultValue' ] != NULL %}
+      {%- if param[ 'defaultValue' ] != None %}
       default: {{ param['defaultValue'] }}
       {%- endif %}
-      {%- if param[ 'mandatory' ] != NULL %}
+      {%- if param[ 'mandatory' ] != None %}
       required: {{ param['mandatory'] }}
       {%- endif %}
     {%- endfor %}
