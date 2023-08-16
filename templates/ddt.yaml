@@ -50,9 +50,9 @@ topology_template:
       type: tosca.nodes.MiCADO.Edge
       properties:
         {%- if 'public_ip' in edge %}
-        public_ip: {{ edge['public_ip'] }}
+        public_ip: {{ edge['endpoint'] }}
         {%- else %}
-          {{ raise("Missing parameter from edge definition: public_ip") }}
+          {{ raise("Missing parameter from edge definition: endpoint") }}
         {%- endif %}
         {%- if 'ssh_username' in edge %}
         ssh_username: {{ edge['ssh_username'] }}
