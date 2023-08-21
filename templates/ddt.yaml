@@ -50,7 +50,7 @@ topology_template:
       type: tosca.nodes.MiCADO.Edge
       properties:
         {%- if 'endpoint' in edge %}
-        endpoint: {{ edge['endpoint'] }}
+        public_ip: {{ edge['endpoint'] }}
         {%- else %}
           {{ raise("Missing parameter from edge definition: endpoint") }}
         {%- endif %}
