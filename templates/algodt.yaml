@@ -34,6 +34,16 @@ topology_template:
     EMG_SUBMISSION_ID:
       type: string
       required: true
+    EMG_SALT:
+      type: string
+      required: true
+    EMG_IV:
+      type: string
+      required: true
+    EMG_NONCE:
+      type: string
+      required: true
+
 
   {%- endif %}
   node_templates:
@@ -60,10 +70,16 @@ topology_template:
         env:
         - name: CONDITIONS
           value: { get_input: RULES_OF_CONDITION_EVALUATOR }
-        - name: DMAINSTANCEID
+        - name: WFID
           value: { get_input: EMG_SUBMISSION_ID }
         - name: MH_ENDPOINT
           value: "{{ endpointMessageHandler }}"
+        - name: EMG_SALT
+          value: { get_input: EMG_SALT }
+        - name: EMG_IV
+          value: { get_input: EMG_IV }
+        - name: EMG_NONCE
+          value: { get_input: EMG_NONCE }
       interfaces:
         Kubernetes:
           create:
