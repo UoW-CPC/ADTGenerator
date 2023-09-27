@@ -32,14 +32,77 @@ def store_input_json_as_file(input_data, full_wd):
     f.close()
     add_log(full_wd, 'Storing incoming json finised.\n')
 
-def prepare_and_validate_input_assets(input_data, full_wd):
+def download_asset_from_amr(baseurl, asset_in_msg, asset_in_amr, id, full_wd):
+    add_log(full_wd, "  Trying to retrieve \""+asset_in_msg+
+                    "\" with id(\""+str(id)+"\") from AMR...\n")
+    url = baseurl if baseurl.endswith("/") else f"{baseurl}/"
+    url = url + asset_in_amr + "?id=eq." + str(id)
+    response = requests.get(url)
+    if response.status_code != 200:
+        raise ValueError("ERROR: querying "+asset_in_msg+" from AMR failed! Result of query: "+str(response))
+    response_json = response.json()
+    if not response_json:
+        raise ValueError("ERROR: "+asset_in_msg+" with id ("+str(id)+") not found in AMR. Querying the asset from AMR FAILED!")
+    add_log(full_wd, "  Downloading "+asset_in_msg+" from AMR is successful.\n")
+    return response_json
+
+def prepare_and_validate_input_assets(input_data, amr_endpoint, full_wd):
     add_log(full_wd, 'Validating incoming json starts...\n')
     #lowercase names of assets
     lc_data = {key.lower():value for key, value in input_data.items()}
-    for asset in ['dma','ma','algorithm','microservices']:
+    for asset in ['dma','data']:
         #check the existence of required assets
         if asset not in set(lc_data.keys()):
             raise ValueError("Missing asset \""+asset+"\" from input!")
+    
+    #check the existence of MAPAIR asset
+    if "ma" not in set(lc_data.keys()):
+        add_log(full_wd, '  Missing asset: ma pair\n')
+        id = lc_data.get("dma",{}).get("ma_pair", 0)
+        if not id:
+            raise ValueError("ERROR: ma_pair id parameter not found in DMA! Building the DMA from AMR FAILED!")
+        asset = \
+            download_asset_from_amr(amr_endpoint, "ma pair", "ma_pair", id, full_wd) 
+        lc_data["ma"]=asset[0]
+
+    #check the existence of MODEL asset
+    if "model" not in set(lc_data.keys()):
+        add_log(full_wd, '  Missing asset: model\n')
+        id = lc_data.get("ma",{}) .get("m_asset",0)
+        if not id:
+            raise ValueError("ERROR: model id parameter not found in MA pair! Building the DMA from AMR FAILED!")
+        asset = \
+            download_asset_from_amr(amr_endpoint, "model", "model", id, full_wd) 
+        lc_data["model"]=asset[0]
+
+    #check the existence of ALGORITHM asset
+    if "algorithm" not in set(lc_data.keys()):
+        add_log(full_wd, '  Missing asset: algorithm\n')
+        id = lc_data.get("ma",{}) .get("a_asset",0)
+        if not id:
+            raise ValueError("ERROR: algorithm id parameter not found in MA pair! Building the DMA from AMR FAILED!")
+        asset = \
+            download_asset_from_amr(amr_endpoint, "algorithm", "algorithm", id, full_wd) 
+        lc_data["algorithm"]=asset[0]
+
+    #check the existence of MICROSERVICES asset
+    if "microservices" not in set(lc_data.keys()):
+        add_log(full_wd, '  Missing asset: microservices\n')
+        ids = lc_data.get("algorithm",{}).get("list_of_microservices",0)
+        if not ids:
+            raise ValueError("ERROR: microservice id parameter not found in algorithm! Building the DMA from AMR FAILED!")
+        microservices=list()
+        for id in ids:
+            asset = \
+                download_asset_from_amr(amr_endpoint, "microservice", "microservice", id, full_wd) 
+            microservices.append(asset[0])
+        lc_data["microservices"]=microservices
+
+    for asset in ['ma','model','algorithm','microservices']:
+        #check the existence of required assets
+        if asset not in set(lc_data.keys()):
+            raise ValueError("Missing asset \""+asset+"\" from input!")
+    
     for asset in ['dma','ma','algorithm']:
         #check if the asset is a dictionary
         if not isinstance(lc_data[asset], dict):
@@ -304,7 +367,8 @@ def perform_generate(log, root_wd, gen_wd, input_data):
         full_wd = os.path.join(root_wd, gen_wd)
         add_log(full_wd, "ADT generation process ID: "+gen_wd+"\n")
         store_input_json_as_file(input_data, full_wd)
-        input_data = prepare_and_validate_input_assets(input_data, full_wd)
+        amr_endpoint = adtg_conf.CONFIG.get('generator',dict()).get('asset_metadata_registry',dict()).get("endpoint","")
+        input_data = prepare_and_validate_input_assets(input_data, amr_endpoint, full_wd)
         store_input_assets_as_files(input_data,full_wd)
 
         out_wd = os.path.join(full_wd, DIR_OUT)

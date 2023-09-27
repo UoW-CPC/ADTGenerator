@@ -27,9 +27,11 @@ generator:
             s3urlprefix: "https://myadtgeneratortest.s3.amazonaws.com"
             s3_keys_json_path: "/home/ubuntu/github-adtg/config/s3secret.json"
     condition_evaluator: 
-            enable: False
+            enable: True
             insert_MH_endpoint: ""
             query_MH_endpoint_from: "https://dbs.emgora.eu/endpoints"
+    asset_metadata_registry:
+            endpoint: "https://dbs-api.emgora.eu:443/v1/emgamr/api"
 
 logging:
     version: 1
