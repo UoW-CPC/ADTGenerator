@@ -87,7 +87,7 @@ def generate():
     input_data = request.get_json()
     try:
         root_wd = adtg_conf.CONFIG.get('generator',dict())['working_directory']
-        id = adtg_generate.init_working_directory(log, root_wd)
+        id = adtg_generate.init_working_directory(root_wd)
         log.info('  ID: '+id)
     except Exception as e:
         log.info('ADT generation finished with ERROR.')

@@ -10,7 +10,7 @@ import adtg_conf
 from urllib.parse import urlparse
 import requests
 
-def init_working_directory(log, root_wd):
+def init_working_directory(root_wd):
     while(1):
         gen_wd = datetime.now().strftime("%Y-%m-%d_%H-%M-%S_%f")
         full_wd = os.path.join(root_wd,gen_wd)
@@ -24,7 +24,7 @@ def init_working_directory(log, root_wd):
     f.close()
     return gen_wd
 
-def store_input_json_as_file(log, input_data, full_wd):
+def store_input_json_as_file(input_data, full_wd):
     add_log(full_wd, 'Storing incoming json starts...\n')
     filefullpath=os.path.join(full_wd,DIR_IN,'input.json')
     f=open(filefullpath, "w")
@@ -32,7 +32,7 @@ def store_input_json_as_file(log, input_data, full_wd):
     f.close()
     add_log(full_wd, 'Storing incoming json finised.\n')
 
-def prepare_and_validate_input_assets(log, input_data, full_wd):
+def prepare_and_validate_input_assets(input_data, full_wd):
     add_log(full_wd, 'Validating incoming json starts...\n')
     #lowercase names of assets
     lc_data = {key.lower():value for key, value in input_data.items()}
@@ -140,11 +140,10 @@ def prepare_and_validate_input_assets(log, input_data, full_wd):
     add_log(full_wd, 'Validating incoming json finished.\n')
     return lc_data
 
-def store_input_assets_as_files(log,input_data, full_wd):
+def store_input_assets_as_files(input_data, full_wd):
     add_log(full_wd, 'Storing assets in files starts...\n')
     for component in ["dma","ma","model","algorithm"]:
         add_log(full_wd, "Storing "+component+"...\n")
-        #log.debug(component+'====>'+str(input_data[component]))
         filefullpath=os.path.join(full_wd,DIR_IN,component+'_'+input_data[component]['id']+'.json')
         f=open(filefullpath, "w")
         f.write(json.dumps(input_data[component], indent=4, sort_keys=True)+'\n')
@@ -152,7 +151,6 @@ def store_input_assets_as_files(log,input_data, full_wd):
     for component in ['microservices','data']:
         index = 0
         for item in input_data[component]:
-            #log.debug(component+'['+str(index)+']====>'+str(item))
             add_log(full_wd, "Storing "+component+"["+str(index)+"]...\n")
             filefullpath=os.path.join(full_wd,DIR_IN,component+'_'+str(index)+'_'+item['id']+'.json')
             f=open(filefullpath, "w")
@@ -305,9 +303,9 @@ def perform_generate(log, root_wd, gen_wd, input_data):
     try:
         full_wd = os.path.join(root_wd, gen_wd)
         add_log(full_wd, "ADT generation process ID: "+gen_wd+"\n")
-        store_input_json_as_file(log, input_data, full_wd)
-        input_data = prepare_and_validate_input_assets(log, input_data, full_wd)
-        store_input_assets_as_files(log,input_data,full_wd)
+        store_input_json_as_file(input_data, full_wd)
+        input_data = prepare_and_validate_input_assets(input_data, full_wd)
+        store_input_assets_as_files(input_data,full_wd)
 
         out_wd = os.path.join(full_wd, DIR_OUT)
         dma_id = input_data['dma']['id']
