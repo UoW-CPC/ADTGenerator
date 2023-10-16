@@ -293,10 +293,11 @@ def upload_to_s3(log, s3config, source_dir, target_dir, zip_file, log_file):
             aws_secret_access_key=s3config['s3_aws_secret_key'])
     s3 = session.resource('s3')
     bucket = s3.Bucket(s3config['s3bucketname'])
+    s3dir = s3config['s3dir']
     if zip_file:
-        bucket.upload_file(os.path.join(source_dir,zip_file),os.path.join(target_dir,zip_file))
+        bucket.upload_file(os.path.join(source_dir,zip_file),os.path.join(s3dir,target_dir,zip_file))
     if log_file:
-        bucket.upload_file(os.path.join(source_dir,log_file),os.path.join(target_dir,log_file))
+        bucket.upload_file(os.path.join(source_dir,log_file),os.path.join(s3dir,target_dir,log_file))
     return
 
 def extract_fields_from_uri(url):
