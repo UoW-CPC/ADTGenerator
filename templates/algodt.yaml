@@ -63,7 +63,7 @@ topology_template:
     microservice.condition_evaluator:
       type: tosca.nodes.MiCADO.Container.Application.Docker.Deployment
       properties:
-        image: ignaciolopezr/digitbrain-condition-evaluator
+        image: dbs-container-repo.emgora.eu/digitbrain-condition-evaluator
         ports:
         - port: 80
           targetPort: 5000
