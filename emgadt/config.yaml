@@ -3,7 +3,7 @@ service:
     port: 4000
     rest_root_path: "/v1/emgadt"
     flask_debug_mode: False
-    public_endpoint: "https://dbs-api.emgora.eu/"
+    public_endpoint: "https://emgora-api.ai4cpps.com/"
 
     enable_oidc: false
     secrets_json_path: "/home/ubuntu/github-adtg/config/secret.json"
@@ -22,10 +22,17 @@ generator:
     imports_directory: "/home/ubuntu/github-adtg/emgadt/imports"
     puccini_csar_tool_path: "/home/ubuntu/github-adtg/bin/puccini-csar"
     s3_upload_config:
-            enabled: True
-            s3bucketname: "dbs-platform"
-            s3urlprefix: "https://dbs-platform.s3.amazonaws.com"
+            enabled: true
+            s3dir: "ADT"
+            s3bucketname: "emgora-platform"
+            s3urlprefix: "https://emgora-platform.s3.amazonaws.com"
             s3_keys_json_path: "/home/ubuntu/s3secret.json"
+    condition_evaluator:
+            enable: true
+            insert_MH_endpoint: ""
+            query_MH_endpoint_from: "https://emgora.eu/endpoints"
+    asset_metadata_registry:
+            endpoint: "https://dbs-api.emgora.eu:443/v1/emgamr/api"
 
 logging:
     version: 1
