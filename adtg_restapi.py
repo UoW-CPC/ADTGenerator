@@ -64,7 +64,7 @@ def make_response(success, message, id):
     if adtg_conf.CONFIG.get('generator',dict()).get('s3_upload_config',dict()).get('enabled',False):
         s3config = adtg_conf.CONFIG['generator']['s3_upload_config']
         endpoint = s3config['s3urlprefix']
-        rest_path = s3config['s3bucketname']
+        rest_path = s3config['s3dir']
     else:
         endpoint = adtg_conf.CONFIG.get('service',dict()).get('public_endpoint')
         rest_path = "/".join([i.strip("/").lstrip("/") for i in [adtg_conf.CONFIG.get('service',dict()).get('rest_root_path'),"download"]])
