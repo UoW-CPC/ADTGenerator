@@ -64,14 +64,14 @@ def make_response(success, message, id):
     if adtg_conf.CONFIG.get('generator',dict()).get('s3_upload_config',dict()).get('enabled',False):
         s3config = adtg_conf.CONFIG['generator']['s3_upload_config']
         endpoint = s3config['s3urlprefix']
-        rest_path = s3config['s3dir']
+        rest_path = os.path.join(s3config['s3dir'],str(id))
     else:
         endpoint = adtg_conf.CONFIG.get('service',dict()).get('public_endpoint')
-        rest_path = "/".join([i.strip("/").lstrip("/") for i in [adtg_conf.CONFIG.get('service',dict()).get('rest_root_path'),"download"]])
+        rest_path = "/".join([i.strip("/").lstrip("/") for i in [adtg_conf.CONFIG.get('service',dict()).get('rest_root_path'),"download",str(id)]])
 
-    log_route = "/".join([i.strip("/").lstrip("/") for i in [endpoint, rest_path, str(id), adtg_generate.FILE_LOG]])
+    log_route = "/".join([i.strip("/").lstrip("/") for i in [endpoint, rest_path, adtg_generate.FILE_LOG]])
     if success:
-        adt_route = "/".join([i.strip("/").lstrip("/") for i in [endpoint, rest_path, str(id), adtg_generate.FILE_OUT]])
+        adt_route = "/".join([i.strip("/").lstrip("/") for i in [endpoint, rest_path, adtg_generate.FILE_OUT]])
     else:
         adt_route = None
     response = dict(success=success,
