@@ -7,6 +7,7 @@ import jinja2, jinja2schema
 from adtg_file import *
 from adtg_compile import compile
 import adtg_conf
+import adtg_utils as utils
 from urllib.parse import urlparse
 import requests
 
@@ -200,6 +201,10 @@ def prepare_and_validate_input_assets(input_data, amr_endpoint, full_wd):
         if isinstance(ms['deployment_data'],str):
             newdd = json.loads(ms['deployment_data'])
             ms['deployment_data']=newdd
+        
+        ms["deployment_data"] = utils.handle_env_braces(
+            ms["deployment_data"], ms.get("parameters", [])
+        )
     add_log(full_wd, 'Validating incoming json finished.\n')
     return lc_data
 
