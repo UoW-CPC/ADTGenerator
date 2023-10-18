@@ -21,7 +21,7 @@ def init_working_directory(root_wd):
     os.makedirs(os.path.join(full_wd,DIR_IN))
     os.makedirs(os.path.join(full_wd,DIR_OUT))
     f = open(os.path.join(full_wd,FILE_LOG), "a")
-    f.write("Log of generating CSAR archive based on DMA metadata:\n")
+    f.write("Log of generating CSAR archive based on Process metadata:\n")
     f.close()
     return gen_wd
 
@@ -51,19 +51,19 @@ def prepare_and_validate_input_assets(input_data, amr_endpoint, full_wd):
     add_log(full_wd, 'Validating incoming json starts...\n')
     #lowercase names of assets
     lc_data = {key.lower():value for key, value in input_data.items()}
-    for asset in ['dma','data']:
+    for asset, asset_name in zip(['dma','data'],['process','data']):
         #check the existence of required assets
         if asset not in set(lc_data.keys()):
-            raise ValueError("Missing asset \""+asset+"\" from input!")
+            raise ValueError("Missing asset \""+asset_name+"\" from input!")
     
     #check the existence of MAPAIR asset
     if "ma" not in set(lc_data.keys()):
-        add_log(full_wd, '  Missing asset: ma pair\n')
+        add_log(full_wd, '  Missing asset: Behaviour\n')
         id = lc_data.get("dma",{}).get("ma_pair", 0)
         if not id:
-            raise ValueError("ERROR: ma_pair id parameter not found in DMA! Building the DMA from AMR FAILED!")
+            raise ValueError("ERROR: Behaviour id parameter not found in Process! Constructing the Process from AMR FAILED!")
         asset = \
-            download_asset_from_amr(amr_endpoint, "ma pair", "ma_pair", id, full_wd) 
+            download_asset_from_amr(amr_endpoint, "Behaviour", "ma_pair", id, full_wd) 
         lc_data["ma"]=asset[0]
 
     #check the existence of MODEL asset
@@ -71,7 +71,7 @@ def prepare_and_validate_input_assets(input_data, amr_endpoint, full_wd):
         add_log(full_wd, '  Missing asset: model\n')
         id = lc_data.get("ma",{}) .get("m_asset",0)
         if not id:
-            raise ValueError("ERROR: model id parameter not found in MA pair! Building the DMA from AMR FAILED!")
+            raise ValueError("ERROR: model id parameter not found in Behaviour! Constructing the Process from AMR FAILED!")
         asset = \
             download_asset_from_amr(amr_endpoint, "model", "model", id, full_wd) 
         lc_data["model"]=asset[0]
@@ -81,7 +81,7 @@ def prepare_and_validate_input_assets(input_data, amr_endpoint, full_wd):
         add_log(full_wd, '  Missing asset: algorithm\n')
         id = lc_data.get("ma",{}) .get("a_asset",0)
         if not id:
-            raise ValueError("ERROR: algorithm id parameter not found in MA pair! Building the DMA from AMR FAILED!")
+            raise ValueError("ERROR: algorithm id parameter not found in behaviour! Constructing the Process from AMR FAILED!")
         asset = \
             download_asset_from_amr(amr_endpoint, "algorithm", "algorithm", id, full_wd) 
         lc_data["algorithm"]=asset[0]
@@ -91,7 +91,7 @@ def prepare_and_validate_input_assets(input_data, amr_endpoint, full_wd):
         add_log(full_wd, '  Missing asset: microservices\n')
         ids = lc_data.get("algorithm",{}).get("list_of_microservices",0)
         if not ids:
-            raise ValueError("ERROR: microservice id parameter not found in algorithm! Building the DMA from AMR FAILED!")
+            raise ValueError("ERROR: microservice id parameter not found in algorithm! Constructing the Process from AMR FAILED!")
         microservices=list()
         for id in ids:
             asset = \
@@ -99,10 +99,10 @@ def prepare_and_validate_input_assets(input_data, amr_endpoint, full_wd):
             microservices.append(asset[0])
         lc_data["microservices"]=microservices
 
-    for asset in ['ma','model','algorithm','microservices']:
+    for asset, asset_name in zip(['ma','model','algorithm','microservices'],['behaviour','model','algorithm','microservices']):
         #check the existence of required assets
         if asset not in set(lc_data.keys()):
-            raise ValueError("Missing asset \""+asset+"\" from input!")
+            raise ValueError("Missing asset \""+asset_name+"\" from input!")
     
     for asset in ['dma','ma','algorithm']:
         #check if the asset is a dictionary
@@ -170,11 +170,11 @@ def prepare_and_validate_input_assets(input_data, amr_endpoint, full_wd):
     #check for obligatory parameters in dma
     for param in ["name","version","ip_instance","provider","ma_pair","deployments"]:
         if param not in lc_data["dma"]:
-            raise ValueError("DMA does not contain required field '"+param+"'!")
+            raise ValueError("Process does not contain required field '"+param+"'!")
     #check for obligatory parameters in ma
     for param in ["name","ip_family","m_asset","a_asset"]:
         if param not in lc_data["ma"]:
-            raise ValueError("MA does not contain required field '"+param+"'!")
+            raise ValueError("Behaviour does not contain required field '"+param+"'!")
     #check for obligatory parameters in model
     for param in ["name", "repository_uri", "path", "filename"]:
         if param not in lc_data["model"]:
@@ -210,8 +210,8 @@ def prepare_and_validate_input_assets(input_data, amr_endpoint, full_wd):
 
 def store_input_assets_as_files(input_data, full_wd):
     add_log(full_wd, 'Storing assets in files starts...\n')
-    for component in ["dma","ma","model","algorithm"]:
-        add_log(full_wd, "Storing "+component+"...\n")
+    for component, component_name in zip(["dma","ma","model","algorithm"],["process","behaviour","model","algorithm"]):
+        add_log(full_wd, "Storing "+component_name+"...\n")
         filefullpath=os.path.join(full_wd,DIR_IN,component+'_'+input_data[component]['id']+'.json')
         f=open(filefullpath, "w")
         f.write(json.dumps(input_data[component], indent=4, sort_keys=True)+'\n')
@@ -342,7 +342,7 @@ def collect_data_assets_for_mapping(input_data,msid):
 
 def prepare_autogenerate_CE(full_wd, insertCE):
     if not insertCE:
-        add_log(full_wd, "\n  Auto-insert DigitBrain Condition Evaluator microservice is DISABLED in DMA. Skipping...\n")
+        add_log(full_wd, "\n  Auto-insert DigitBrain Condition Evaluator microservice is DISABLED in Process. Skipping...\n")
         return False, ""
     insertCE = adtg_conf.CONFIG.get('generator',dict()).get('condition_evaluator',dict()).get('enable',False)
     if not insertCE:
@@ -380,7 +380,7 @@ def perform_generate(log, root_wd, gen_wd, input_data):
         out_wd = os.path.join(full_wd, DIR_OUT)
         dma_id = input_data['dma']['id']
         dma_name = input_data['dma']['name']
-        add_log(full_wd, "\nGenerating ADT for DMA \""+dma_name+"\" ("+dma_id+") starts...\n")
+        add_log(full_wd, "\nGenerating ADT for Process \""+dma_name+"\" ("+dma_id+") starts...\n")
 
         for dmt_name, dmt_content in input_data['dma']['deployments'].items():
             add_log(full_wd, "\nConverting deployment \""+dmt_name+"\"... ")
@@ -470,7 +470,7 @@ def perform_generate(log, root_wd, gen_wd, input_data):
         validate_csar(log, full_wd)
         add_log(full_wd, "done.\n")
 
-        add_log(full_wd, "\nGenerating ADT for DMA \""+dma_name+"\" ("+dma_id+") finished.\n")
+        add_log(full_wd, "\nGenerating ADT for Process \""+dma_name+"\" ("+dma_id+") finished.\n")
 
         if adtg_conf.CONFIG.get('generator',dict()).get('s3_upload_config',dict()).get("enabled",False):
             s3_upload_config = adtg_conf.CONFIG.get('generator').get('s3_upload_config')
