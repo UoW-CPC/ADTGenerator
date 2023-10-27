@@ -31,7 +31,17 @@ topology_template:
     {{ param[ 'name' ]}}:
       type: "{{ param['type'] }}"
       description: "{{ param['description'] }}"
-      default: {{ param['defaultValue']|default('', true) }}
+      default: {% if param['defaultValue'] is defined and param['defaultValue'] %} 
+                   {{ param['defaultValue'] }}
+               {% elif param['type'] == 'string' or param['type'] == 'secret' %}
+                   ""
+               {% elif param['type'] == 'boolean' %}
+                   false
+               {% elif param['type'] == 'integer' or param['type'] == 'float' %}
+                   0
+               {% else %}
+                   ""
+               {% endif %}
       {%- if param[ 'mandatory' ] != None %}
       required: {{ param['mandatory'] }}
       {%- endif %}
