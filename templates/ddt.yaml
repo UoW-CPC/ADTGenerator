@@ -58,7 +58,10 @@ topology_template:
         ssh_username: {{ edge['ssh_username'] }}
         {%- endif %}
         {%- if 'ssh_private_key' in edge %}
-        ssh_private_key: {{ edge['ssh_private_key'] }}
+        ssh_private_key: |- 
+{%- filter indent(width=10) %} 
+{{ edge['ssh_private_key'] }}
+{%- endfilter %}
         {%- endif %}
         {%- if 'ssh_tunnel' in edge %}
         ssh_tunnel: {{ edge['ssh_tunnel'] }}
