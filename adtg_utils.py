@@ -24,7 +24,7 @@ def handle_env_braces(deploy_data: dict, ms_params: list) -> dict:
         """
         variable_name = match.group(1)
         if variable_name in params:
-            return f'open_parameter({variable_name})'
+            return f'open_parameter{{{variable_name}}}'
         else:
             return f'{{{{ {variable_name} }}}}'  
 
