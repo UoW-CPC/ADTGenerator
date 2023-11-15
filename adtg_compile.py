@@ -29,16 +29,16 @@ def rendering_open_parameters(data):
     else:
         d = str(data)
         # Match the value of the key/value pair
-        match = re.match(r'^open_parameter\("?(.*?)"?\)$', d)
+        match = re.match(r'^open_parameter\{"?(.*?)"?\}$', d)
         if match:
             return {'get_input': match.group(1).strip()}
         
         # Match within the string
-        matches = re.findall(r'open_parameter\("?(.*?)"?\)', d)
+        matches = re.findall(r'open_parameter\{"?(.*?)"?\}', d)
         for match in matches:
             param_value = match.strip().strip('\"').strip('\'')
             replace_value = f'{{ get_input: {param_value} }}'
-            return d.replace(f'open_parameter({match})', replace_value)
+            return d.replace(f'open_parameter{{{match}}}', replace_value)
         return data
 
 def compile(log, full_wd, asset_type, asset_dict, template_file):
