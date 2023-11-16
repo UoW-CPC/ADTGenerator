@@ -38,8 +38,8 @@ def rendering_open_parameters(data):
         for match in matches:
             param_value = match.strip().strip('\"').strip('\'')
             replace_value = f'{{ get_input: {param_value} }}'
-            return d.replace(f'open_parameter{{{match}}}', replace_value)
-        return data
+            d = d.replace(f'open_parameter{{{match}}}', replace_value)
+        return d
 
 def compile(log, full_wd, asset_type, asset_dict, template_file):
     if asset_type == "mdt":
