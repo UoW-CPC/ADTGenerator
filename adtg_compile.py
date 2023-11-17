@@ -26,20 +26,20 @@ def rendering_open_parameters(data):
         return {k: rendering_open_parameters(v) for k, v in data.items()}
     elif isinstance(data, list):
         return [rendering_open_parameters(i) for i in data]
-    else:
-        d = str(data)
+    elif isinstance(data, str):
         # Match the value of the key/value pair
-        match = re.match(r'^open_parameter\{"?(.*?)"?\}$', d)
+        match = re.match(r'^open_parameter\{"?(.*?)"?\}$', data)
         if match:
             return {'get_input': match.group(1).strip()}
         
         # Match within the string
-        matches = re.findall(r'open_parameter\{"?(.*?)"?\}', d)
+        matches = re.findall(r'open_parameter\{"?(.*?)"?\}', data)
         for match in matches:
             param_value = match.strip().strip('\"').strip('\'')
             replace_value = f'{{ get_input: {param_value} }}'
-            d = d.replace(f'open_parameter{{{match}}}', replace_value)
-        return d
+            data = data.replace(f'open_parameter{{{match}}}', replace_value)
+        return data
+    return data
 
 def compile(log, full_wd, asset_type, asset_dict, template_file):
     if asset_type == "mdt":
