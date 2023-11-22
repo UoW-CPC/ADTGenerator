@@ -10,5 +10,5 @@ Werkzeug==2.0.1
 oauth2client==4.1.3
 ruamel.yaml==0.18.2
 boto3==1.20.46
-micado-parser==0.12.2
+micado-parser==0.12.3
 dockubeadt==0.3.4
