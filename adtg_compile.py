@@ -59,6 +59,7 @@ def compile(log, full_wd, asset_type, asset_dict, template_file):
                 raise
         
         yaml = ruamel.yaml.YAML()
+        yaml.preserve_quotes = True
         #workaround due to the fact that dockubeadt returns node_templates as yaml instead of dict
         dockubeadt_result = yaml.load(str(dockubeadt_result))
         #workaround finishes here
