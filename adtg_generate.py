@@ -184,7 +184,7 @@ def prepare_and_validate_input_assets(input_data, amr_endpoint, full_wd):
                 msg = "Model \"<noname>\" ("+lc_data['model']['id']+") does not contain required field '"+param+"'!"
             raise ValueError(msg)
     #check for obligatory parameters in algorithm
-    for param in ["name","description","classification_schema","type","list_of_microservices","deployment_mapping"]:
+    for param in ["name","description","classification_schema","type","list_of_microservices"]:
         if param not in lc_data["algorithm"]:
             raise ValueError("Algorithm does not contain required field '"+param+"'!")
     #check for obligatory parameters in microservices
@@ -206,6 +206,34 @@ def prepare_and_validate_input_assets(input_data, amr_endpoint, full_wd):
             ms["deployment_data"], ms.get("parameters", [])
         )
     add_log(full_wd, 'Validating incoming json finished.\n')
+
+    #handling extra "hosts" parameter in Alg asset with backward compatibility
+    if "hosts" in lc_data["algorithm"]:
+        #add_log(full_wd, 'In Algorithm asset, hosts parameter is found. Converting...\n')
+        #add_log(full_wd, 'deployment_data BEFORE:\n'+
+        #                  str(lc_data["algorithm"]["deployment_mapping"])+'\n')
+        #add_log(full_wd, 'microservice BEFORE:\n'+
+        #                  str(lc_data["algorithm"]["list_of_microservices"])+'\n')
+        lc_data["algorithm"]["deployment_mapping"]=dict()
+        #lc_data["algorithm"]["list_of_microservices"]=list()
+        for host in lc_data["algorithm"]["hosts"]:
+            #add_log(full_wd, 'Host '+host+' found.\n')
+            if "microservices" not in lc_data["algorithm"]["hosts"][host]:
+                raise ValueError("Algorithm does not contain the required field 'microservices'! Incorrect input format.")
+            for ms in lc_data["algorithm"]["hosts"][host]["microservices"]:
+                #add_log(full_wd, '  MS '+ms+' found.\n')
+                lc_data["algorithm"]["deployment_mapping"][ms]=host
+                #lc_data["algorithm"]["list_of_microservices"].append(ms)
+            if "cloud_config" in lc_data["algorithm"]["hosts"][host]:
+                cloud_config=lc_data["algorithm"]["hosts"][host]["cloud_config"]
+                type=lc_data["dma"]["deployments"][host]["type"]
+                lc_data["dma"]["deployments"][host][type]["cloud_config"]=cloud_config
+                #add_log(full_wd, '  host: {}\n  cc: {}\n'.format(host,cloud_config))
+        #add_log(full_wd, 'deployment_data AFTER:\n'+
+        #                  str(lc_data["algorithm"]["deployment_mapping"])+'\n')
+        #add_log(full_wd, 'microservice AFTER:\n'+
+        #                  str(lc_data["algorithm"]["list_of_microservices"])+'\n')
+
     return lc_data
 
 def store_input_assets_as_files(input_data, full_wd):
