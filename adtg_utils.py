@@ -59,3 +59,17 @@ def read_status_file(filename):
     status = yaml.load(file)
   return status
 
+response_file_name = "generate.response"
+
+def write_response_file(filename, response):
+  yaml = YAML()
+  with open(filename, 'w') as file:
+    yaml.dump(response, file)
+  return
+
+def read_response_file(filename):
+  yaml = YAML()
+  with open(filename, 'r') as file:
+    response = yaml.load(file)
+  return response
+

@@ -96,7 +96,7 @@ def generate():
         log.info("Response JSON: "+str(response))
         return response, 500
     try:
-        success, message = adtg_generate.perform_generate(log, root_wd, id, input_data)
+        success, message = adtg_generate.launch_generate(log, root_wd, id, input_data)
         log.info('ADT generation finished with SUCCESS.')
         response = make_response(success, message, id)
         log.info("Response JSON: "+str(response))
@@ -104,10 +104,6 @@ def generate():
     except Exception as e:
         log.info('ADT generation finished with ERROR.')
         log.exception(e)
-        if adtg_conf.CONFIG.get('generator',dict()).get('s3_upload_config',dict()).get("enabled",False):
-            s3_upload_config = adtg_conf.CONFIG.get('generator').get('s3_upload_config')
-            full_wd = os.path.join(root_wd, id)
-            adtg_generate.upload_to_s3(log, s3_upload_config, full_wd, id, "", adtg_generate.FILE_LOG)
         response = make_response(False, str(e), id)
         log.info("Response JSON: "+str(response))
         return response, 400
