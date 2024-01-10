@@ -397,13 +397,25 @@ def prepare_autogenerate_CE(full_wd, insertCE):
     return True, mh_endpoint
 
 def perform_generate(log, root_wd, gen_wd, input_data):
+    status = {
+        "running": True,
+        "progress": 0,
+        "outcome": False,
+        "message": "validating inputs"
+    }
     try:
         full_wd = os.path.join(root_wd, gen_wd)
+        status_fname = os.path.join(root_wd, gen_wd, utils.status_file_name)
+        utils.write_status_file(status_fname, status)
         add_log(full_wd, "ADT generation process ID: "+gen_wd+"\n")
         store_input_json_as_file(input_data, full_wd)
         amr_endpoint = adtg_conf.CONFIG.get('generator',dict()).get('asset_metadata_registry',dict()).get("endpoint","")
         input_data = prepare_and_validate_input_assets(input_data, amr_endpoint, full_wd)
         store_input_assets_as_files(input_data,full_wd)
+
+        status["progress"] = 10
+        status["message"] = "converting deployments"
+        utils.write_status_file(status_fname, status)
 
         out_wd = os.path.join(full_wd, DIR_OUT)
         dma_id = input_data['dma']['id']
@@ -419,6 +431,10 @@ def perform_generate(log, root_wd, gen_wd, input_data):
             add_log(full_wd, "Saving deployment \""+dmt_name+"\" into file \""+dmt_fname+"\"... ")
             save_to_file(out_wd, dmt_fname, result)
             add_log(full_wd, "done.\n")
+        
+        status["progress"] = 20
+        status["message"] = "converting algorithm"
+        utils.write_status_file(status_fname, status)
 
         alg_id = input_data['algorithm']['id']
         alg_name = input_data['algorithm']['name']
@@ -437,7 +453,16 @@ def perform_generate(log, root_wd, gen_wd, input_data):
         save_to_file(out_wd, alg_fname, result)
         add_log(full_wd, "done.\n")
 
-        for ms in input_data['microservices']:
+
+        status_ms_id = 0
+        status_ms_number = len(input_data['microservices'])
+        for ms in input_data['microservices']: 
+            status["progress"] = 30+(status_ms_id/status_ms_number)*20
+            status_ms_id+=1
+            status["message"] = "converting microservice {0}/{1}".format(
+                                 str(status_ms_id),str(status_ms_number))
+            utils.write_status_file(status_fname, status)
+
             ms_id = ms['id']
             ms_name = ms['name']
             add_log(full_wd, "\nConverting microservice \""+ms_name+"\" ("+ms_id+") starts...")
@@ -486,6 +511,10 @@ def perform_generate(log, root_wd, gen_wd, input_data):
             add_log(full_wd, "done.\n")
             add_log(full_wd, "Converting microservice \""+ms_name+"\" ("+ms_id+") finished.\n")
 
+        status["progress"] = 50
+        status["message"] = "creating ADT"
+        utils.write_status_file(status_fname, status)
+
         add_log(full_wd, "\nCopying micado type import files starts...\n")
         copy_imports(log, full_wd)
         add_log(full_wd, "done.\n")
@@ -494,21 +523,40 @@ def perform_generate(log, root_wd, gen_wd, input_data):
         create_csar(log, full_wd, alg_fname)
         add_log(full_wd, "done.\n")
 
+        status["progress"] = 60
+        status["message"] = "validating ADT"
+        utils.write_status_file(status_fname, status)
+        
         add_log(full_wd, "\nValidating csar zip (with micadoparser) starts...\n")
         validate_csar(log, full_wd)
         add_log(full_wd, "done.\n")
+
+        status["progress"] = 80
+        status["message"] = "uploading ADT to storage"
+        utils.write_status_file(status_fname, status)
 
         add_log(full_wd, "\nGenerating ADT for Process \""+dma_name+"\" ("+dma_id+") finished.\n")
 
         if adtg_conf.CONFIG.get('generator',dict()).get('s3_upload_config',dict()).get("enabled",False):
             s3_upload_config = adtg_conf.CONFIG.get('generator').get('s3_upload_config')
             upload_to_s3(log, s3_upload_config, full_wd, gen_wd, FILE_OUT, FILE_LOG)
+    
+        status = {"running": False, "progress": 100, "outcome": True, "message": "ADT generated successfully" }
+        utils.write_status_file(status_fname, status)
 
     except ValueError as e:
         add_log(full_wd,"ERROR: "+str(e)+"\n")
+        status["running"]=False
+        status["outcome"]=False
+        status["message"]="ADT generation finished with ERROR. See logs for details."
+        utils.write_status_file(status_fname, status)
         raise
     except Exception as e:
         add_log(full_wd,'\n'+traceback.format_exc())
+        status["running"]=False
+        status["outcome"]=False
+        status["message"]="ADT generation finished with ERROR. See logs for details."
+        utils.write_status_file(status_fname, status)
         raise
 
     return True, "ADT generated successfully"

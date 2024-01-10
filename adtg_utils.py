@@ -1,4 +1,5 @@
 import re
+from ruamel.yaml import YAML
 
 def handle_env_braces(deploy_data: dict, ms_params: list) -> dict:
     """
@@ -42,3 +43,19 @@ def handle_env_braces(deploy_data: dict, ms_params: list) -> dict:
             return item
 
     return recursive_replace(deploy_data)
+
+
+status_file_name = "generate.status"
+
+def write_status_file(filename, status):
+  yaml = YAML()
+  with open(filename, 'w') as file:
+    yaml.dump(status, file)
+  return
+
+def read_status_file(filename):
+  yaml = YAML()
+  with open(filename, 'r') as file:
+    status = yaml.load(file)
+  return status
+
