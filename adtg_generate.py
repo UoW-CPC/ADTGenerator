@@ -397,25 +397,27 @@ def prepare_autogenerate_CE(full_wd, insertCE):
     return True, mh_endpoint
 
 def perform_generate(log, root_wd, gen_wd, input_data):
-    status = {
-        "running": True,
+    response = {
+        "success": True,
         "progress": 0,
-        "outcome": False,
-        "message": "validating inputs"
+        "message": "validating inputs",
+        "log": None,
+        "adt": None
     }
     full_wd = os.path.join(root_wd, gen_wd)
     try:
-        status_fname = os.path.join(root_wd, gen_wd, utils.status_file_name)
-        utils.write_status_file(status_fname, status)
+        response_file_path = os.path.join(root_wd, gen_wd, utils.response_file_name)
+        utils.write_file(response_file_path, response)
+
         add_log(full_wd, "ADT generation process ID: "+gen_wd+"\n")
         store_input_json_as_file(input_data, full_wd)
         amr_endpoint = adtg_conf.CONFIG.get('generator',dict()).get('asset_metadata_registry',dict()).get("endpoint","")
         input_data = prepare_and_validate_input_assets(input_data, amr_endpoint, full_wd)
         store_input_assets_as_files(input_data,full_wd)
 
-        status["progress"] = 10
-        status["message"] = "converting deployments"
-        utils.write_status_file(status_fname, status)
+        response["progress"] = 10
+        response["message"] = "converting deployments"
+        utils.write_file(response_file_path, response)
 
         out_wd = os.path.join(full_wd, DIR_OUT)
         dma_id = input_data['dma']['id']
@@ -432,9 +434,9 @@ def perform_generate(log, root_wd, gen_wd, input_data):
             save_to_file(out_wd, dmt_fname, result)
             add_log(full_wd, "done.\n")
         
-        status["progress"] = 20
-        status["message"] = "converting algorithm"
-        utils.write_status_file(status_fname, status)
+        response["progress"] = 20
+        response["message"] = "converting algorithm"
+        utils.write_file(response_file_path, response)
 
         alg_id = input_data['algorithm']['id']
         alg_name = input_data['algorithm']['name']
@@ -453,15 +455,14 @@ def perform_generate(log, root_wd, gen_wd, input_data):
         save_to_file(out_wd, alg_fname, result)
         add_log(full_wd, "done.\n")
 
-
-        status_ms_id = 0
-        status_ms_number = len(input_data['microservices'])
+        progress_ms_id = 0
+        progress_ms_number = len(input_data['microservices'])
         for ms in input_data['microservices']: 
-            status["progress"] = int(30+(status_ms_id/status_ms_number)*20)
-            status_ms_id+=1
-            status["message"] = "converting microservice {0}/{1}".format(
-                                 str(status_ms_id),str(status_ms_number))
-            utils.write_status_file(status_fname, status)
+            response["progress"] = int(30+(progress_ms_id/progress_ms_number)*20)
+            progress_ms_id+=1
+            response["message"] = "converting microservice {0}/{1}".format(
+                                 str(progress_ms_id),str(progress_ms_number))
+            utils.write_file(response_file_path, response)
 
             ms_id = ms['id']
             ms_name = ms['name']
@@ -511,9 +512,9 @@ def perform_generate(log, root_wd, gen_wd, input_data):
             add_log(full_wd, "done.\n")
             add_log(full_wd, "Converting microservice \""+ms_name+"\" ("+ms_id+") finished.\n")
 
-        status["progress"] = 50
-        status["message"] = "creating ADT"
-        utils.write_status_file(status_fname, status)
+        response["progress"] = 50
+        response["message"] = "creating ADT"
+        utils.write_file(response_file_path, response)
 
         add_log(full_wd, "\nCopying micado type import files starts...\n")
         copy_imports(log, full_wd)
@@ -523,17 +524,19 @@ def perform_generate(log, root_wd, gen_wd, input_data):
         create_csar(log, full_wd, alg_fname)
         add_log(full_wd, "done.\n")
 
-        status["progress"] = 60
-        status["message"] = "validating ADT"
-        utils.write_status_file(status_fname, status)
+        raise Exception("ADT generation interrupted...")
+
+        response["progress"] = 60
+        response["message"] = "validating ADT"
+        utils.write_file(response_file_path, response)
         
         add_log(full_wd, "\nValidating csar zip (with micadoparser) starts...\n")
         validate_csar(log, full_wd)
         add_log(full_wd, "done.\n")
 
-        status["progress"] = 90
-        status["message"] = "uploading ADT to storage"
-        utils.write_status_file(status_fname, status)
+        response["progress"] = 90
+        response["message"] = "uploading ADT to storage"
+        utils.write_file(response_file_path, response)
 
         add_log(full_wd, "\nGenerating ADT for Process \""+dma_name+"\" ("+dma_id+") finished.\n")
 
@@ -541,61 +544,50 @@ def perform_generate(log, root_wd, gen_wd, input_data):
             s3_upload_config = adtg_conf.CONFIG.get('generator').get('s3_upload_config')
             upload_to_s3(log, s3_upload_config, full_wd, gen_wd, FILE_OUT, FILE_LOG)
     
-        status = {"running": False, "progress": 100, "outcome": True, "message": "ADT generated successfully" }
-        utils.write_status_file(status_fname, status)
-
     except ValueError as e:
         add_log(full_wd,"ERROR: "+str(e)+"\n")
-        status["running"]=False
-        status["outcome"]=False
-        status["message"]="ADT generation finished with ERROR. See logs for details."
-        utils.write_status_file(status_fname, status)
         raise
     except Exception as e:
         add_log(full_wd,'\n'+traceback.format_exc())
-        status["running"]=False
-        status["outcome"]=False
-        status["message"]="ADT generation finished with ERROR. See logs for details."
-        utils.write_status_file(status_fname, status)
         raise
 
     return True, "ADT generated successfully."
 
 def launch_generate(log, root_wd, gen_wd, input_data):
-    success, message = False, "ADT generation finished with ERROR. See logs for details!"
+    response_file_path = os.path.join(root_wd, gen_wd, utils.response_file_name)
     try:
-        success, message = perform_generate(log, root_wd, gen_wd, input_data)
+        perform_generate(log, root_wd, gen_wd, input_data)
         log.info('ADT generation finished with SUCCESS.')
+        response = utils.read_file(response_file_path)
+        response["success"] = True
+        response["progress"] = 100
+        response["message"] = "ADT generated successfully"
     except Exception as e:
         log.info('ADT generation finished with ERROR.')
         log.exception(e)
-        #response = make_response(False, str(e), id)
-        #log.info("Response JSON: "+str(response))
+        response = utils.read_file(response_file_path)
+        response["success"] = False
+        response["message"] = "ADT generation finished with ERROR. See logs for details!"
         if adtg_conf.CONFIG.get('generator',dict()).get('s3_upload_config',dict()).get("enabled",False):
             s3_upload_config = adtg_conf.config.get('generator').get('s3_upload_config')
-            full_wd = os.path.join(root_wd, id)
-            upload_to_s3(log, s3_upload_config, full_wd, id, "", FILE_LOG)
+            full_wd = os.path.join(root_wd, gen_wd)
+            upload_to_s3(log, s3_upload_config, full_wd, gen_wd, "", FILE_LOG)
     finally:
         if adtg_conf.CONFIG.get('generator',dict()).get('s3_upload_config',dict()).get("enabled",False):
             s3_upload_config = adtg_conf.config.get('generator').get('s3_upload_config')
             endpoint = s3_upload_config['s3urlprefix']
-            rest_path = os.path.join(s3_upload_config['s3dir'],str(id))
+            rest_path = os.path.join(s3_upload_config['s3dir'],str(gen_wd))
         else:
             endpoint = adtg_conf.CONFIG.get('service',dict()).get('public_endpoint')
-            rest_path = "/".join([i.strip("/").lstrip("/") for i in [adtg_conf.CONFIG.get('service',dict()).get('rest_root_path'),"download",str(id)]])
+            rest_path = "/".join([i.strip("/").lstrip("/") for i in [adtg_conf.CONFIG.get('service',dict()).get('rest_root_path'),"download",str(gen_wd)]])
         log_route = "/".join([i.strip("/").lstrip("/") for i in [endpoint, rest_path, FILE_LOG]])
-        if success:
-            adt_route = "/".join([i.strip("/").lstrip("/") for i in [endpoint, rest_path, FILE_OUT]])
-        else:
-            adt_route = None
-        response = dict(success=success,
-                        message=message,
-                        log=log_route,
-                        adt=adt_route)
-        response_fname = os.path.join(root_wd, gen_wd, utils.response_file_name)
-        utils.write_response_file(response_fname, response)
+        adt_route = "/".join([i.strip("/").lstrip("/") for i in [endpoint, rest_path, FILE_OUT]])
         
-        return success, message
+        response["log"] = log_route
+        response["adt"] = adt_route if response["success"] else None
+        utils.write_file(response_file_path, response)
+        
+        return response["success"], response["message"]
 
 
 

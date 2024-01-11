@@ -46,30 +46,19 @@ def handle_env_braces(deploy_data: dict, ms_params: list) -> dict:
 
 
 status_file_name = "generate.status"
-
-def write_status_file(filename, status):
-  yaml = YAML()
-  with open(filename, 'w') as file:
-    yaml.dump(status, file)
-  return
-
-def read_status_file(filename):
-  yaml = YAML()
-  with open(filename, 'r') as file:
-    status = yaml.load(file)
-  return status
-
 response_file_name = "generate.response"
 
-def write_response_file(filename, response):
+def write_file(filename, content):
   yaml = YAML()
   with open(filename, 'w') as file:
-    yaml.dump(response, file)
+    yaml.dump(content, file)
+  import time
+  time.sleep(5)
   return
 
-def read_response_file(filename):
+def read_file(filename):
   yaml = YAML()
   with open(filename, 'r') as file:
-    response = yaml.load(file)
-  return response
+    content = yaml.load(file)
+  return content
 

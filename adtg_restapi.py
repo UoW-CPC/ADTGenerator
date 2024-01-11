@@ -8,6 +8,7 @@ from typing import Any as EndpointResult
 
 import adtg_generate
 import adtg_compile
+import adtg_utils
 
 log = None
 app = None
@@ -108,6 +109,17 @@ def generate():
         log.info("Response JSON: "+str(response))
         return response, 400
 
+def status(id):
+    log.debug("status() invoked: "+id)
+    root_wd = adtg_conf.CONFIG.get('generator',dict()).get('working_directory')
+    full_wd = os.path.join(root_wd, str(id))
+    if os.path.isdir(full_wd):
+        response_file_path = os.path.join(full_wd, adtg_utils.response_file_name)
+        if os.path.isfile(response_file_path):
+            response = jsonify(adtg_utils.read_file(response_file_path))
+            return response, 200
+    return jsonify({"message": "Cannot find ADT generation with this ID!"}), 400
+
 def download(dir,file):
     global log
     log.debug("download() invoked: "+dir+"/"+file)
@@ -118,7 +130,7 @@ def health():
     return '', 200
 
 def init():
-    global log, app, oidc, oidc_enabled, compile, generate, download
+    global log, app, oidc, oidc_enabled, compile, generate, status, download
 
     logging.config.dictConfig(adtg_conf.CONFIG['logging'])
     log = logging.getLogger('adtg')
@@ -132,6 +144,7 @@ def init():
         oidc = OpenIDConnect(app)
         compile = (oidc.accept_token(require_token=oidc_require_token))(compile)
         generate = (oidc.accept_token(require_token=oidc_require_token))(generate)
+        status = (oidc.accept_token(require_token=oidc_require_token))(status)
         download = (oidc.accept_token(require_token=oidc_require_token))(download)
         
     endpoint=adtg_conf.rest_root_path+'/compile/<type>'
@@ -141,6 +154,10 @@ def init():
     endpoint=adtg_conf.rest_root_path+'/generate'
     log.debug("Registering generate() method for endpoint "+endpoint)
     app.add_url_rule(endpoint, methods=['POST'], view_func=generate)
+    
+    endpoint=adtg_conf.rest_root_path+'/status/<id>'
+    log.debug("Registering status() method for endpoint "+endpoint)
+    app.add_url_rule(endpoint, methods=['GET'], view_func=status)
 
     endpoint=adtg_conf.rest_root_path+'/download/<dir>/<file>'
     log.debug("Registering download() method for endpoint "+endpoint)
