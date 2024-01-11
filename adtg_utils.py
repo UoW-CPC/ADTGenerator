@@ -52,8 +52,6 @@ def write_file(filename, content):
   yaml = YAML()
   with open(filename, 'w') as file:
     yaml.dump(content, file)
-  import time
-  time.sleep(5)
   return
 
 def read_file(filename):
