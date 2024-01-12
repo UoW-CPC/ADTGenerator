@@ -524,8 +524,6 @@ def perform_generate(log, root_wd, gen_wd, input_data):
         create_csar(log, full_wd, alg_fname)
         add_log(full_wd, "done.\n")
 
-        raise Exception("ADT generation interrupted...")
-
         response["progress"] = 60
         response["message"] = "validating ADT"
         utils.write_file(response_file_path, response)
