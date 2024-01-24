@@ -405,6 +405,8 @@ def perform_generate(log, root_wd, gen_wd, input_data):
         "adt": None
     }
     full_wd = os.path.join(root_wd, gen_wd)
+    os.chdir(full_wd)
+
     try:
         response_file_path = os.path.join(root_wd, gen_wd, utils.response_file_name)
         utils.write_file(response_file_path, response)
@@ -555,13 +557,13 @@ def launch_generate(log, root_wd, gen_wd, input_data):
     response_file_path = os.path.join(root_wd, gen_wd, utils.response_file_name)
     try:
         perform_generate(log, root_wd, gen_wd, input_data)
-        log.info('ADT generation finished with SUCCESS.')
+        log.info('ADT generation finished with SUCCESS. ID:{}'.format(gen_wd))
         response = utils.read_file(response_file_path)
         response["success"] = True
         response["progress"] = 100
         response["message"] = "ADT generated successfully"
     except Exception as e:
-        log.info('ADT generation finished with ERROR.')
+        log.info('ADT generation finished with ERROR. ID:{}'.format(gen_wd))
         log.exception(e)
         response = utils.read_file(response_file_path)
         response["success"] = False

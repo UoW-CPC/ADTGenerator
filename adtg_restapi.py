@@ -6,10 +6,11 @@ import adtg_conf
 from functools import wraps
 from typing import Any as EndpointResult
 import threading
-
+import multiprocessing as mp
 import adtg_generate
 import adtg_compile
 import adtg_utils
+import signal
 
 log = None
 app = None
@@ -128,10 +129,16 @@ def start():
         log.info("Response JSON: "+str(response))
         return response, 500
     try:
-        th = threading.Thread(  target=adtg_generate.launch_generate,
-                                args=(log, root_wd, id, input_data) )
-        th.daemon = True
-        th.start()
+        #Using thread library
+        #th = threading.Thread(  target=adtg_generate.launch_generate,
+        #                        args=(log, root_wd, id, input_data) )
+        #th.daemon = True
+        #th.start()
+        #Using process library
+        p = mp.Process( target=adtg_generate.launch_generate, 
+                        args=(log, root_wd, id, input_data), daemon=False)
+        p.start()
+        
         log.info('Starting the ADT generation process DONE')
         response = jsonify( {"success": True,
                              "id" : id,
@@ -171,6 +178,9 @@ def health():
 
 def init():
     global log, app, oidc, oidc_enabled, compile, generate, start, status, download
+
+    mp.set_start_method('fork')
+    signal.signal(signal.SIGCHLD, signal.SIG_IGN)
 
     logging.config.dictConfig(adtg_conf.CONFIG['logging'])
     log = logging.getLogger('adtg')
