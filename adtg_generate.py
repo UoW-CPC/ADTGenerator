@@ -10,6 +10,7 @@ import adtg_conf
 import adtg_utils as utils
 from urllib.parse import urlparse
 import requests
+from functools import reduce
 
 def init_working_directory(root_wd):
     while(1):
@@ -207,7 +208,7 @@ def prepare_and_validate_input_assets(input_data, amr_endpoint, full_wd):
         )
     add_log(full_wd, 'Validating incoming json finished.\n')
 
-    #handling extra "hosts" parameter in Alg asset with backward compatibility
+    #check if hosts exists in ALG asset and perform conversion to provide backward compatibility
     if "hosts" in lc_data["algorithm"]:
         #add_log(full_wd, 'In Algorithm asset, hosts parameter is found. Converting...\n')
         #add_log(full_wd, 'deployment_data BEFORE:\n'+
@@ -233,6 +234,38 @@ def prepare_and_validate_input_assets(input_data, amr_endpoint, full_wd):
         #                  str(lc_data["algorithm"]["deployment_mapping"])+'\n')
         #add_log(full_wd, 'microservice AFTER:\n'+
         #                  str(lc_data["algorithm"]["list_of_microservices"])+'\n')
+
+    #check if opened_port exists in MS asset and perform conversion to provide backward compatibility
+    opened_port_merging = False
+    for ms in lc_data["microservices"]:
+        if "opened_port" in ms:
+            opened_port_merging = True
+    #handling extra "port" parameter in MS asset with backward compatibility
+    if opened_port_merging:
+        #iterate over the hosts to produce opened_port parameter for each host
+        for host in lc_data["dma"]["deployments"].keys():
+            #add_log(full_wd, '==>HOST: {}\n'.format(host))
+            opened_port_set = set()
+            #iterate over microservices to find given host in mapping
+            for msidinmapping in lc_data["algorithm"]["deployment_mapping"].keys():
+                hostofms=lc_data["algorithm"]["deployment_mapping"][msidinmapping]
+                #add_log(full_wd,"==>MSID: {}, HOST: {}\n".format(msidinmapping,hostofms))
+                #check if ms is mapped to the given host
+                if host==hostofms:
+                    for ms in lc_data["microservices"]:
+                        if ms["id"]==msidinmapping and "opened_port" in ms:
+                            #add_log(full_wd, "==>MSID: {}, HOST: {}, OPENED_PORT: {}\n".format(
+                            #    ms["id"],host,ms["opened_port"]))
+                            #split, strip, convert to int and add them to existing set of ints
+                            opened_port_set.update(set([ int(x.strip()) for x in ms["opened_port"].split(',')]))
+            #sort and concatenate set of ints into string
+            if opened_port_set:
+                host_merged_ports = reduce(lambda a, b : str(a)+', '+str(b) , sorted(opened_port_set))
+                #add_log(full_wd, "==> HOST: {}, OPENED_PORT: {}\n".format(host,host_merged_ports))
+                hosttype=lc_data["dma"]["deployments"][host]["type"]
+                if hosttype == "edge":
+                    raise ValueError("Cannot set opened ports for edge. Found opened ports in microservices mapped to edge")
+                lc_data["dma"]["deployments"][host][hosttype]["opened_port"] = host_merged_ports
 
     return lc_data
 
